@@ -3,7 +3,7 @@
  * @Date: 2022-06-20 19:10:23
  * @LastEditors: Dino
  * @LastEditTime: 2022-06-20 19:14:22
- * @Description: httpå®¢æˆ·ç«¯
+ * @Description: http¿Í»§¶Ë
  */
 
 #include <HttpClient.h>
@@ -55,7 +55,7 @@ HttpResponse HttpClient::post(const std::string& url, const int port, const std:
     throw SocketException("invalid url");
   }
 
-  // ç”Ÿæˆbody
+  // Éú³Ébody
   auto boundary = http::get_boundary();
   std::stringstream ss;
   for (auto&& form : forms) {
@@ -106,15 +106,15 @@ HttpRequest HttpClient::make_request(const std::string& ip, const int& port, Htt
 HttpResponse HttpClient::send_request(const HttpRequest& request)
 {
   std::stringstream header_stream;
-  //  è¯·æ±‚è¡Œ POST /?id=1 HTTP/1.1
+  //  ÇëÇóĞĞ POST /?id=1 HTTP/1.1
   header_stream << request.method << " " \
                 << request.path << " " \
                 << "HTTP/1.1" << CRLF;
-  // å¤´éƒ¨
+  // Í·²¿
   for (auto&& header : request.header) {
     header_stream << header.first << ": " << header.second << CRLF;
   }
-  // ç©ºè¡Œ
+  // ¿ÕĞĞ
   header_stream << CRLF;
   // body
   header_stream << request.body;
@@ -122,10 +122,10 @@ HttpResponse HttpClient::send_request(const HttpRequest& request)
   // std::cout << header_stream.str() << std::endl;
   HttpResponse response;
 
-  // å‘é€è¯·æ±‚
+  // ·¢ËÍÇëÇó
   send(header_stream.str());
 
-  // æ¥æ”¶å“åº”
+  // ½ÓÊÕÏìÓ¦
   std::stringstream response_stream;
 
   while (true) {

@@ -1,16 +1,10 @@
-build: Client Server
+build: client server
 
-Client: TCPServer.o TCPClient.o
-	g++ -o client TCPServer.o TCPClient.o Client.cpp -lpthread
+server: server.cpp
+	g++ -o server server.cpp
 
-Server: TCPServer.o TCPClient.o
-	g++ -o server TCPServer.o TCPClient.o Server.cpp -lpthread
-
-TCPServer.o:
-	g++ -c -o TCPServer.o TCPServer.cpp
-
-TCPClient.o:
-	g++ -c -o TCPClient.o TCPClient.cpp
+client: client.cpp
+	g++ -o client client.cpp
 
 clean:
-	rm -f *.o server
+	rm -f server client

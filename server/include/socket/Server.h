@@ -5,3 +5,8 @@
  * @LastEditTime: 2022-06-22 16:12:56
  * @Description: 
  */
+class Server
+{
+public:
+  Server(int port);
+};
