@@ -12,6 +12,7 @@
 
 #include "message.h"
 #include "message_parser.h"
+#include "md5.h"
 
 using namespace std;
 
@@ -21,6 +22,10 @@ using namespace std;
 
 int main()
 {
+  string md5;
+  get_file_md5("./server.cpp", md5);
+  cout << md5 << endl;
+
   router r("root", "root123", "netdisk");
 
   int i, j, maxi, listenfd, connfd, sockfd;
@@ -39,6 +44,11 @@ int main()
   servaddr.sin_family = AF_INET;
   servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
   servaddr.sin_port = htons(SERV_PORT);
+
+  // 端口重用
+  int optval = 1;
+  setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+
   /*将listenfd绑定服务端地址*/
   bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
 

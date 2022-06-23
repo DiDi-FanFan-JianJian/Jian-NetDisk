@@ -14,6 +14,8 @@ string router::parse(const char* msg)
       return handle_login(msg + 1);
     case MSG_TYPE_REGISTER:
       return handle_reg(msg + 1);
+    case MSG_UPLOAD_FILE:
+      return handle_upload(msg + 1);
     default:
       return "unknown type";
   }
@@ -47,5 +49,15 @@ string router::handle_reg(const char* m)
   else
   {
     return "register failed";
+  }
+}
+
+string router::handle_upload(const char* m)
+{
+  UploadFileMessage msg(m);
+  // 判断文件是否存在
+  if (!this->db->is_file_exist(msg.md5))
+  {
+    // 创建文件
   }
 }

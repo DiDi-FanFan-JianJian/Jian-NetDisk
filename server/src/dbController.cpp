@@ -34,6 +34,8 @@ bool dbController::query(string sql)
   result.clear();
   while ((row = mysql_fetch_row(res)))
   {
+    if (row[0] == NULL)
+      continue;
     vector<string> tmp;
     for (int i = 0; i < num_fields; i++)
     {
@@ -41,7 +43,6 @@ bool dbController::query(string sql)
     }
     result.push_back(tmp);
   }
-  
   return true;
 }
 
@@ -74,4 +75,30 @@ void dbController::printResult()
 dbController::~dbController()
 {
   mysql_close(conn);
+}
+
+string dbController::getMysqlTime()
+{
+  string sql = "select now()";
+  if (!query(sql))
+  {
+    return "";
+  }
+  return result[0][0];
+}
+
+string dbController::getNextId(string table)
+{
+  // 获取下一个主键id
+  string sql = "select MAX(id) from " + table;
+  if (!query(sql))
+  {
+    return "";
+  }
+  if (result.size() == 0)
+  {
+    return "1";
+  }
+  int id = atoi(result[0][0].c_str()) + 1;
+  return to_string(id);
 }

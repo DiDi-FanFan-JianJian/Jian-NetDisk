@@ -3,6 +3,7 @@
   "editor.tabSize": 2,
   "files.associations": {
     "*.js": "javascript",
-    "ostream": "cpp"
+    "ostream": "cpp",
+    "iostream": "cpp"
   }
 }

@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -Wall -std=c++11
 
-objs = dbController.o userController.o message_parser.o
+objs = dbController.o md5.o fileController.o userController.o message_parser.o 
 mysql_flags = `mysql_config --cxxflags --libs`
 
 build: $(objs)
@@ -16,6 +16,12 @@ userController.o: src/userController.cpp
 
 message_parser.o: src/message_parser.cpp
 	$(CXX) $(CXXFLAGS) -c -I./include src/message_parser.cpp -o message_parser.o
+
+md5.o: src/md5.cpp
+	$(CXX) $(CXXFLAGS) -c -I./include src/md5.cpp -o md5.o
+
+fileController.o: src/fileController.cpp
+	$(CXX) $(CXXFLAGS) -c -I./include src/fileController.cpp -o fileController.o
 
 clean:
 	rm -f *.o server client

@@ -17,11 +17,14 @@ bool dbController::login(string username, string password)
 
 bool dbController::reg(string username, string password)
 {
-  string sql = "insert into users (username, password) values ('" + username + "', '" + password + "')";
+  string uid = getNextId("users");
+  string did = getNextId("dirs");
+  string sql = "insert into users (username, password, root) values ('" + username + "', '" + password + "', '" + did + "')";
   if (!insert(sql))
   {
     return false;
   }
+  create_dir(uid, "0", "root");
   return true;
 }
 
@@ -37,4 +40,18 @@ bool dbController::is_user_exist(string username)
     return false;
   }
   return true;
+}
+
+string dbController::get_user_id(string username)
+{
+  string sql = "select id from users where username = '" + username + "'";
+  if (!query(sql))
+  {
+    return "";
+  }
+  if (result.size() == 0)
+  {
+    return "";
+  }
+  return result[0][0];
 }
