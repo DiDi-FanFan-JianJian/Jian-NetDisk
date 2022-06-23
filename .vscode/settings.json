@@ -1,4 +1,8 @@
 {
   "files.encoding": "gbk",
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "files.associations": {
+    "*.js": "javascript",
+    "ostream": "cpp"
+  }
 }

@@ -3,41 +3,48 @@ create database netdisk;
 use netdisk;
 
 # 用户表
-create table user (
-  id int not null auto_increment,
-  username varchar(20) not null,
-  password varchar(20) not null,
-  primary key (id)
+drop table if exists users;
+create table `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(20) NOT NULL,
+  `password` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`)
 );
+
+insert into users(username, password) values('admin', 'admin');
+insert into users(username, password) values('dino', '1234565');
 
 # 文件表
 drop table if exists files;
-create table files (
-  id int primary key auto_increment,
-  name varchar(255) not null,
-  size int not null,
-  path varchar(255) not null,
-  link_count int not null,
-  create_time datetime not null,
-  update_time datetime not null,
+create table `files` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL, # 文件名
+  `size` int(11) NOT NULL, # 文件大小
+  `md5` varchar(32) NOT NULL, # 文件md5
+  `path` varchar(100) NOT NULL, # 文件路径
+  `count` int(11) NOT NULL, # 链接数
+  PRIMARY KEY (`id`)
 );
-
 
 # 目录表
-drop table if exists directories;
-create table directories (
-  id int primary key auto_increment,
-  name varchar(255) not null,
-  par int not null,
-  create_time datetime not null,
-  update_time datetime not null,
+drop table if exists dirs;
+create table `dirs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL, # 目录名
+  `uid` int(11) NOT NULL, # 用户id
+  `pid` int(11) NOT NULL, # 父目录id
+  `create_time` datetime NOT NULL, # 创建时间
+  `update_time` datetime NOT NULL, # 更新时间
+  PRIMARY KEY (`id`)
 );
 
-
-# 联系表
-drop table if exists contacts;
-create table contacts (
-  id int primary key auto_increment,
-  file int not null,
-  directory int not null,
+# 文件目录联系表 可以视为是用户的文件
+drop table if exists file_dir;
+create table `file_dir` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `fid` int(11) NOT NULL, # 文件id
+  `did` int(11) NOT NULL, # 目录id
+  `create_time` datetime NOT NULL, # 创建时间
+  `update_time` datetime NOT NULL, # 更新时间
+  PRIMARY KEY (`id`)
 );
