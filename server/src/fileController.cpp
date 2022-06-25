@@ -42,8 +42,16 @@ bool dbController::is_file_exist(string md5)
 bool dbController::create_file(string md5, string size)
 {
   string path = file_base_path + md5;
-  string count = 0;
-  string time = getMysqlTime();
+  // 创建文件
+  FILE* fp = fopen(path.c_str(), "wb");
+  if (fp == NULL)
+  {
+    printf("文件创建失败！\n");
+    return false;
+  }
+  // 关闭文件
+  fclose(fp);
+  string count = "0";
   string sql = "insert into files (md5, size, path, count) values ('" + md5 + "', '" + size + "', '" + path + "', '" + count + "')";
   if (!insert(sql))
   {

@@ -31,7 +31,11 @@ bool dbController::query(string sql)
 
   res = mysql_store_result(conn);
   int num_fields = mysql_num_fields(res);
+  int num_rows = mysql_num_rows(res);
   result.clear();
+  if (num_rows == 0) {
+    return true;
+  }
   while ((row = mysql_fetch_row(res)))
   {
     if (row[0] == NULL)
@@ -50,7 +54,6 @@ bool dbController::insert(string sql)
 {
   if (mysql_query(conn, sql.c_str()))
   {
-    cout << "mysql_query failed(" << mysql_errno(conn) << "):" << mysql_error(conn) << endl;
     return false;
   }
   return true;

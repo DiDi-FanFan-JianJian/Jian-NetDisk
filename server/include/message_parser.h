@@ -27,5 +27,6 @@ public:
   string handle_reg(const char* msg);
 
   // file
-  string handle_upload(const char* msg);
+  string handle_upload_file(const char* msg);
+  string handle_upload_block(const char* msg);
 };
