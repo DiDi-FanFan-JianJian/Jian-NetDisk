@@ -1,0 +1,49 @@
+#include "SignInWindow.h"
+#include "ui_SignInWindow.h"
+#include "signup.h"
+
+SignInWindow::SignInWindow(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::SignInWindow)
+{
+    ui->setupUi(this);
+}
+
+SignInWindow::~SignInWindow()
+{
+    delete ui;
+}
+
+
+void SignInWindow::on_sign_in_account_textChanged(const QString &arg1)
+{
+    this->sign_in_account = arg1;
+}
+
+
+void SignInWindow::on_sign_in_password_textChanged(const QString &arg1)
+{
+    this->sign_in_password = arg1;
+}
+
+
+void SignInWindow::on_go_to_sign_up_clicked()
+{
+    // 启动注册的dialog
+    SignUp sign_dlg;
+    sign_dlg.exec();
+    SJ::SignUpReq req;
+    req.username = sign_dlg.sign_up_account.toStdString();
+    req.password = sign_dlg.sign_up_password1.toStdString();
+    SJ::SignUpRes res;
+    controller_p->signup(req, res);
+    ShowMsg();
+    reconnect();
+}
+
+void SignInWindow::ShowMsg(QString msg)
+{
+    QMessageBox msgbox;
+    msgbox.setText(msg);
+    msgbox.exec();
+}
