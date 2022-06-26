@@ -27,30 +27,30 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QPushButton" name="rename_btn">
+        <widget class="QPushButton" name="copy_file_btn">
          <property name="text">
-          <string>重命名</string>
+          <string>复制文件</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="copy_btn">
+        <widget class="QPushButton" name="copy_dir_btn">
          <property name="text">
-          <string>复制</string>
+          <string>复制文件夹</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="delete_btn">
+        <widget class="QPushButton" name="move_dir_btn">
          <property name="text">
-          <string>删除</string>
+          <string>移动文件</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="move_btn">
+        <widget class="QPushButton" name="move_file_btn">
          <property name="text">
-          <string>移动</string>
+          <string>移动文件夹</string>
          </property>
         </widget>
        </item>
@@ -160,7 +160,7 @@
         <number>2</number>
        </property>
        <property name="columnCount">
-        <number>2</number>
+        <number>4</number>
        </property>
        <attribute name="horizontalHeaderVisible">
         <bool>true</bool>
@@ -185,6 +185,16 @@
          <string>文件类型</string>
         </property>
        </column>
+       <column>
+        <property name="text">
+         <string>下载</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>删除</string>
+        </property>
+       </column>
        <item row="0" column="0">
         <property name="text">
          <string>我是sb</string>
@@ -197,6 +207,16 @@
        <item row="0" column="1">
         <property name="text">
          <string>文件夹</string>
+        </property>
+       </item>
+       <item row="0" column="2">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="0" column="3">
+        <property name="text">
+         <string/>
         </property>
        </item>
        <item row="1" column="0">

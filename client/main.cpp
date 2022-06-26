@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     SignInWidget w;
+//    NetDisk w;
     w.show();
     return a.exec();
 }

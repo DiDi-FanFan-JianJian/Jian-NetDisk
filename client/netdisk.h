@@ -2,8 +2,7 @@
 #define NETDISK_H
 
 #include <QMainWindow>
-#include <QAction>
-#include <QTreeWidgetItem>
+#include <QStringList>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class NetDisk; }
@@ -28,19 +27,26 @@ private slots:
 
     void on_new_dir_clicked();
 
-    void on_rename_btn_clicked();
+    void on_file_list_cellClicked(int row, int column);
 
-    void on_copy_btn_clicked();
+    void on_file_list_cellDoubleClicked(int row, int column);
 
-    void on_delete_btn_clicked();
+    void on_copy_dir_btn_clicked();
 
-    void on_move_btn_clicked();
+    void on_move_file_btn_clicked();
+
+    void on_copy_file_btn_clicked();
+
+    void on_move_dir_btn_clicked();
 
 private:
     Ui::NetDisk *ui;
-    QStringList file_list;
+    QStringList file_list, dir_list;
     QString download_file, upload_file;
+    QString user, path;
 
     void showMsg(QString msg);
+    void renderFileList(QStringList file_list, QStringList dir_list);
+    void testFile();
 };
 #endif // NETDISK_H
