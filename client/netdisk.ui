@@ -25,6 +25,38 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QPushButton" name="rename_btn">
+         <property name="text">
+          <string>重命名</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="copy_btn">
+         <property name="text">
+          <string>复制</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="delete_btn">
+         <property name="text">
+          <string>删除</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="move_btn">
+         <property name="text">
+          <string>移动</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QPushButton" name="upload_file">
@@ -76,7 +108,7 @@
          </property>
          <property name="icon">
           <iconset resource="icon.qrc">
-           <normaloff>:/icon/img/return.png</normaloff>:/icon/img/return.png</iconset>
+           <normaloff>:/img/return.png</normaloff>:/img/return.png</iconset>
          </property>
          <property name="autoDefault">
           <bool>false</bool>
@@ -93,7 +125,7 @@
          </property>
          <property name="icon">
           <iconset resource="icon.qrc">
-           <normaloff>:/icon/img/refresh.png</normaloff>:/icon/img/refresh.png</iconset>
+           <normaloff>:/img/refresh.png</normaloff>:/img/refresh.png</iconset>
          </property>
          <property name="flat">
           <bool>true</bool>
@@ -157,6 +189,10 @@
         <property name="text">
          <string>我是sb</string>
         </property>
+        <property name="icon">
+         <iconset resource="icon.qrc">
+          <normaloff>:/img/dir_icon.jpg</normaloff>:/img/dir_icon.jpg</iconset>
+        </property>
        </item>
        <item row="0" column="1">
         <property name="text">
@@ -166,6 +202,10 @@
        <item row="1" column="0">
         <property name="text">
          <string>我也是</string>
+        </property>
+        <property name="icon">
+         <iconset resource="icon.qrc">
+          <normaloff>:/img/file_icon.png</normaloff>:/img/file_icon.png</iconset>
         </property>
        </item>
        <item row="1" column="1">
@@ -191,30 +231,30 @@
     <property name="title">
      <string>功能</string>
     </property>
-    <addaction name="action_3"/>
-    <addaction name="action_4"/>
+    <addaction name="change_password"/>
+    <addaction name="log_out"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
      <string>更多</string>
     </property>
-    <addaction name="action_5"/>
+    <addaction name="about"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action_3">
+  <action name="change_password">
    <property name="text">
     <string>修改密码</string>
    </property>
   </action>
-  <action name="action_4">
+  <action name="log_out">
    <property name="text">
     <string>退出登录</string>
    </property>
   </action>
-  <action name="action_5">
+  <action name="about">
    <property name="text">
     <string>项目介绍</string>
    </property>

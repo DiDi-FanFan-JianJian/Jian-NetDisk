@@ -2,6 +2,9 @@
 #include "ui_signinwidget.h"
 #include "signupdialog.h"
 #include "netdisk.h"
+#include "mysocket.h"
+
+extern SJ::MySocket& my_socket;
 
 SignInWidget::SignInWidget(QWidget *parent) :
     QWidget(parent),
@@ -28,71 +31,63 @@ void SignInWidget::on_sign_in_password_textChanged(const QString &arg1)
 
 void SignInWidget::on_sign_in_btn_clicked()
 {
-    SJ::SignInReq req;
-    req.password = sign_in_password.toStdString();
-    req.username = sign_in_account.toStdString();
-    // req.session = session.toStdString();
+    // 如果用户名和密码都不为空，则发送登录请求
+    if (sign_in_account.isEmpty() || sign_in_password.isEmpty()) {
+        showMsg("请输入用户名和密码");
+        return;
+    }
 
-    // log("LoginWindow: Logining in as " + sign_in_account);
+    // 发送登录请求，获取登录结果
+    showMsg(sign_in_account + " " + sign_in_password);
+    int ret = 1;
 
-//    SJ::SignInRes res;
-//    res.code = 0;
-    // controller_p->login(req, res);
-//    if (res.code == 0)
-    if (1)
-    {
-//        QFile file("./tmyuser.txt");
-//        file.open(QIODevice::WriteOnly | QIODevice::Text);
-//        QTextStream ts(&file);
-//        session = QString(res.session.c_str());
-//        ts << ip << "\n" << ports << "\n" << session << "\n" << syncPath;
-//        file.close();
-
+    if (ret) {
+        // 登录成功，到主页面
         NetDisk *client = new NetDisk();
-//        client.initialize(syncPath, controller_p);
-//        client.exec();
         this->close();
         client->show();
     }
-    else
-    {
-//        log("LoginWindowLogin in failed, msg: " + QString(res.message.c_str()));
-        ShowMsg(QString(res.message.c_str()));
-        Reconnect();
+    else {
+        // 登录失败，提示错误信息
+        showMsg("登录失败原因");
+        reConnect();
     }
-
 }
 
 void SignInWidget::on_go_to_sign_up_clicked()
 {
-    // 启动注册的dialog
+    /* 
+     * 创建一个新的窗口，显示注册对话框
+     *
+     * 对话框返回有两种情况：注册成功返回
+     *                     关闭窗口返回
+     */
+
     SignUpDialog sign_dlg;
     this->hide();
-    if (sign_dlg.exec() == QDialog::Accepted)
-    {
-        // SJ::SignUpReq req;
-        // req.username = sign_dlg.sign_up_account.toStdString();
-        // req.password = sign_dlg.sign_up_password1.toStdString();
-        // SJ::SignUpRes res;
-        // controller_p->signup(req, res);
+    if (sign_dlg.exec() == QDialog::Accepted) {
+        // 注册成功返回，自动填写用户名和密码
+        showMsg(this->sign_in_account + " " + this->sign_in_password);
+        ui->sign_in_account->setText(sign_dlg.sign_up_account);
+        ui->sign_in_password->setText(sign_dlg.sign_up_password1);
         this->show();
-        ShowMsg(sign_dlg.sign_up_account + sign_dlg.sign_up_password1);
-        Reconnect();
+        reConnect();
     }
-    else
-    {
+    else {
+        // 关闭窗口返回，不做任何处理
         this->show();
     }
 }
 
-void SignInWidget::ShowMsg(QString msg)
+void SignInWidget::showMsg(QString msg)
 {
     QMessageBox msgbox;
     msgbox.setText(msg);
     msgbox.exec();
 }
 
-void SignInWidget::Reconnect()
+void SignInWidget::reConnect()
 {
-
+    // 如果登录失败，则重新连接
+    // my_socket.reConnect();
 }

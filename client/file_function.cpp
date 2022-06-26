@@ -101,7 +101,7 @@ QString getFileName(QString file_name)
 }
 
 // 向某个文件指定位置写入内容（-1：尾，0：头，其他：指定位置）
-bool writeFile(const QString &file_path, const QString &content, int)
+bool writeFile(const QString &file_path, const QString &content, int pos)
 {
     // 判断文件是否存在
     if (!isFileExist(file_path))

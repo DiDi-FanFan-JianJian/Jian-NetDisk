@@ -28,13 +28,12 @@ private slots:
 
 private:
     Ui::SignInWidget *ui;
-    // 连接的服务端
-    QString ip, port;
+
     // 登录的用户名、密码
     QString sign_in_account, sign_in_password;
 
-    void ShowMsg(QString msg);
-    void Reconnect();
+    void showMsg(QString msg);
+    void reConnect();
 };
 
 #endif // SIGNINWIDGET_H

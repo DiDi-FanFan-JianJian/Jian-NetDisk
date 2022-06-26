@@ -1,15 +1,9 @@
 #ifndef MYSOCKET_H
 #define MYSOCKET_H
 
-#include "message.h"
-
 #include <ws2tcpip.h>
 #include <Winsock2.h>
 #include <string>
-#include <iostream>
-#include <QDebug>
-#include <fstream>
-#include <errno.h>
 
 namespace SJ
 {
@@ -28,12 +22,20 @@ namespace SJ
         bool hasError();
         void printError();
 
-        // 发送接收相关
-        int sendUserInfo(const std::string &user_name, const std::string &user_ip);
+        // 用户账号（登录注册）
+        int sendUserInfo(int type, const std::string &user_name, const std::string &user_password);
+        int getSignin(std::string &user_name, std::string &user_password);
+        int getSignUp(std::string &user_name, std::string &user_password);
 
+        // 文件传输（上传下载）
         int sendFileInfo(const std::string &file_name, const std::string &file_size);
         int recvFileInfo(std::string &file_name, std::string &file_size);
+        int sendFile(const std::string &file_name);
+        int recvFile(const std::string &file_name);
+        int sendBlock(const std::string &file_name, int block_id);
+        int recvBlock(const std::string &file_name, int block_id);
 
+        // 其他（移动、复制、重命名、删除）
         int sendMsg(const std::string &message);
         int recvMsg(const std::string &message);
 
@@ -47,30 +49,6 @@ namespace SJ
         std::string msg2string();
         void string2msg(std::string msg);
     };
-
-    /* -------------- *
-     *    SignUpReq
-     *    SignInReq
-     *----------------*/
-    struct SignUpReq
-    {
-        std::string username;
-        std::string password;
-        std::string session;
-    };
-    typedef SignUpReq SignInReq;
-
-    /* -------------- *
-     *    SignUpRes
-     *    SignInRes
-     *----------------*/
-    struct SignUpRes
-    {
-        int code;
-        std::string message;
-        std::string session;
-    };
-    typedef SignUpRes SignInRes;
 
 }
 

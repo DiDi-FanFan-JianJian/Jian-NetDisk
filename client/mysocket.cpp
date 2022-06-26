@@ -1,4 +1,10 @@
 #include "mysocket.h"
+#include "message.h"
+
+#include <QDebug>
+#include <iostream>
+#include <fstream>
+#include <errno.h>
 
 SJ::MySocket::MySocket()
 {
@@ -9,12 +15,12 @@ SJ::MySocket::MySocket()
     port = 8000;
 
     // 连接到服务端
-    if (getConnect() == -1) {
-        has_error = true;
-    }
-    else {
-        is_connected = true;
-    }
+//    if (getConnect() == -1) {
+//        has_error = true;
+//    }
+//    else {
+//        is_connected = true;
+//    }
 }
 
 SJ::MySocket::MySocket(std::string ip, int port)
@@ -60,7 +66,7 @@ int SJ::MySocket::getConnect()
     }
     // 连接服务端
     sockaddr_in server_addr;
-    bzero(&server_addr, sizeof(server_addr));
+    memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
     server_addr.sin_addr.S_un.S_addr = inet_addr(ip.c_str());
@@ -117,7 +123,7 @@ void SJ::MySocket::printError()
 }
 
 // 发送用户信息
-int SJ::MySocket::sendUserInfo(const std::string &user_name, const std::string &user_ip)
+int SJ::MySocket::sendUserInfo(int type, const std::string &user_name, const std::string &user_password)
 {
     if (!is_connected) {
         return -1;
@@ -125,32 +131,9 @@ int SJ::MySocket::sendUserInfo(const std::string &user_name, const std::string &
     // 发送消息
     char buf[1024] = { 0 };
     LoginMessage msg;
-    buf[0] = LOGIN_MESSAGE;
+    buf[0] = type;
     strcpy(msg.username, user_name.c_str());
-    strcpy(msg.ip, user_ip.c_str());
-    memcpy(buf + 1, &msg, sizeof(msg));
-    int len = sizeof(msg) + 1;
-    int ret = send(client, buf, len, 0);
-    if (ret == SOCKET_ERROR) {
-        std::cout << "send error" << std::endl;
-        has_error = true;
-        return -1;
-    }
-    return 0;
-}
-
-// 发送文件信息
-int SJ::MySocket::sendFileInfo(const std::string &file_name, const std::string &file_md5, int file_size)
-{
-    if (!is_connected) {
-        return -1;
-    }
-    // 发送消息
-    char buf[1024] = { 0 };
-    UploadFileMessage msg;
-    buf[0] = UPLOAD_FILE_MESSAGE;
-    strcpy(msg.md5, file_md5.c_str());
-    msg.file_size = file_size;
+    strcpy(msg.password, user_password.c_str());
     memcpy(buf + 1, &msg, sizeof(msg));
     int len = sizeof(msg) + 1;
     int ret = send(client, buf, len, 0);

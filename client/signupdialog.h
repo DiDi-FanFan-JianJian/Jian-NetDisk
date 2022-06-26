@@ -29,8 +29,8 @@ private slots:
 
 private:
     Ui::SignUpDialog *ui;
-    bool IsWeak(const QString pw);
-    void ShowMsg(const QString msg);
+    bool isWeak(const QString pw);
+    void showMsg(const QString msg);
 };
 
 #endif // SIGNUPDIALOG_H

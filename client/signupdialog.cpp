@@ -1,11 +1,16 @@
 #include "signupdialog.h"
 #include "ui_signupdialog.h"
 
+#include "mysocket.h"
+
+extern SJ::MySocket& my_socket;
+
 SignUpDialog::SignUpDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SignUpDialog)
 {
     ui->setupUi(this);
+    // 禁止使用中文
     ui->sign_up_account->setAttribute(Qt::WA_InputMethodEnabled, false);
 }
 
@@ -16,27 +21,27 @@ SignUpDialog::~SignUpDialog()
 
 void SignUpDialog::on_sign_up_account_textChanged(const QString &arg1)
 {
-    this->sign_up_account = arg1;
+    this->sign_up_account = arg1.trimmed();
 }
 
 void SignUpDialog::on_sign_up_password1_textChanged(const QString &arg1)
 {
-    this->sign_up_password1 = arg1;
+    this->sign_up_password1 = arg1.trimmed();
 }
 
 void SignUpDialog::on_sign_up_password2_textChanged(const QString &arg1)
 {
-    this->sign_up_password2 = arg1;
+    this->sign_up_password2 = arg1.trimmed();
 }
 
-void SignUpDialog::ShowMsg(const QString msg)
+void SignUpDialog::showMsg(const QString msg)
 {
     QMessageBox msgbox;
     msgbox.setText(msg);
     msgbox.exec();
 }
 
-bool SignUpDialog::IsWeak(const QString password)
+bool SignUpDialog::isWeak(const QString password)
 {
     if (password.size() < 8 || password.size() > 16)
         return true;
@@ -70,20 +75,30 @@ bool SignUpDialog::IsWeak(const QString password)
 
 void SignUpDialog::on_sign_up_btn_clicked()
 {
-    if (sign_up_account.trimmed().isEmpty() || sign_up_password1.trimmed().isEmpty() || sign_up_password2.trimmed().isEmpty())
-    {
-        ShowMsg("表单填写不完整");
+    if (sign_up_account.isEmpty() || sign_up_password1.isEmpty() || sign_up_password2.isEmpty()) {
+        showMsg("表单填写不完整");
         return;
     }
-    if (sign_up_password1 != sign_up_password2)
-    {
-        ShowMsg("两次输入的密码不一致");
+    if (sign_up_password1 != sign_up_password2) {
+        showMsg("两次输入的密码不一致");
         return;
     }
-    if (IsWeak(sign_up_password1))
-    {
-        ShowMsg("密码强度太弱（密码长度为8-16位，必须同时包含数字/小写字母/大写字母）");
+    if (isWeak(sign_up_password1)) {
+        showMsg("密码强度太弱（密码长度为8-16位，必须同时包含数字/小写字母/大写字母）");
         return;
     }
-    this->accept();
+
+    // 判断socket是否连接，未连接则重新连接
+    
+    // 发送注册请求
+    int ret = 1;
+
+    // 注册成功
+    if (ret) {
+        showMsg("注册成功");
+        this->accept();
+    }
+    else {
+        showMsg("注册失败原因");
+    }
 }
