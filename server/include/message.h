@@ -20,6 +20,20 @@ struct LoginMessage
   char password[20];
 };
 
+struct LoginResponse
+{
+  LoginResponse() {}
+  LoginResponse(const char* msg) {
+    memcpy(this, msg, sizeof(LoginResponse));
+  }
+  enum flags{
+    success = 0,
+    failed = 1,
+    user_exist = 2,
+  };
+  int status;
+};
+
 // нд╪Ч
 struct UploadFileMessage
 {

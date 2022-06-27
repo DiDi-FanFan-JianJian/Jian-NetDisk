@@ -34,32 +34,40 @@ string router::parse(const char* msg)
 string router::handle_login(const char* m)
 {
   LoginMessage msg(m);
+  cout << "handle_login" << endl;
+  cout << "username: " << msg.username << endl;
+  cout << "password: " << msg.password << endl;
+  cout << endl;
+  LoginResponse res;
   if (this->db->login(msg.username, msg.password))
   {
-    return "login success";
+    res.status = LoginResponse::success;
   }
   else
   {
-    return "login failed";
+    res.status = LoginResponse::failed;
   }
+  return struct_to_string(res);
 }
 
 string router::handle_reg(const char* m)
 {
   LoginMessage msg(m);
+  LoginResponse res;
   // 判断用户名是否存在
   if (this->db->is_user_exist(msg.username))
   {
-    return "user exist";
+    res.status = LoginResponse::user_exist;
   }
-  if (this->db->reg(msg.username, msg.password))
+  else if (this->db->reg(msg.username, msg.password))
   {
-    return "register success";
+    res.status = LoginResponse::success;
   }
   else
   {
-    return "register failed";
+    res.status = LoginResponse::failed;
   }
+  return struct_to_string(res);
 }
 
 string router::handle_upload_file(const char* m)
