@@ -1,7 +1,9 @@
+#include <iostream>
+
 #include "signupdialog.h"
 #include "ui_signupdialog.h"
 
-#include "mysocket.h"
+#include "message.h"
 
 extern SJ::MySocket& my_socket;
 
@@ -9,6 +11,7 @@ SignUpDialog::SignUpDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SignUpDialog)
 {
+    this->sock = new SJ::MySocket("1.15.144.212", 8000);
     ui->setupUi(this);
     // 禁止使用中文
     ui->sign_up_account->setAttribute(Qt::WA_InputMethodEnabled, false);
@@ -89,16 +92,17 @@ void SignUpDialog::on_sign_up_btn_clicked()
     }
 
     // 判断socket是否连接，未连接则重新连接
-    
-    // 发送注册请求
-    int ret = 1;
-
-    // 注册成功
-    if (ret) {
+    sock->sendUserInfo(MSG_TYPE_REGISTER, sign_up_account.toStdString(), sign_up_password1.toStdString());
+    sock->recvMsg();
+    auto res = LoginResponse(sock->recv_buf);
+    if (res.status == LoginResponse::success) {
         showMsg("注册成功");
         this->accept();
     }
+    else if (res.status == LoginResponse::user_exist) {
+        showMsg("该用户名已存在!");
+    }
     else {
-        showMsg("注册失败原因");
+        showMsg("注册失败");
     }
 }

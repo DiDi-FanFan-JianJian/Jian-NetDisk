@@ -15,12 +15,12 @@ SJ::MySocket::MySocket()
     port = 8000;
 
     // 连接到服务端
-//    if (getConnect() == -1) {
-//        has_error = true;
-//    }
-//    else {
-//        is_connected = true;
-//    }
+    //    if (getConnect() == -1) {
+    //        has_error = true;
+    //    }
+    //    else {
+    //        is_connected = true;
+    //    }
 }
 
 SJ::MySocket::MySocket(std::string ip, int port)
@@ -122,6 +122,12 @@ void SJ::MySocket::printError()
     }
 }
 
+// 接收消息
+int SJ::MySocket::recvMsg()
+{
+    return recv(client, recv_buf, sizeof(recv_buf), 0);
+}
+
 // 发送用户信息
 int SJ::MySocket::sendUserInfo(int type, const std::string &user_name, const std::string &user_password)
 {
@@ -129,7 +135,7 @@ int SJ::MySocket::sendUserInfo(int type, const std::string &user_name, const std
         return -1;
     }
     // 发送消息
-    char buf[1024] = { 0 };
+    char buf[MAX_BUF_SIZE] = { 0 };
     LoginMessage msg;
     buf[0] = type;
     strcpy(msg.username, user_name.c_str());

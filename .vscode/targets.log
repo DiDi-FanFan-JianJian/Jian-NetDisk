@@ -1,0 +1,381 @@
+make.exe all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 3.81
+# Copyright (C) 2006  Free Software Foundation, Inc.
+# This is free software; see the source for copying conditions.
+# There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# This program built for i686-pc-mingw32
+ 
+
+# Make data base, printed on Mon Jun 27 23:36:40 2022
+
+# Variables
+
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# environment
+NVCUDASAMPLES10_2_ROOT = C:\ProgramData\NVIDIA Corporation\CUDA Samples\v10.2
+# makefile
+MAKEFLAGS = Rrqp
+# environment
+VSCODE_LOG_NATIVE = false
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# environment
+HOMEDRIVE = C:
+# automatic
+@F = $(notdir $@)
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# makefile
+CURDIR := d:/Jian-NetDisk
+# default
+SHELL := sh.exe
+# environment
+VIM = E:/vim
+# environment
+CLION = D:\CLion 2020.1\bin;
+# environment
+WINDIR = C:\WINDOWS
+# environment
+VSCODE_NLS_CONFIG = {"locale":"zh-cn","availableLanguages":{"*":"zh-cn"},"_languagePackId":"bbca1a7059cee8a1b93da8947fee1c4f.zh-cn","_translationsConfigFile":"C:\\Users\\86131\\AppData\\Roaming\\Code\\clp\\bbca1a7059cee8a1b93da8947fee1c4f.zh-cn\\tcf.json","_cacheRoot":"C:\\Users\\86131\\AppData\\Roaming\\Code\\clp\\bbca1a7059cee8a1b93da8947fee1c4f.zh-cn","_resolvedLanguagePackCoreLocation":"C:\\Users\\86131\\AppData\\Roaming\\Code\\clp\\bbca1a7059cee8a1b93da8947fee1c4f.zh-cn\\30d9c6cd9483b2cc586687151bcbcd635f373630","_corruptedFile":"C:\\Users\\86131\\AppData\\Roaming\\Code\\clp\\bbca1a7059cee8a1b93da8947fee1c4f.zh-cn\\corrupted.info","_languagePackSupport":true}
+# environment
+PYCHARM COMMUNITY EDITION = D:\PyCharm Community Edition 2019.3.1\bin;
+# environment
+NVM_HOME = D:\nvm
+# environment
+PATHEXT = .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.RB;.RBW
+# makefile
+MAKEFILE_LIST := 
+# environment
+FPS_BROWSER_USER_PROFILE_STRING = Default
+# environment
+TMP = C:\Users\86131\AppData\Local\Temp
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+WEBSTORM = E:\WebStorm\WebStorm 2020.3.1\bin;
+# environment
+PROGRAMW6432 = C:\Program Files
+# environment
+NVM_SYMLINK = D:\mynvm
+# environment
+PROGRAMDATA = C:\ProgramData
+# environment
+VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-b8309027-fe49-4228-86ae-d0809d39a3eb-sock
+# environment
+VSCODE_CWD = D:\
+# environment
+PATH = C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\libnvvp;D:\VMware\bin\;C:\ProgramData\Oracle\Java\javapath;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files\Python38\Scripts\;C:\Program Files\Python38\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NGX;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\dotnet\;C:\Program Files\Java\jdk1.8.0_05\jre\bin;C:\Program Files\Java\jdk1.8.0_05\bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Mozilla Firefox;D:\ssh;D:\Git\cmd;D:\CMake\bin;D:\node_js\;D:\vivado\Vivado\2016.2\bin;E:\codeforces\;E:\yarn\bin\;E:\vcpkg;D:\xshell\;D:\xftp\;C:\Program Files\NVIDIA Corporation\Nsight Compute 2019.5.0\;D:\MongoDB\bin\;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\ProgramData\chocolatey\bin;D:\nvm;D:\mynvm;D:\nvm\v16.13.0\;D:\Dev-Cpp\MinGW64\bin;D:\anaconda;D:\anaconda\Library\mingw-w64\bin;D:\anaconda\Library\usr\bin;D:\anaconda\Library\bin;D:\anaconda\Scripts;E:\Ruby\Ruby30-x64\bin;D:\Scripts\;D:\;C:\Users\86131\AppData\Local\Programs\AdoptOpenJDK\bin;C:\Users\86131\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Bandizip\;D:\Microsoft VS Code\bin;D:\PyCharm Community Edition 2019.3.1\bin;;D:\PyCharm 2020.1\bin;;D:\IntelliJ IDEA Educational Edition 2020.1\bin;;D:\CLion 2020.1\bin;;D:\digitLogic\win32pe;C:\Users\86131\AppData\Local\GitHubDesktop\bin;D:\texlive\2020\bin\win32;E:\WebStorm\WebStorm 2020.3.1\bin;;E:\IntelliJ\IntelliJ IDEA 2020.3.2\bin;;C:\Users\86131\AppData\Roaming\npm;C:\Users\86131\AppData\Local\Yarn\bin;E:\os-64\NASM;E:\os-64\MinGW\bin;E:\vcpkg;D:\nvm;D:\mynvm
+# environment
+COMMONPROGRAMW6432 = C:\Program Files\Common Files
+# environment
+CHOCOLATEYLASTPATHUPDATE = 132990840999037572
+# environment
+PROCESSOR_ARCHITECTURE = x86
+# environment
+ONEDRIVE = C:\Users\86131\OneDrive
+# environment
+USERPROFILE = C:\Users\86131
+# environment
+CHOCOLATEYINSTALL = C:\ProgramData\chocolatey
+# environment
+ALLUSERSPROFILE = C:\ProgramData
+# environment
+VSCODE_LOG_STACK = false
+# environment
+NUMBER_OF_PROCESSORS = 8
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# default
+.FEATURES := target-specific order-only second-expansion else-if archives
+# environment
+NVTOOLSEXT_PATH = C:\Program Files\NVIDIA Corporation\NvToolsExt\
+# environment
+INTELLIJ IDEA = E:\IntelliJ\IntelliJ IDEA 2020.3.2\bin;
+# automatic
+%F = $(notdir $%)
+# environment
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_10492_OFSQNYDJVBIRIPEB
+# environment
+CUDA_PATH_V10_2 = C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+COMPUTERNAME = MAGIC-PC
+# environment
+PROGRAMFILES = C:\Program Files (x86)
+# environment
+DRIVERDATA = C:\Windows\System32\Drivers\DriverData
+# environment
+NVCUDASAMPLES_ROOT = C:\ProgramData\NVIDIA Corporation\CUDA Samples\v10.2
+# environment
+WORKON_HOME = PIPENV_VENV_IN_PROJECT
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = undefined
+# environment
+USERNAME = DinoMax
+# environment
+MGLS_LICENSE_FILE = 1717@202.120.188.126
+# environment
+PUBLIC = C:\Users\Public
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+VSCODE_CODE_CACHE_PATH = C:\Users\86131\AppData\Roaming\Code\CachedData\30d9c6cd9483b2cc586687151bcbcd635f373630
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+# environment
+COMMONPROGRAMFILES = C:\Program Files (x86)\Common Files
+# environment
+LOGONSERVER = \\MAGIC-PC
+# environment
+ONEDRIVECONSUMER = C:\Users\86131\OneDrive
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# environment
+USERDOMAIN = MAGIC-PC
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# environment
+JAVA_HOME = C:\Program Files\Java\jdk1.8.0_05
+# default
+MAKE_VERSION := 3.81
+# environment
+NODE16 = D:\nvm\v16.13.0
+# makefile
+.DEFAULT_GOAL := 
+# environment
+CLASSPATH = .;C:\Program Files\Java\jdk1.8.0_05\\lib;C:\Program Files\Java\jdk1.8.0_05\\lib\tools.jar
+# environment
+PROGRAMFILES(X86) = C:\Program Files (x86)
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# environment
+LOCALAPPDATA = C:\Users\86131\AppData\Local
+# environment
+PSMODULEPATH = C:\Program Files\WindowsPowerShell\Modules;C:\WINDOWS\system32\WindowsPowerShell\v1.0\Modules
+# default
+MAKE_COMMAND := make.exe
+# environment
+PROCESSOR_ARCHITEW6432 = AMD64
+# default
+.VARIABLES := 
+# automatic
+*F = $(notdir $*)
+# environment
+PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 158 Stepping 10, GenuineIntel
+# environment
+OS = Windows_NT
+# environment
+VSCODE_IPC_HOOK = \\.\pipe\2b3c799df7ae66e8bdb4dcd95133feca-1.68.1-main-sock
+# environment
+HOMEPATH = \Users\86131
+# environment
+COMMONPROGRAMFILES(X86) = C:\Program Files (x86)\Common Files
+# environment
+PROMPT = $P$G
+# environment
+MFLAGS = -Rrqp
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+SYSTEMROOT = C:\WINDOWS
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# automatic
++F = $(notdir $+)
+# environment
+APPDATA = C:\Users\86131\AppData\Roaming
+# environment
+TEMP = C:\Users\86131\AppData\Local\Temp
+# environment
+COMSPEC = C:\WINDOWS\system32\cmd.exe
+# default
+MAKEFILES := 
+# automatic
+<F = $(notdir $<)
+# environment
+LC_ALL = C
+# environment
+PYCHARM = D:\PyCharm 2020.1\bin;
+# environment
+CONFIGSETROOT = C:\WINDOWS\ConfigSetRoot
+# automatic
+^F = $(notdir $^)
+# environment
+CUDA_PATH = C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2
+# default
+SUFFIXES := 
+# environment
+SYSTEMDRIVE = C:
+# environment
+SESSIONNAME = Console
+# environment
+PROCESSOR_REVISION = 9e0a
+# environment
+INTELLIJ IDEA EDUCATIONAL EDITION = D:\IntelliJ IDEA Educational Edition 2020.1\bin;
+# environment
+VS140COMNTOOLS = C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\
+# environment
+MAKELEVEL := 0
+# environment
+LANG = C
+# environment
+PROCESSOR_LEVEL = 6
+# environment
+FPS_BROWSER_APP_PROFILE_STRING = Internet Explorer
+# environment
+VSCODE_PID = 10492
+# environment
+USERDOMAIN_ROAMINGPROFILE = MAGIC-PC
+# variable set hash-table stats:
+# Load=112/1024=11%, Rehash=0, Collisions=12/129=9%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# : could not be stat'd.
+# D:\PyCharm Community Edition 2019.3.1\bin: could not be stat'd.
+# C:\Program Files\Mozilla Firefox (key C:/Program Files/Mozilla Firefox, mtime 1656084891): 79 files, no impossibilities.
+# D:\xshell\ (key D:/xshell/, mtime 1646117162): 39 files, no impossibilities.
+# C:\Program Files\Common Files\Oracle\Java\javapath (key C:/Program Files/Common Files/Oracle/Java/javapath, mtime 1614318167): 6 files, no impossibilities.
+# C:\Program Files\Bandizip\ (key C:/Program Files/Bandizip/, mtime 1640760692): 25 files, no impossibilities.
+# C:\Program Files\Docker\Docker\resources\bin (key C:/Program Files/Docker/Docker/resources/bin, mtime 1652029963): 13 files, no impossibilities.
+# C:\Program Files\NVIDIA Corporation\NVIDIA NGX (key C:/Program Files/NVIDIA Corporation/NVIDIA NGX, mtime 1562007594): 5 files, no impossibilities.
+# C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\bin (key C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.2/bin, mtime 1646547254): 44 files, no impossibilities.
+# C:\Program Files\Java\jdk1.8.0_05\bin (key C:/Program Files/Java/jdk1.8.0_05/bin, mtime 1568180372): 55 files, no impossibilities.
+# D:\nvm\v16.13.0\ (key D:/nvm/v16.13.0/, mtime 1656080946): 16 files, no impossibilities.
+# D:\node_js\: could not be stat'd.
+# E:\IntelliJ\IntelliJ IDEA 2020.3.2\bin (key E:/IntelliJ/IntelliJ IDEA 2020.3.2/bin, mtime 1614313979): 33 files, no impossibilities.
+# C:\Users\86131\AppData\Local\Microsoft\WindowsApps (key C:/Users/86131/AppData/Local/Microsoft/WindowsApps, mtime 1656084936): 35 files, no impossibilities.
+# C:\Windows\System32\WindowsPowerShell\v1.0\ (key C:/Windows/System32/WindowsPowerShell/v1.0/, mtime 1644739936): 32 files, no impossibilities.
+# D:\CLion 2020.1\bin: could not be stat'd.
+# C:\Windows\System32\Wbem (key C:/Windows/System32/Wbem, mtime 1652279611): 156 files, no impossibilities.
+# . (key d:/Jian-NetDisk, mtime 1656314920): 11 files, no impossibilities.
+# D:\xftp\ (key D:/xftp/, mtime 1655747077): 27 files, no impossibilities.
+# C:\Program Files\NVIDIA Corporation\Nsight Compute 2019.5.0\ (key C:/Program Files/NVIDIA Corporation/Nsight Compute 2019.5.0/, mtime 1646547233): 10 files, no impossibilities.
+# C:\Users\86131\AppData\Local\Programs\AdoptOpenJDK\bin (key C:/Users/86131/AppData/Local/Programs/AdoptOpenJDK/bin, mtime 1568168839): 52 files, no impossibilities.
+# C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common (key C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common, mtime 1562007579): 10 files, no impossibilities.
+# D:\Dev-Cpp\MinGW64\bin (key D:/Dev-Cpp/MinGW64/bin, mtime 1600734913): 62 files, no impossibilities.
+# E:\Ruby\Ruby30-x64\bin (key E:/Ruby/Ruby30-x64/bin, mtime 1612019929): 50 files, no impossibilities.
+# E:\yarn\bin\ (key E:/yarn/bin/, mtime 1626788393): 7 files, no impossibilities.
+# C:\ProgramData\chocolatey\bin (key C:/ProgramData/chocolatey/bin, mtime 1654610825): 14 files, no impossibilities.
+# D:\MongoDB\bin\ (key D:/MongoDB/bin/, mtime 1649589620): 9 files, no impossibilities.
+# C:\Program Files\dotnet\ (key C:/Program Files/dotnet/, mtime 1624119170): 9 files, no impossibilities.
+# D:\vivado\Vivado\2016.2\bin (key D:/vivado/Vivado/2016.2/bin, mtime 1600087214): 45 files, no impossibilities.
+# D:\Microsoft VS Code\bin (key D:/Microsoft VS Code/bin, mtime 1655349725): 4 files, no impossibilities.
+# D:\: could not be stat'd.
+# D:\mynvm: could not be stat'd.
+# D:\Scripts\: could not be stat'd.
+# D:\digitLogic\win32pe (key D:/digitLogic/win32pe, mtime 1600082732): 123 files, no impossibilities.
+# E:\os-64\MinGW\bin (key E:/os-64/MinGW/bin, mtime 1631251712): 33 files, no impossibilities.
+# C:\Windows\System32\OpenSSH\: could not be stat'd.
+# C:\Users\86131\AppData\Roaming\npm (key C:/Users/86131/AppData/Roaming/npm, mtime 1655310042): 27 files, no impossibilities.
+# C:\Program Files\Microsoft SQL Server\130\Tools\Binn\ (key C:/Program Files/Microsoft SQL Server/130/Tools/Binn/, mtime 1588519258): 4 files, no impossibilities.
+# C:\Windows (key C:/Windows, mtime 1614336362): 147 files, no impossibilities.
+# C:\ProgramData\Oracle\Java\javapath (key C:/ProgramData/Oracle/Java/javapath, mtime 1618725295): 5 files, no impossibilities.
+# D:\anaconda\Library\mingw-w64\bin (key D:/anaconda/Library/mingw-w64/bin, mtime 1646541249): 15 files, no impossibilities.
+# E:\WebStorm\WebStorm 2020.3.1\bin: could not be stat'd.
+# E:\os-64\NASM (key E:/os-64/NASM, mtime 1631255050): 18 files, no impossibilities.
+# D:\Git\cmd (key D:/Git/cmd, mtime 1605103015): 8 files, no impossibilities.
+# D:\anaconda (key D:/anaconda, mtime 1646548455): 89 files, no impossibilities.
+# E:\vcpkg (key E:/vcpkg, mtime 1633542702): 30 files, no impossibilities.
+# D:\anaconda\Library\usr\bin: could not be stat'd.
+# D:\texlive\2020\bin\win32 (key D:/texlive/2020/bin/win32, mtime 1602770013): 538 files, no impossibilities.
+# C:\Users\86131\AppData\Local\GitHubDesktop\bin (key C:/Users/86131/AppData/Local/GitHubDesktop/bin, mtime 1611912502): 4 files, no impossibilities.
+# D:\anaconda\Library\bin (key D:/anaconda/Library/bin, mtime 1646548455): 481 files, no impossibilities.
+# C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\libnvvp (key C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.2/libnvvp, mtime 1646547245): 14 files, no impossibilities.
+# E:\codeforces\ (key E:/codeforces/, mtime 1630733858): 6 files, no impossibilities.
+# D:\PyCharm 2020.1\bin (key D:/PyCharm 2020.1/bin, mtime 1588050507): 25 files, no impossibilities.
+# D:\anaconda\Scripts (key D:/anaconda/Scripts, mtime 1646548455): 349 files, no impossibilities.
+# C:\ProgramData\DockerDesktop\version-bin: could not be stat'd.
+# D:\IntelliJ IDEA Educational Edition 2020.1\bin: could not be stat'd.
+# C:\Windows\system32 (key C:/Windows/system32, mtime 1656336972): 3176 files, no impossibilities.
+# D:\ssh (key D:/ssh, mtime 1644736177): 3 files, no impossibilities.
+# C:\Users\86131\AppData\Local\Yarn\bin (key C:/Users/86131/AppData/Local/Yarn/bin, mtime 1626790428): 2 files, no impossibilities.
+# C:\Program Files\Python38\ (key C:/Program Files/Python38/, mtime 1617792903): 22 files, no impossibilities.
+# D:\nvm (key D:/nvm, mtime 1656080938): 11 files, no impossibilities.
+# C:\Program Files\Python38\Scripts\ (key C:/Program Files/Python38/Scripts/, mtime 1648443250): 80 files, no impossibilities.
+# D:\CMake\bin (key D:/CMake/bin, mtime 1616234330): 7 files, no impossibilities.
+# C:\Program Files\Java\jdk1.8.0_05\jre\bin (key C:/Program Files/Java/jdk1.8.0_05/jre/bin, mtime 1568180372): 89 files, no impossibilities.
+# C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR (key C:/Program Files/NVIDIA Corporation/NVIDIA NvDLISR, mtime 1562007710): 5 files, no impossibilities.
+# D:\VMware\bin\ (key D:/VMware/bin/, mtime 1643533563): 4 files, no impossibilities.
+
+# 6163 files, no impossibilities in 66 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+# Not a target:
+all:
+#  Command-line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/0=0%
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+makefile:
+#  A default, MAKEFILES, or -include/sinclude makefile.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/0=0%
+
+# Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+GNUmakefile:
+#  A default, MAKEFILES, or -include/sinclude makefile.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/0=0%
+
+# files hash-table stats:
+# Load=5/1024=0%, Rehash=0, Collisions=0/16=0%
+# VPATH Search Paths
+
+# No `vpath' search paths.
+
+# No general (`VPATH' variable) search path.
+
+# # of strings in strcache: 0
+# # of strcache buffers: 0
+# strcache size: total = 0 / max = 0 / min = 4096 / avg = 0
+# strcache free: total = 0 / max = 0 / min = 4096 / avg = 0
+
+# Finished Make data base on Mon Jun 27 23:36:40 2022
+
+ 
+make.exe: *** No rule to make target `all'.  Stop.
+

@@ -11,6 +11,10 @@ namespace SJ
     class MySocket
     {
     public:
+        static const int MAX_BUF_SIZE = 1024 * 4;
+        char recv_buf[MAX_BUF_SIZE];
+
+    public:
         MySocket();
         MySocket(std::string ip, int port);
         ~MySocket();
@@ -38,6 +42,7 @@ namespace SJ
         // 其他（移动、复制、重命名、删除）
         int sendMsg(const std::string &message);
         int recvMsg(const std::string &message);
+        int recvMsg();
 
     private:
         SOCKET client;

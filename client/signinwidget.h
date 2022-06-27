@@ -3,6 +3,9 @@
 
 #include <QWidget>
 #include <QMessageBox>
+#include <iostream>
+
+#include "mysocket.h"
 
 namespace Ui {
 class SignInWidget;
@@ -27,6 +30,7 @@ private slots:
     void on_sign_in_btn_clicked();
 
 private:
+    SJ::MySocket* sock;
     Ui::SignInWidget *ui;
 
     // 登录的用户名、密码
