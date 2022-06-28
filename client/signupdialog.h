@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QMessageBox>
 
+#include "mysocket.h"
+
 namespace Ui {
 class SignUpDialog;
 }
@@ -11,6 +13,8 @@ class SignUpDialog;
 class SignUpDialog : public QDialog
 {
     Q_OBJECT
+public:
+    SJ::MySocket* sock;
 
 public:
     explicit SignUpDialog(QWidget *parent = nullptr);

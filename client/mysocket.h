@@ -11,6 +11,10 @@ namespace SJ
     class MySocket
     {
     public:
+        static const int MAX_BUF_SIZE = 1024 * 4;
+        char recv_buf[MAX_BUF_SIZE];
+
+    public:
         MySocket();
         MySocket(std::string ip, int port);
         ~MySocket();
@@ -30,14 +34,15 @@ namespace SJ
         // 文件传输（上传下载）
         int sendFileInfo(const std::string &file_name, const std::string &file_size);
         int recvFileInfo(std::string &file_name, std::string &file_size);
-        int sendFile(const std::string &file_name);
-        int recvFile(const std::string &file_name);
+        void sendFile(const std::string &file_name);
+        void recvFile(const std::string &file_name);
         int sendBlock(const std::string &file_name, int block_id);
         int recvBlock(const std::string &file_name, int block_id);
 
         // 其他（移动、复制、重命名、删除）
         int sendMsg(const std::string &message);
         int recvMsg(const std::string &message);
+        int recvMsg();
 
     private:
         SOCKET client;
