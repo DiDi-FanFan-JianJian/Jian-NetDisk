@@ -34,8 +34,8 @@ namespace SJ
         // 文件传输（上传下载）
         int sendFileInfo(const std::string &file_name, const std::string &file_size);
         int recvFileInfo(std::string &file_name, std::string &file_size);
-        int sendFile(const std::string &file_name);
-        int recvFile(const std::string &file_name);
+        void sendFile(const std::string &file_name);
+        void recvFile(const std::string &file_name);
         int sendBlock(const std::string &file_name, int block_id);
         int recvBlock(const std::string &file_name, int block_id);
 
