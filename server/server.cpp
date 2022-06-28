@@ -40,10 +40,11 @@ int main()
   /*分配一个网络通信套接字，监听文件描述符listenfd*/
   listenfd = socket(AF_INET, SOCK_STREAM, 0);
   /*初始化 IP类型 端口*/
+  // string ip = "1.15.144.212";
   bzero(&servaddr, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
-  servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
   servaddr.sin_port = htons(SERV_PORT);
+  servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   // 端口重用
   int optval = 1;
@@ -135,6 +136,7 @@ int main()
         }
         else
         { /*非空则处理客户端信息*/
+          cout << "received from " << sockfd << ": " << (int)buf[0] << endl;
           auto res = r.parse(buf);
           write(sockfd, res.c_str(), res.size());
         }

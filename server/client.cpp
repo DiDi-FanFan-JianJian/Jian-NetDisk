@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
   bzero(&servaddr, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
-  inet_pton(AF_INET, "127.0.0.1", &servaddr.sin_addr);
+  inet_pton(AF_INET, "1.15.144.212", &servaddr.sin_addr);
   servaddr.sin_port = htons(SERV_PORT);
 
   /*连接服务端*/
@@ -43,7 +43,8 @@ int main(int argc, char *argv[])
   string md5;
   get_file_md5("./test_file/test.txt", md5);
   char buf_send[BUFSIZE];
-
+  strcpy(buf_send, md5.c_str());
+  send(sockfd, buf_send, strlen(buf_send), 0);
   while (true) {
     getchar();
 
