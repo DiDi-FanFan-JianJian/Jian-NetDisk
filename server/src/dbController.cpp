@@ -59,6 +59,24 @@ bool dbController::insert(string sql)
   return true;
 }
 
+bool dbController::update(string sql)
+{
+  if (mysql_query(conn, sql.c_str()))
+  {
+    return false;
+  }
+  return true;
+}
+
+bool dbController::_delete(string sql)
+{
+  if (mysql_query(conn, sql.c_str()))
+  {
+    return false;
+  }
+  return true;
+}
+
 void dbController::printResult()
 {
   int num_fields = mysql_num_fields(res);
@@ -105,3 +123,5 @@ string dbController::getNextId(string table)
   int id = atoi(result[0][0].c_str()) + 1;
   return to_string(id);
 }
+
+ 

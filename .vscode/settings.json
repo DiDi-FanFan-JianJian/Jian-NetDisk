@@ -4,6 +4,8 @@
   "files.associations": {
     "*.js": "javascript",
     "ostream": "cpp",
-    "iostream": "cpp"
+    "iostream": "cpp",
+    "vector": "cpp",
+    "regex": "cpp"
   }
 }

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="gbk" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+    <title>网盘</title>
+</head>
+
+<body>
+
+    <form name="goto_dir" id="goto_dir" action="netdisk.php" method="post">
+        <input type="hidden" name="goto_dir" value="">
+        <input type="hidden" name="path" id="goto_dir_path" value="<?=$_SESSION['path'] ?>">
+    </form>
+    <form id="paste" action="netdisk.php" method="post">
+        <input type="hidden" name="paste" value="">
+        <input type="hidden" name="paste_fname" id="paste_fname" value="">
+    </form>
+    <form id="rename" action="netdisk.php" method="post">
+        <input type="hidden" name="rename" value="">
+        <input type="hidden" name="id" id="rename_id" value="">
+        <input type="hidden" name="new_fname" id="rename_new_fname" value="error">
+    </form>
+    <form id="copyed" action="netdisk.php" method="post">
+        <input type="hidden" name="copyed" value="">
+        <input type="hidden" name="copyed_name" id="copyed_name" value="">
+        <input type="hidden" name="copyed_id" id="copyed_id" value="">
+    </form>
+    <form id="clip" action="netdisk.php" method="post">
+        <input type="hidden" name="clip" value="">
+        <input type="hidden" name="clip_name" id="clip_name" value="">
+        <input type="hidden" name="clip_id" id="clip_id" value="">
+    </form>
+    <form id="delfile" action="netdisk.php" method="post">
+        <input type="hidden" name="delfile" value="">
+        <input type="hidden" name="delfile_id" id="delfile_id" value="">
+    </form>
+    <form id="download" action="download_file.php" method="post">
+        <input type="hidden" name="md5" id="download_md5" value="">
+        <input type="hidden" name="filename" id="download_filename" value="">
+    </form>
+
+    <div style="padding: 0% 15%; margin: 2% 0%;">
+        <h3 id="time" style="display: inline-block;"></h3>
+        <button id="quituser" type="button" class="btn btn-danger"
+            style="color: white; background-color: red; float: right; margin-top: 1%;"
+            onclick="window.location.href='../index.php'">退出</button>
+        <hr class="simple" />
+    </div>
+    <script type="text/javascript">
+        var dayNames = new Array("星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六");
+        function get_obj(time) {
+            return document.getElementById(time);
+        }
+        function getTime() {
+            var t = new Date();
+            var _time = "当前时间：";
+            with (t) {
+                _time += "" + getFullYear() + "-" + (getMonth() + 1) + "-" + getDate() + " " + (getHours() < 10 ? "0" : "") + getHours() + ":" + (getMinutes() < 10 ? "0" : "") + getMinutes() + ":" + (getSeconds() < 10 ? "0" : "") + getSeconds() + " " + dayNames[t.getDay()];
+            }
+            get_obj("time").innerHTML = _time;
+            setTimeout("getTime()", 1000);
+        }
+        getTime();
+    </script>
+
+    <div style="margin: 0% 15%; width: 70%;">
+        <div class="container-fluid" style="height: auto;">
+            </br>
+            <div style="padding-top: 1%;">
+                <form id="add_dir_form" class="form-inline" name="adddir0" action="netdisk.php" method="post"
+                    enctype="multipart/form-data">
+                    新建文件夹名：
+                    <input type=text name="add_dir_name" class="form-control" id="add_dir_name">
+                    <input type="button" id="add_dir_btn" class="btn btn-info" name="add_dir" value="创建文件夹"
+                        style="margin-left:10px;">
+                </form>
+            </div>
+            <div style="padding-top: 1%;">
+                <form name="addfile0" class="form-inline" id="addfile0" action="netdisk.php" method="post"
+                    enctype="multipart/form-data">
+
+                    <input type="hidden" name="md5" id="md5" value="">
+                    <input type="hidden" name="addfile" id="addfile_token" value="">
+
+                    上传文件名：&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type=text name="fname" id="addfile_fname" class="form-control">
+                    <span class="btn btn-info fileinput-button" style="margin-left:10px;">
+                        <span id="file_name">选&nbsp;择&nbsp;文&nbsp;件</span>
+                        <input type="file" name="file" id="loadfile" accept=".rar"">
+                    </span>
+
+                    <input type="submit" id="addfile" value="上&nbsp;传&nbsp;文&nbsp;件" class="btn btn-info" style="margin-left:10px;">
+                </form>
+            </div>
+
+            <hr class="simple" />
+        </div>
+    </div>
+
+    <div style="margin: 0% 15%; width: 70%; text-align: center;">
+        <div class="container-fluid" style="padding-top: 2%;">
+            <h2 style="text-align: center;">文件列表</h2>
+            <table align="center" class="table table-bordered">
+                <caption align="left">
+                    <span style="font-size: 24px;">当前路径：</span><span id="right_now_path" style="font-size: 24px;">
+                        <?=$_SESSION['path'] ?>
+                    </span>
+                    <button class="btn btn-info" style="margin-left:20px; float: right;" id="back_dir">后退</button>
+
+                    <?php if($_SESSION['copyed_id'] != -1) : ?>
+                    <button class="btn btn-info" style="margin-left:20px; float: right;" id="paste_file">粘贴</button>
+                    <?php else : ?>
+                    <button class="btn btn-info" style="margin-left:20px; float: right;" id="paste_file"
+                        disabled>粘贴</button>
+                    <?php endif; ?>
+                </caption>
+
+                <?php foreach($dir_list as $dir) : ?>
+                <tr>
+                    <!-- 图标 -->
+                    <td style="width:5%;" align="center"><img style="width: 100%;" src="../static/dir_icon.jpg"
+                            alt="文件夹"></td>
+                    <!-- 文件名 -->
+                    <td align="center" colspan=6>
+                        <?= $dir['name'] ?>
+                    </td>
+                    <!-- 进入 -->
+                    <td align="center" style="width:10%;"><a class="btn btn-default" id="dir_<?= $dir['id']?>">进入</a>
+                    </td>
+                    <script type="text/javascript">
+                        $("#dir_<?=$dir['id'] ?>").on("click", function (e) {
+                            $("#goto_dir_path").val("<?php echo $_SESSION['path']; echo $dir['name']; echo '/'; ?>");
+                            $("#goto_dir").submit();
+                        })
+                    </script>
+                </tr>
+                <?php endforeach; ?>
+
+                <?php foreach($file_list as $file) : ?>
+                <tr>
+                    <!-- 图标 -->
+                    <td style="width:5%;" align="center"><img style="width:100%;" src="../static/file_icon.png"
+                            alt="文件"></td>
+                    <!-- 文件名 -->
+                    <td align="center">
+                        <?= $file['filename'] ?>
+                    </td>
+                    <!-- 文件大小 -->
+                    <td align="center">
+                        <?= $file['size'] ?> B
+                    </td>
+                    <!-- 重命名 -->
+                    <td align="center" style="width:10%;"><a class="btn btn-info"
+                            id="rename_<?= $file['unique_id'] ?>">重命名</a></td>
+                    <!-- 复制 -->
+                    <td align="center" style="width:10%;"><a class="btn btn-info"
+                            id="copyed_<?= $file['unique_id'] ?>">复制</a></td>
+                    <!-- 剪切 -->
+                    <td align="center" style="width:10%;"><a class="btn btn-info"
+                            id="clip_<?= $file['unique_id'] ?>">剪切</a></td>
+                    <!-- 下载 -->
+                    <td align="center" style="width:10%;"><a class="btn btn-info"
+                            id="download_<?= $file['unique_id'] ?>">下载</a></td>
+                    <!-- 删除 -->
+                    <td align="center" style="width:10%;"><a class="btn btn-danger"
+                            id="delete_<?= $file['unique_id'] ?>">删除</a></td>
+
+
+                    <script type="text/javascript">
+                        // 重命名：需要文件的unique_id和新名字
+                        $("#rename_<?= $file['unique_id'] ?>").on("click", function (e) {
+                            $("#rename_id").val("<?= $file['unique_id'] ?>");
+                            var new_name = prompt("请输入新名字");
+                            if (!new_name) {
+                                alert("您没有输入新名字");
+                            } else {
+                                $("#rename_new_fname").val(new_name);
+                                $("#rename").submit();
+                            }
+                        });
+                        // 复制：需要文件的fid、名字
+                        $("#copyed_<?= $file['unique_id'] ?>").on("click", function (e) {
+                            $("#copyed_id").val("<?= $file['fid'] ?>");
+                            $("#copyed_name").val("<?= $file['filename'] ?>");
+                            $("#copyed").submit();
+                        });
+                        // 剪切：需要文件的unique_id、名字
+                        $("#clip_<?= $file['unique_id'] ?>").on("click", function (e) {
+                            $("#clip_id").val("<?= $file['unique_id'] ?>");
+                            $("#clip_name").val("<?= $file['filename'] ?>");
+                            $("#clip").submit();
+                        });
+                        // 删除：需要文件的unique_id
+                        $("#delete_<?= $file['unique_id'] ?>").on("click", function (e) {
+                            $("#delfile_id").val("<?= $file['unique_id'] ?>");
+                            $("#delfile").submit();
+                        });
+                        // 下载：需要文件的fid、md5、filename
+                        $("#download_<?= $file['unique_id'] ?>").on("click", function (e) {
+                            $("#download_md5").val("<?= $file['md5'] ?>");
+                            $("#download_filename").val("<?= $file['filename'] ?>");
+                            $("#download").submit();
+                        });
+                    </script>
+                </tr>
+                <?php endforeach; ?>
+            </table>
+            <?php if(empty($dir_list) && empty($file_list)) : ?>
+            当前目录下无文件/文件夹
+            <?php endif; ?>
+
+        </div>
+    </div>
+
+
+    <script src="../static/js/spark-md5.min.js"></script>
+    <script type="text/javascript">
+        function loadFile(file) {
+            $("#file_name").html(file.name);
+        }
+        $("#loadfile").change(function () {
+            loadFile(this.files[0]);
+
+            var addfile = document.getElementById("addfile");
+            addfile.disabled = true;
+            var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
+                file = this.files[0],
+                chunkSize = 2097152,                             // Read in chunks of 2MB
+                chunks = Math.ceil(file.size / chunkSize),
+                currentChunk = 0,
+                spark = new SparkMD5.ArrayBuffer(),
+                fileReader = new FileReader();
+
+            fileReader.onload = function (e) {
+                console.log("read chunk nr", currentChunk + 1, "of", chunks);
+                spark.append(e.target.result);                   // Append array buffer
+                currentChunk++;
+
+                if (currentChunk < chunks) {
+                    loadNext();
+                } else {
+                    console.log("finished loading");
+                    var md5_post = document.getElementById("md5");
+                    md5_post.value = spark.end();
+                    $("#addfile_fname").val(document.getElementById("loadfile").files[0].name);
+                    console.log($("#addfile_fname").val());
+                    console.info("computed hash", md5_post.value);  // Compute hash
+                    addfile.disabled = false;
+                }
+            };
+
+            fileReader.onerror = function () {
+                console.warn("oops, something went wrong.");
+            };
+
+            function loadNext() {
+                var start = currentChunk * chunkSize,
+                    end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
+                fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
+            }
+
+            loadNext();
+        });
+
+        $("#addfile0").on("submit", function (e) {
+            e.preventDefault();
+            var form = this;
+            var md5_post = document.getElementById("md5");
+            if (!md5_post) {
+                alert("请先选择您要上传的文件");
+                return;
+            }
+            $.post("check_md5.php", {
+                md5: md5_post.value
+            },
+                function (data, status) {
+                    if (data == 1) {
+                        // alert("您上传的文件支持秒传");
+                        document.getElementById("loadfile").value = "";
+                        document.getElementById("addfile_token").value = "miao";
+                    }
+                    console.log(data);
+                    // var status = confirm("Click OK to continue?");
+                    form.submit();
+                });
+        });
+
+        $("#add_dir_btn").on("click", function () {
+            let add_dir_name = $.trim($("#add_dir_name").val());
+            if (add_dir_name == "") {
+                alert("请输入文件夹名称");
+                return;
+            }
+            else {
+                $("#add_dir_name").val(add_dir_name);
+                $("#add_dir_form").submit();
+            }
+        });
+
+        $("#back_dir").on("click", function (e) {
+            var dir = "<?=$_SESSION['path'] ?>";
+            dir = dir.slice(0, -1);
+            var tmp = dir.lastIndexOf("/");
+            if (tmp < 0) {
+                dir = "root/";
+            } else {
+                dir = dir.slice(0, tmp + 1);
+            }
+            $("#goto_dir_path").val(dir);
+            $("#goto_dir").submit();
+        });
+
+        $("#paste_file").on("click", function (e) {
+            if ("<?=$_SESSION['copyed_id'] ?>" == -1) {
+                alert("请先复制/剪切一个文件");
+                return;
+            } else {
+                var new_name = prompt("请输入新名字, 不输入以原名为准");
+                if (!new_name) {
+                    $('#paste_fname').val("<?=$_SESSION['copyed_name'] ?>");
+                } else {
+                    $("#paste_fname").val(new_name);
+                }
+                $("#paste").submit();
+            }
+        });
+    </script>
+
+    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js"></script>
+    <!-- <script src="https://unpkg.com/vue@3"></script> -->
+    <!-- <script src="../static/js/vue.global.js"></script> -->
+    <style>
+        .margin-tb {
+            display: inline-block;
+            margin-top: 15px;
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+
+        .fileinput-button {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+        }
+
+        .fileinput-button input {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            opacity: 0;
+            -ms-filter: 'alpha(opacity=0)';
+            filter: 'alpha(opacity=0)';
+        }
+    </style>
+</body>
+
+</html>

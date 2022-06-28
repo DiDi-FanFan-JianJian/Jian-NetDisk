@@ -29,4 +29,18 @@ public:
   // file
   string handle_upload_file(const char* msg);
   string handle_upload_block(const char* msg);
+  string handle_create_file_dir(const char* msg);
+  string handle_get_file_id(const char* msg);
+  string handle_get_files(const char* msg);
+  string handle_move_file(const char* msg);
+  string handle_delete_file(const char* msg);
+  string handle_get_file_info(const char* msg);
+  string handle_download_block(const char* msg);
+
+  // dir
+  string handle_create_dir(const char* msg);
+  string handle_get_dir_id(const char* msg);
+  string handle_get_dirs(const char* msg);
+  string handle_move_dir(const char* msg);
+  string handle_delete_dir(const char* msg);
 };

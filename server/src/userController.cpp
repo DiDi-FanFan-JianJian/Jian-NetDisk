@@ -17,14 +17,13 @@ bool dbController::login(string username, string password)
 
 bool dbController::reg(string username, string password)
 {
-  string uid = getNextId("users");
   string did = getNextId("dirs");
   string sql = "insert into users (username, password, root) values ('" + username + "', '" + password + "', '" + did + "')";
   if (!insert(sql))
   {
     return false;
   }
-  create_dir(uid, "0", "root");
+  create_dir(username, "0", "root");
   return true;
 }
 
