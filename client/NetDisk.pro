@@ -26,6 +26,7 @@ SOURCES += \
 
 HEADERS += \
     file_function.h \
+    global_msg.h \
     md5.h \
     message.h \
     mysocket.h \

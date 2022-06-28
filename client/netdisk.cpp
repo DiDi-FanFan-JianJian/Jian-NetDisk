@@ -10,8 +10,9 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 
+#include "global_msg.h"
 
-extern SJ::MySocket& my_socket;
+extern Global_Msg g_msg;
 
 // 添加测试文件/文件夹
 void NetDisk::testFile()
@@ -31,6 +32,7 @@ void NetDisk::testFile()
     dir_list.append("test3");
     // 渲染文件列表
     renderFileList(file_list, dir_list);
+    cout << g_msg.username << " " << g_msg.cur_dir << endl;
 }
 
 

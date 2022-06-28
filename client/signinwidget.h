@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "mysocket.h"
+#include "global_msg.h"
 
 namespace Ui {
 class SignInWidget;

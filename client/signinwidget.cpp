@@ -4,6 +4,9 @@
 #include "netdisk.h"
 #include "mysocket.h"
 #include "message.h"
+#include "global_msg.h"
+
+extern Global_Msg g_msg;
 
 SignInWidget::SignInWidget(QWidget *parent) :
     QWidget(parent),
@@ -43,13 +46,20 @@ void SignInWidget::on_sign_in_btn_clicked()
     if (res.status == LoginResponse::success) {
         // 登录成功，到主页面
         showMsg("登陆成功!");
+        // 记录全局信息
+        g_msg.username = this->sign_in_account.toStdString();
+        g_msg.path.push_back("root");
+        g_msg.cur_dir = res.dir;
+
         NetDisk *client = new NetDisk();
         this->close();
         client->show();
     }
+    else if (res.status == LoginResponse::passwd_error) {
+        showMsg("密码错误!");
+    }
     else {
-        // 登录失败，提示错误信息
-        showMsg("登录失败原因");
+        showMsg("用户不存在!");
     }
 }
 

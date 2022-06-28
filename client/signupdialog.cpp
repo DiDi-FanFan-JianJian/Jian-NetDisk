@@ -4,8 +4,9 @@
 #include "ui_signupdialog.h"
 
 #include "message.h"
+#include "global_msg.h"
 
-extern SJ::MySocket& my_socket;
+extern Global_Msg g_msg;
 
 SignUpDialog::SignUpDialog(QWidget *parent) :
     QDialog(parent),
