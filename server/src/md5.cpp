@@ -35,3 +35,22 @@ int get_file_md5(const std::string &file_name, std::string &md5_value)
 
   return 0;
 }
+
+string get_str_md5(const string str)
+{
+  MD5_CTX md5Context;
+  MD5_Init(&md5Context);
+  MD5_Update(&md5Context, str.c_str(), str.size());
+
+  unsigned char result[MD5_DIGEST_LENGTH];
+  MD5_Final(result, &md5Context);
+
+  char hex[35];
+  memset(hex, 0, sizeof(hex));
+  for (int i = 0; i < MD5_DIGEST_LENGTH; ++i)
+  {
+    sprintf(hex + i * 2, "%02x", result[i]);
+  }
+  hex[32] = '\0';
+  return string(hex);
+}

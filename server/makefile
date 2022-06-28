@@ -6,7 +6,7 @@ mysql_flags = `mysql_config --cxxflags --libs`
 
 build: $(objs)
 	$(CXX) $(CXXFLAGS) -I./include -o server server.cpp $(objs) $(mysql_flags)
-	$(CXX) $(CXXFLAGS) -I./include -o client client.cpp $(objs) $(mysql_flags)
+	# $(CXX) $(CXXFLAGS) -I./include -o client client.cpp $(objs) $(mysql_flags)
 
 dbController.o: src/dbController.cpp
 	$(CXX) $(CXXFLAGS) -c -I./include src/dbController.cpp -o dbController.o

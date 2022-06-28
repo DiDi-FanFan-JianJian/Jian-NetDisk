@@ -46,6 +46,7 @@ struct LoginResponse
     success = 0,
     failed = 1,
     user_exist = 2,
+    passwd_error = 3
   };
   int status;
   int dir; // ¸ùÄ¿Â¼±àºÅ

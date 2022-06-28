@@ -8,7 +8,7 @@
 
 using namespace std;
 
-const string file_base_path = "./files/";
+const string file_base_path = "/home/netdisk/files/";
 
 class dbController {
 private:

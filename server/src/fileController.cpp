@@ -3,7 +3,7 @@
 string dbController::get_dir_id(string username, string pid, string dname)
 {
   auto uid = get_user_id(username);
-  string sql = "select id from dirs where uid = '" + uid + "' and pid = '" + pid + "' and dname = '" + dname + "'";
+  string sql = "select id from dirs where uid = '" + uid + "' and pid = '" + pid + "' and name = '" + dname + "'";
   if (!query(sql))
   {
     return "";

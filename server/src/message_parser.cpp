@@ -63,11 +63,17 @@ string router::handle_login(const char* m)
   cout << "password: " << msg.password << endl;
   cout << endl;
   LoginResponse res;
-  if (this->db->login(msg.username, msg.password))
+  // 密码md5加密
+  auto passwd = get_str_md5(msg.password);
+  if (this->db->login(msg.username, passwd))
   {
     res.status = LoginResponse::success;
     auto dir = this->db->get_dir_id(msg.username, "0", "root");
     res.dir = stoi(dir);
+  }
+  else if (this->db->is_user_exist(msg.username))
+  {
+    res.status = LoginResponse::passwd_error;
   }
   else
   {
@@ -80,12 +86,13 @@ string router::handle_reg(const char* m)
 {
   LoginMessage msg(m);
   LoginResponse res;
+  auto passwd = get_str_md5(msg.password);
   // 判断用户名是否存在
   if (this->db->is_user_exist(msg.username))
   {
     res.status = LoginResponse::user_exist;
   }
-  else if (this->db->reg(msg.username, msg.password))
+  else if (this->db->reg(msg.username, passwd))
   {
     res.status = LoginResponse::success;
     auto dir = this->db->get_dir_id(msg.username, "0", "root");
