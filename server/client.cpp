@@ -17,20 +17,8 @@ using namespace std;
 #define SERV_PORT 8000
 #define OPEN_MAX 1024
 
-int main(int argc, char *argv[])
+void upload_file(int sockfd)
 {
-  struct sockaddr_in servaddr;
-  int sockfd;
-
-  sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  bzero(&servaddr, sizeof(servaddr));
-  servaddr.sin_family = AF_INET;
-  inet_pton(AF_INET, "1.15.144.212", &servaddr.sin_addr);
-  servaddr.sin_port = htons(SERV_PORT);
-
-  /*连接服务端*/
-  connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
-
   // 读文件
   FILE *fp = fopen("./test_file/test.txt", "r");
   int size = 0;
@@ -43,8 +31,6 @@ int main(int argc, char *argv[])
   string md5;
   get_file_md5("./test_file/test.txt", md5);
   char buf_send[BUFSIZE];
-  strcpy(buf_send, md5.c_str());
-  send(sockfd, buf_send, strlen(buf_send), 0);
   while (true) {
     getchar();
 
@@ -105,6 +91,58 @@ int main(int argc, char *argv[])
       break;
     }
   }
+}
+
+void create_file_dir(int sockfd) 
+{
+  char send_buf[BUFSIZE];
+  send_buf[0] = MSG_CREATE_FILE_DIR;
+  CreateFileDirMessage msg;
+  strcpy(msg.username, "123");
+  strcpy(msg.md5, "8beb825ca302cc1abbaf14a164fa59b4");
+  strcpy(msg.dir_name, "root");
+  strcpy(msg.file_name, "test.txt");
+
+  memcpy(send_buf + 1, &msg, sizeof(msg));
+  send(sockfd, send_buf, sizeof(msg) + 1, 0);
+  recv(sockfd, send_buf, sizeof(send_buf), 0);
+  CreateFileDirResponse res(send_buf);
+  cout << "res.status " << res.status << endl;
+}
+
+void create_dir(int sockfd, string dirname, string pdirname)
+{
+  char send_buf[BUFSIZE];
+  send_buf[0] = MSG_CREATE_DIR;
+  CreateDirMessage msg;
+  strcpy(msg.username, "123");
+  strcpy(msg.dirname, dirname.c_str());
+  strcpy(msg.pdirname, pdirname.c_str());
+  memcpy(send_buf + 1, &msg, sizeof(msg));
+  send(sockfd, send_buf, sizeof(msg) + 1, 0);
+  recv(sockfd, send_buf, sizeof(send_buf), 0);
+  CreateDirResponse res(send_buf);
+  cout << "res.status " << res.status << endl;
+}
+
+int main(int argc, char *argv[])
+{
+  struct sockaddr_in servaddr;
+  int sockfd;
+
+  sockfd = socket(AF_INET, SOCK_STREAM, 0);
+  bzero(&servaddr, sizeof(servaddr));
+  servaddr.sin_family = AF_INET;
+  inet_pton(AF_INET, "1.15.144.212", &servaddr.sin_addr);
+  servaddr.sin_port = htons(SERV_PORT);
+
+  /*连接服务端*/
+  connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
+
+  // upload_file(sockfd);
+  // create_file_dir(sockfd);
+  create_dir(sockfd, "home", "root");
+  create_dir(sockfd, "etc", "root");
 
   close(sockfd);
   return 0;

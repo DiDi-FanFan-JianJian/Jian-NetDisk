@@ -26,6 +26,30 @@ string router::parse(const char* msg)
       return handle_upload_file(msg + 1);
     case MSG_UPLOAD_BLOCK:
       return handle_upload_block(msg + 1);
+    case MSG_CREATE_DIR:
+      return handle_create_dir(msg + 1);
+    case MSG_CREATE_FILE_DIR:
+      return handle_create_file_dir(msg + 1);
+    case MSG_GET_DIR_ID:
+      return handle_get_dir_id(msg + 1);
+    case MSG_GET_FILE_ID:
+      return handle_get_file_id(msg + 1);
+    case MSG_GET_DIRS:
+      return handle_get_dirs(msg + 1);
+    case MSG_GET_FILES:
+      return handle_get_files(msg + 1);
+    case MSG_MOVE_DIR:
+      return handle_move_dir(msg + 1);
+    case MSG_MOVE_FILE:
+      return handle_move_file(msg + 1);
+    case MSG_DELETE_DIR:
+      return handle_delete_dir(msg + 1);
+    case MSG_DELETE_FILE:
+      return handle_delete_file(msg + 1);
+    case MSG_GET_FILE_INFO:
+      return handle_get_file_info(msg + 1);
+    case MSG_DOWNLOAD_BLOCK:
+      return handle_download_block(msg + 1);
     default:
       return "unknown type";
   }
@@ -39,9 +63,17 @@ string router::handle_login(const char* m)
   cout << "password: " << msg.password << endl;
   cout << endl;
   LoginResponse res;
-  if (this->db->login(msg.username, msg.password))
+  // 密码md5加密
+  auto passwd = get_str_md5(msg.password);
+  if (this->db->login(msg.username, passwd))
   {
     res.status = LoginResponse::success;
+    auto dir = this->db->get_dir_id(msg.username, "0", "root");
+    res.dir = stoi(dir);
+  }
+  else if (this->db->is_user_exist(msg.username))
+  {
+    res.status = LoginResponse::passwd_error;
   }
   else
   {
@@ -54,14 +86,17 @@ string router::handle_reg(const char* m)
 {
   LoginMessage msg(m);
   LoginResponse res;
+  auto passwd = get_str_md5(msg.password);
   // 判断用户名是否存在
   if (this->db->is_user_exist(msg.username))
   {
     res.status = LoginResponse::user_exist;
   }
-  else if (this->db->reg(msg.username, msg.password))
+  else if (this->db->reg(msg.username, passwd))
   {
     res.status = LoginResponse::success;
+    auto dir = this->db->get_dir_id(msg.username, "0", "root");
+    res.dir = stoi(dir);
   }
   else
   {
@@ -138,6 +173,180 @@ string router::handle_upload_block(const char* m)
   fwrite(msg.block_data, sizeof(char), msg.size, fp);
   UploadBlockResponse res;
   res.next_block_id = (this->cur_block[msg.md5] >= this->tot_block[msg.md5]) ? -1 : this->cur_block[msg.md5] + 1;
+  fclose(fp);
+  return struct_to_string(res);
+}
+
+// 上传目录
+string router::handle_create_dir(const char* m)
+{
+  CreateDirMessage msg(m);
+  cout << "handle_create_dir" << endl;
+  CreateDirResponse res;
+  if (this->db->create_dir(msg.username, to_string(msg.pid), msg.dirname)) {
+    res.status = CreateDirResponse::success;
+  }
+  else {
+    res.status = CreateDirResponse::failed;
+  }
+  return struct_to_string(res);
+}
+
+// 创建文件目录
+string router::handle_create_file_dir(const char* m)
+{
+  cout << "handle_create_file_dir" << endl;
+  CreateFileDirMessage msg(m);
+  CreateFileDirResponse res;
+  if (this->db->create_file_dir(msg.username, msg.md5, to_string(msg.pid), msg.filename)) {
+    res.status = CreateFileDirResponse::success;
+  } 
+  else {
+    res.status = CreateFileDirResponse::failed;
+  }
+  return struct_to_string(res);
+}
+
+// 获取目录id
+string router::handle_get_dir_id(const char* m)
+{
+  cout << "handle_get_dir_id" << endl;
+  GetDirIDMessage msg(m);
+  GetDirIDResponse res;
+  string id = this->db->get_dir_id(msg.username, to_string(msg.pid), msg.dirname);
+  res.dir = atoi(id.c_str());
+  res.status = GetDirIDResponse::success;
+  return struct_to_string(res);
+}
+
+// 获取文件id
+string router::handle_get_file_id(const char* m)
+{
+  cout << "handle_get_file_id" << endl;
+  GetFileIDMessage msg(m);
+  GetFileIDResponse res;
+  string id = this->db->get_file_id(msg.username, to_string(msg.pid), msg.filename);
+  res.dir = atoi(id.c_str());
+  res.status = GetFileIDResponse::success;
+  return struct_to_string(res);
+}
+
+// 获取目录下所有目录
+string router::handle_get_dirs(const char* m)
+{
+  cout << "handle_get_dirs" << endl;
+  GetDirsMessage msg(m);
+  GetDirsResponse res;
+  vector<string> dirs = this->db->get_dirs(msg.username, to_string(msg.pid));
+  res.num = dirs.size();
+  for (size_t i = 0; i < dirs.size(); ++i)
+  {
+    strcpy(res.dirname[i], dirs[i].c_str());
+  }
+  return struct_to_string(res);
+}
+
+string router::handle_get_files(const char* m)
+{
+  cout << "handle_get_files" << endl;
+  GetFilesMessage msg(m);
+  GetFilesResponse res;
+  vector<string> files = this->db->get_files(msg.username, to_string(msg.pid));
+  res.num = files.size();
+  for (size_t i = 0; i < files.size(); ++i)
+  {
+    strcpy(res.dirname[i], files[i].c_str());
+  }
+  return struct_to_string(res);
+}
+
+// 移动目录
+string router::handle_move_dir(const char* m)
+{
+  cout << "handle_move_dir" << endl;
+  MoveDirMessage msg(m);
+  MoveDirResponse res;
+  if (this->db->move_dir(to_string(msg.id), to_string(msg.dst))) {
+    res.status = MoveDirResponse::success;
+  }
+  else {
+    res.status = MoveDirResponse::failed;
+  }
+  return struct_to_string(res);
+}
+
+// 移动文件
+string router::handle_move_file(const char* m)
+{
+  cout << "handle_move_file" << endl;
+  MoveFileMessage msg(m);
+  MoveFileResponse res;
+  if (this->db->move_file(to_string(msg.id), to_string(msg.src), to_string(msg.dst))) {
+    res.status = MoveFileResponse::success;
+  }
+  else {
+    res.status = MoveFileResponse::failed;
+  }
+  return struct_to_string(res);
+}
+
+// 删除目录
+string router::handle_delete_dir(const char* m)
+{
+  cout << "handle_delete_dir" << endl;
+  DeleteDirMessage msg(m);
+  DeleteDirResponse res;
+  if (this->db->delete_dir(to_string(msg.id))) {
+    res.status = DeleteDirResponse::success;
+  }
+  else {
+    res.status = DeleteDirResponse::failed;
+  }
+  return struct_to_string(res);
+}
+
+// 删除文件
+string router::handle_delete_file(const char* m)
+{
+  cout << "handle_delete_file" << endl;
+  DeleteFileMessage msg(m);
+  DeleteFileResponse res;
+  if (this->db->delete_file(to_string(msg.id))) {
+    res.status = DeleteFileResponse::success;
+  }
+  else {
+    res.status = DeleteFileResponse::failed;
+  }
+  return struct_to_string(res);
+}
+
+// 获取文件信息 其实就是字节数
+string router::handle_get_file_info(const char* m)
+{
+  cout << "handle_get_file_info" << endl;
+  GetFileInfoMessage msg(m);
+  GetFileInfoResponse res;
+  res.file_size = this->db->get_file_size(to_string(msg.id));
+  return struct_to_string(res);
+}
+
+// 下载文件块
+string router::handle_download_block(const char* m)
+{
+  cout << "handle_download_file_block" << endl;
+  DownloadBlockMessage msg(m);
+  DownloadBlockResponse res;
+  auto path = this->db->get_file_path(to_string(msg.id));
+  int idx = msg.block_id;
+  int size = msg.size;
+  // 读文件
+  FILE* fp = fopen(path.c_str(), "rb");
+  if (fp == NULL) {
+    cout << "open file failed" << endl;
+    exit(1);
+  }
+  fseek(fp, idx * BLOCK_SIZE, SEEK_SET);
+  fread(res.block_data, sizeof(char), size, fp);
   fclose(fp);
   return struct_to_string(res);
 }

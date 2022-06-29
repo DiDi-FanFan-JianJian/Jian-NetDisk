@@ -1,4 +1,5 @@
-# /root/Jian-NetDisk/db/netdisk.sql
+# source /root/Jian-NetDisk/db/netdisk.sql
+# .Ab123456
 drop database if exists netdisk;
 create database netdisk;
 use netdisk;
@@ -7,8 +8,8 @@ use netdisk;
 drop table if exists users;
 create table `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(20) NOT NULL,
-  `password` varchar(20) NOT NULL,
+  `username` varchar(40) NOT NULL,
+  `password` varchar(40) NOT NULL,
   `root` int(11) NOT NULL, # 用户根目录
   PRIMARY KEY (`id`)
 );
@@ -28,7 +29,7 @@ create table `files` (
 drop table if exists dirs;
 create table `dirs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) NOT NULL, # 目录名
+  `name` varchar(40) NOT NULL, # 目录名
   `uid` int(11) NOT NULL, # 用户id
   `pid` int(11) NOT NULL, # 父目录id
   `create_time` datetime NOT NULL, # 创建时间
@@ -41,8 +42,9 @@ drop table if exists file_dir;
 create table `file_dir` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `fid` int(11) NOT NULL, # 文件id
+  `uid` int(11) NOT NULL, # 用户id
   `did` int(11) NOT NULL, # 目录id
-  `filename` varchar(20) NOT NULL, # 文件名
+  `filename` varchar(40) NOT NULL, # 文件名
   `create_time` datetime NOT NULL, # 创建时间
   `update_time` datetime NOT NULL, # 更新时间
   PRIMARY KEY (`id`)
