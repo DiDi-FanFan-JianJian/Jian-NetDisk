@@ -58,9 +58,9 @@ void NetDisk::closeEvent(QCloseEvent *event)
         event->ignore(); // 忽略退出信号，程序继续进行
     }
     else if(button==QMessageBox::Yes) {
+        g_msg.write_file_list();
         event->accept(); // 接受退出信号，程序退出
     }
-    g_msg.write_file_list();
 }
 
 void NetDisk::on_refresh_btn_clicked() {
@@ -442,9 +442,10 @@ void NetDisk::on_file_list_cellDoubleClicked(int row, int column)
 void NetDisk::on_transfer_list_menu_triggered()
 {
     g_msg.test_info();
-    TransferListDialog transfer_dialog;
-    this->hide();
-    transfer_dialog.exec();
-    this->show();
+    TransferListDialog* transfer_dialog = new TransferListDialog(this);
+    // this->hide();
+    transfer_dialog->setWindowFlags(transfer_dialog->windowFlags() | Qt::Tool);
+    transfer_dialog->show();
+    // this->show();
 }
 
