@@ -70,6 +70,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="paste_btn">
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>粘贴</string>
          </property>
@@ -244,8 +250,7 @@
     <property name="title">
      <string>功能</string>
     </property>
-    <addaction name="download_list_menu"/>
-    <addaction name="upload_list_menu"/>
+    <addaction name="transfer_list_menu"/>
     <addaction name="logout_menu"/>
    </widget>
    <widget class="QMenu" name="menu_2">
@@ -258,14 +263,9 @@
    <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="download_list_menu">
+  <action name="transfer_list_menu">
    <property name="text">
-    <string>下载列表</string>
-   </property>
-  </action>
-  <action name="upload_list_menu">
-   <property name="text">
-    <string>上传列表</string>
+    <string>传输列表</string>
    </property>
   </action>
   <action name="about">

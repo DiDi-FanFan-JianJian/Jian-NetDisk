@@ -3,6 +3,8 @@
 #include "mysocket.h"
 #include "global_msg.h"
 
+#include "transferlistdialog.h"
+
 #include <QApplication>
 #include <QTextCodec>
 

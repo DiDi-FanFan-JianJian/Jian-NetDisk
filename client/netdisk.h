@@ -3,8 +3,10 @@
 
 #include <QMainWindow>
 #include <QStringList>
+#include <QCloseEvent>
 
 #include "mysocket.h"
+#include "transferlistdialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class NetDisk; }
@@ -17,6 +19,9 @@ class NetDisk : public QMainWindow
 public:
     NetDisk(QWidget *parent = nullptr);
     ~NetDisk();
+
+protected:
+     void closeEvent(QCloseEvent *event);
 
 private slots:
     void on_refresh_btn_clicked();
@@ -35,9 +40,12 @@ private slots:
 
     void on_paste_btn_clicked();
 
+    void on_transfer_list_menu_triggered();
+
 private:
     SJ::MySocket* sock;
     Ui::NetDisk *ui;
+    TransferListDialog *transfer_dialog;
     QStringList file_list, dir_list;
     QString download_file, upload_file;
     QString user, path;

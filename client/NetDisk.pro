@@ -22,23 +22,23 @@ LIBS    += "C:\Program Files\OpenSSL-Win64\lib\libssl.lib" \
 SOURCES += \
     file_function.cpp \
     main.cpp \
-    md5.cpp \
     mysocket.cpp \
     netdisk.cpp \
     signinwidget.cpp \
     signupdialog.cpp \
-    transferlistdialog.cpp
+    transferlistdialog.cpp \
+    md5.cpp
 
 HEADERS += \
     file_function.h \
     global_msg.h \
-    md5.h \
     message.h \
     mysocket.h \
     netdisk.h \
     signinwidget.h \
     signupdialog.h \
-    transferlistdialog.h
+    transferlistdialog.h \
+    md5.h
 
 FORMS += \
     netdisk.ui \

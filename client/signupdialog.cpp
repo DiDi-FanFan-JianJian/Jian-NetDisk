@@ -47,7 +47,7 @@ void SignUpDialog::showMsg(const QString msg)
 
 bool SignUpDialog::isWeak(const QString password)
 {
-    if (password.size() < 8 || password.size() > 16)
+    if (password.size() < 12 || password.size() > 24)
         return true;
 
     int flag = 0;
@@ -72,6 +72,13 @@ bool SignUpDialog::isWeak(const QString password)
             ++flag;
             break;
         }
+    // 包含特殊字符
+    for (int i = 0; i < password.size(); ++i)
+        if ((password[i] >= '!') && (password[i] <= '/'))
+        {
+            ++flag;
+            break;
+        }
     if (flag < 3)
         return true;
     return false;
@@ -80,15 +87,15 @@ bool SignUpDialog::isWeak(const QString password)
 void SignUpDialog::on_sign_up_btn_clicked()
 {
     if (sign_up_account.isEmpty() || sign_up_password1.isEmpty() || sign_up_password2.isEmpty()) {
-        showMsg("表单填写不完整");
+        showMsg(QStringLiteral("表单填写不完整"));
         return;
     }
     if (sign_up_password1 != sign_up_password2) {
-        showMsg("两次输入的密码不一致");
+        showMsg(QStringLiteral("两次输入的密码不一致"));
         return;
     }
     if (isWeak(sign_up_password1)) {
-        showMsg("密码强度太弱（密码长度为8-16位，必须同时包含数字/小写字母/大写字母）");
+        showMsg(QStringLiteral("密码强度太弱（密码长度为12-24位，至少包含数字/小写字母/大写字母/特殊字符中的三种）"));
         return;
     }
 
@@ -97,13 +104,13 @@ void SignUpDialog::on_sign_up_btn_clicked()
     sock->recvMsg();
     auto res = LoginResponse(sock->recv_buf);
     if (res.status == LoginResponse::success) {
-        showMsg("注册成功");
+        showMsg(QStringLiteral("注册成功"));
         this->accept();
     }
     else if (res.status == LoginResponse::user_exist) {
-        showMsg("该用户名已存在!");
+        showMsg(QStringLiteral("该用户名已存在!"));
     }
     else {
-        showMsg("注册失败");
+        showMsg(QStringLiteral("注册失败"));
     }
 }

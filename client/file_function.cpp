@@ -2,6 +2,9 @@
 
 #include <QFileInfo>
 #include <QDir>
+#include <iostream>
+
+using namespace std;
 
 // 判断某个路径是文件还是文件夹
 bool isDir(const QString &path)
@@ -71,17 +74,6 @@ bool createFile(const QString &file_path)
     return false;
 }
 
-// 获取文件MD5值
-QString getFileMD5(QString file_name)
-{
-    std::string str_md5;
-    if (get_file_md5(file_name.toStdString(), str_md5) < 0)
-    {
-        return "";
-    }
-    return QString::fromStdString(str_md5);
-}
-
 // 获取文件大小
 int getFileSize(QString file_name)
 {
@@ -94,10 +86,11 @@ int getFileSize(QString file_name)
 }
 
 // 获取文件名
-QString getFileName(QString file_name)
+string getFileName(string path)
 {
+    QString file_name = QString::fromStdString(path);
     QFileInfo file_info(file_name);
-    return file_info.fileName();
+    return file_info.fileName().toStdString();
 }
 
 // 向某个文件指定位置写入内容（-1：尾，0：头，其他：指定位置）

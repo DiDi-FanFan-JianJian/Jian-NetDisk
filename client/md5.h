@@ -1,10 +1,15 @@
-#pragma once
+#ifndef MD5_H
+#define MD5_H
 
-#include <fstream>
-#include <openssl/md5.h>
+#include <QString>
+#include <QByteArray>
+#include <QCryptographicHash>
+#include <QFile>
+#include <QDebug>
 #include <string>
-#include <cstring>
 
-using std::string;
+using namespace std;
 
-int get_file_md5(const std::string &file_name, std::string &md5_value);
+string getFileMd5(string path);
+
+#endif // MD5_H
