@@ -47,7 +47,7 @@ void TransferListDialog::renderFileList()
     ui->upload_file_list->clear();
     ui->upload_file_list->setColumnCount(4);
     ui->upload_file_list->setRowCount(g_msg.upload_file_list.size());
-    ui->upload_file_list->setHorizontalHeaderLabels(QStringList() << "文件名" << "进度" << "状态" << "操作");
+    ui->upload_file_list->setHorizontalHeaderLabels(QStringList() << "File" << "Progress Bar" << "Status" << "Option");
     for (unsigned i = 0; i < g_msg.upload_file_list.size(); i++) {
         // 文件名
         QTableWidgetItem *item = new QTableWidgetItem(QString::fromStdString(g_msg.upload_file_list[i].filename));
@@ -58,11 +58,11 @@ void TransferListDialog::renderFileList()
         bar->setValue(g_msg.upload_file_list[i].finished_size * 100 / g_msg.upload_file_list[i].file_size);
         ui->upload_file_list->setCellWidget(i, 1, bar);
         // 状态
-        item = new QTableWidgetItem(QString::fromStdString(g_msg.upload_file_list[i].working ? "正在传输" : "未完成"));
+        item = new QTableWidgetItem(QString::fromStdString(g_msg.upload_file_list[i].working ? "uploading" : "waiting"));
         ui->upload_file_list->setItem(i, 2, item);
         // 控制暂停、继续按钮
         QPushButton *btn = new QPushButton();
-        btn->setText(g_msg.upload_file_list[i].working ? "暂停" : "继续");
+        btn->setText(g_msg.upload_file_list[i].working ? "pause" : "continue");
         ui->upload_file_list->setCellWidget(i, 3, btn);
     }
 
@@ -70,7 +70,7 @@ void TransferListDialog::renderFileList()
     ui->download_file_list->clear();
     ui->download_file_list->setColumnCount(4);
     ui->download_file_list->setRowCount(g_msg.download_file_list.size());
-    ui->download_file_list->setHorizontalHeaderLabels(QStringList() << "文件名" << "进度" << "状态" << "操作");
+    ui->download_file_list->setHorizontalHeaderLabels(QStringList() << "File" << "Progress Bar" << "Status" << "Option");
     for (unsigned i = 0; i < g_msg.download_file_list.size(); i++) {
         // 文件名
         QTableWidgetItem *item = new QTableWidgetItem(QString::fromStdString(g_msg.download_file_list[i].filename));
@@ -81,11 +81,11 @@ void TransferListDialog::renderFileList()
         bar->setValue(g_msg.download_file_list[i].finished_size * 100 / g_msg.download_file_list[i].file_size);
         ui->download_file_list->setCellWidget(i, 1, bar);
         // 状态
-        item = new QTableWidgetItem(QString::fromStdString(g_msg.download_file_list[i].working ? "正在传输" : "未完成"));
+        item = new QTableWidgetItem(QString::fromStdString(g_msg.download_file_list[i].working ? "downloading" : "waiting"));
         ui->download_file_list->setItem(i, 2, item);
         // 控制暂停、继续文字（如果正在传输，则显示暂停，否则显示继续）
         QPushButton *btn = new QPushButton();
-        btn->setText(g_msg.download_file_list[i].working ? "暂停" : "继续");
+        btn->setText(g_msg.download_file_list[i].working ? "pause" : "continue");
         ui->download_file_list->setCellWidget(i, 3, btn);
     }
 }

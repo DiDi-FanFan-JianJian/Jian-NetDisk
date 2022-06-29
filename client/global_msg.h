@@ -71,6 +71,9 @@ struct Global_Msg {
 
     // 测试使用
     void test_info() {
+        if (upload_file_list.size() != 0 || download_file_list.size() != 0) {
+            return;
+        }
         // 添加四个测试文件
         for (int i = 0; i < 4; i++) {
             LoadFileInfo info;
@@ -112,11 +115,15 @@ struct Global_Msg {
         set_all_file_working_false();
 
         // c++判断文件夹C:\\netdisk\\username是否存在，不存在则递归创建
-        string prefix = "C:\\netdisk\\" + username;
-	    if (_access(prefix.c_str(), 0) == -1) {
+        string prefix = "C:\\netdisk";
+        if (_access(prefix.c_str(), 0) == -1) {
             _mkdir(prefix.c_str());
         }
-        
+        prefix += "\\" + username;
+        if (_access(prefix.c_str(), 0) == -1) {
+            _mkdir(prefix.c_str());
+        }
+
         // 写入C:\netdisk\username\upload_file_list.txt
         ofstream ofs("C:\\netdisk\\" + username + "\\upload_file_list.txt");
         for (auto &&it: upload_file_list) {
