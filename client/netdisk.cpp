@@ -103,50 +103,60 @@ void NetDisk::on_new_dir_clicked()
 {
     cout << "???" << endl;
     // 弹框询问文件夹名称
-    QString dir_name = QInputDialog::getText(this, QStringLiteral("新建文件夹"), QStringLiteral("请输入文件夹名称"));
-    if (dir_name.isEmpty()) {
-        showMsg(QStringLiteral("你自己关了，无事发生"));
-    }
-    else {
-        showMsg(dir_name);
-        this->sock->create_dir(dir_name.toStdString());
-        reloadFile();
-        renderFileList(file_list, dir_list);
+    bool ok;
+    QString dir_name = QInputDialog::getText(this, QStringLiteral("新建文件夹"), QStringLiteral("请输入文件夹名称"), QLineEdit::Normal, QString(""), &ok);
+    if (ok) {
+        if (dir_name.isEmpty()) {
+            showMsg(QStringLiteral("输入不能为空"));
+        }
+        else {
+            showMsg(dir_name);
+            this->sock->create_dir(dir_name.toStdString());
+            reloadFile();
+            renderFileList(file_list, dir_list);
+        }
     }
 }
 
 
 void NetDisk::on_paste_btn_clicked()
 {
+    // 判断有没有复制
     if (g_msg.copyfile_status == PASTE_NOFILE) {
         showMsg("请先复制文件");
+        return;
+    }
+    // 弹框询问粘贴的名称
+    bool ok;
+    QString new_name = QInputDialog::getText(this, QStringLiteral("粘贴"), QStringLiteral("请输入新名字, 不输入以原名为准"), QLineEdit::Normal, QString(""), &ok);
+    if (!ok) {
+        // 关闭或者取消
+        return;
+    }
+    // 粘贴之后的名字
+    string after_name = g_msg.copyfile_name;
+    if (!new_name.isEmpty()) {
+        // 输入了新的名字就更新g_msg中的文件名
+        after_name = new_name.toStdString();
+    }
+
+    QString dir_id = QString(g_msg.copyfile_dir_id);
+    cout << g_msg.copyfile_dir_id << endl;
+    if (g_msg.copyfile_status == PASTE_COPYFILE) {
+        // 复制文件
+        showMsg(QString::fromStdString("copy file name: " + g_msg.copyfile_name + "  after_name: " + after_name));
+    }
+    else if (g_msg.copyfile_status == PASTE_COPYDIR) {
+        // 复制文件夹
+        showMsg(QString::fromStdString("copy dir name: " + g_msg.copyfile_name + "  after_name: " + after_name));
+    }
+    else if (g_msg.copyfile_status == PASTE_CUTFILE) {
+        // 剪切文件
     }
     else {
-        // 弹框询问粘贴的名称
-        QString new_name = QInputDialog::getText(this, QStringLiteral("粘贴"), QStringLiteral("请输入新名字, 不输入以原名为准"));
-        if (!new_name.isEmpty()) {
-            // 输入了新的名字就更新g_msg中的文件名
-            g_msg.copyfile_name = new_name.toStdString();
-        }
-
-        QString dir_id = QString(g_msg.copyfile_dir_id);
-        if (g_msg.copyfile_status == PASTE_COPYFILE) {
-            // 复制文件
-            showMsg(QString::fromStdString("copy file: " + g_msg.copyfile_name + "  dir_id: ") + dir_id);
-        }
-        else if (g_msg.copyfile_status == PASTE_COPYDIR) {
-            // 复制文件夹
-            showMsg(QString::fromStdString("copy dir: " + g_msg.copyfile_name + "  dir_id: ") + dir_id);
-        }
-        else if (g_msg.copyfile_status == PASTE_CUTFILE) {
-            // 剪切文件
-
-        }
-        else {
-            // 剪切文件夹
-
-        }
+        // 剪切文件夹
     }
+
 }
 
 // 渲染文件列表
@@ -275,139 +285,136 @@ void NetDisk::showMsg(QString msg) {
 // table中的按钮
 void NetDisk::on_file_list_cellClicked(int row, int column)
 {
-    if (column >= 2 ) {
-        int item_id, is_dir;
-        // 计算文件/文件夹的id
-        if (row < file_list.length()) {
-            item_id = row;
-            is_dir = 0;
+    if (column < 2 ) {
+        // 点击第一列、第二列无效果
+        return;
+    }
+
+    // 计算文件/文件夹的id
+    int item_id, is_dir;
+    if (row < file_list.length()) {
+        item_id = row;
+        is_dir = 0;
+    }
+    else {
+        item_id = row - file_list.length();
+        is_dir = 1;
+    }
+
+    // 执行对应操作
+    if (column == 2) {
+        // 下载文件/文件夹
+        QString download_path = QFileDialog::getExistingDirectory(this, "选择文件夹", "C:/");
+        if (download_path.isEmpty()) {
+            // 取消或者关闭对话框
+            return;
+        }
+
+        if (is_dir) {
+            QString dir_name = dir_list.at(item_id);
+            showMsg("下载文件夹" + dir_name + "到指定位置" + download_path);
         }
         else {
-            item_id = row - file_list.length();
-            is_dir = 1;
+            QString file_name = file_list.at(item_id);
+            showMsg("下载文件" + file_name + "到指定位置" + download_path);
         }
+    }
+    else if (column == 3) {
+        // 删除文件/文件夹
+        if (is_dir) {
+            QString dir_name = dir_list.at(item_id);
+            // 询问是否删除
+            QMessageBox msgbox;
+            msgbox.setText("是否删除文件夹" + dir_name);
+            msgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgbox.setDefaultButton(QMessageBox::No);
+            int ret = msgbox.exec();
+            if (ret == QMessageBox::Yes) {
+                // 删除文件夹
+                showMsg("删除文件夹" + dir_name);
 
-        if (column == 2) {
-            // 下载文件/文件夹
-            if (is_dir) {
-                QString dir_name = dir_list.at(item_id);
-                QString download_path = QFileDialog::getExistingDirectory(this, "选择文件夹", "D:/");
-
-                if (download_path.isEmpty()) {
-                    showMsg("你自己关了，无事发生");
-                    return;
-                }
-                else {
-                    showMsg("下载文件夹" + dir_name + "到指定位置" + download_path);
-                }
-            }
-            else {
-                QString file_name = file_list.at(item_id);
-                QString download_path = QFileDialog::getExistingDirectory(this, "选择文件夹", "D:/");
-
-                if (download_path.isEmpty()) {
-                    showMsg("你自己关了，无事发生");
-                    return;
-                }
-                else {
-                    showMsg("下载文件" + file_name + "到指定位置" + download_path);
-                }
+                ui->file_list->removeRow(row);
+                dir_list.removeAt(item_id);
             }
         }
-        else if (column == 3) {
-            // 删除文件/文件夹
-            if (is_dir) {
-                QString dir_name = dir_list.at(item_id);
-                // 询问是否删除
-                QMessageBox msgbox;
-                msgbox.setText("是否删除文件夹" + dir_name);
-                msgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-                msgbox.setDefaultButton(QMessageBox::No);
-                int ret = msgbox.exec();
-                if (ret == QMessageBox::Yes) {
-                    // 删除文件夹
-                    showMsg("删除文件夹" + dir_name);
+        else {
+            QString file_name = file_list.at(item_id);
+            // 询问是否删除
+            QMessageBox msgbox;
+            msgbox.setText("是否删除文件" + file_name);
+            msgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgbox.setDefaultButton(QMessageBox::No);
+            int ret = msgbox.exec();
+            if (ret == QMessageBox::Yes) {
+                // 删除文件
+                showMsg("删除文件" + file_name);
 
-                    ui->file_list->removeRow(row);
-                    dir_list.removeAt(item_id);
-                }
-            }
-            else {
-                QString file_name = file_list.at(item_id);
-                // 询问是否删除
-                QMessageBox msgbox;
-                msgbox.setText("是否删除文件" + file_name);
-                msgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-                msgbox.setDefaultButton(QMessageBox::No);
-                int ret = msgbox.exec();
-                if (ret == QMessageBox::Yes) {
-                    // 删除文件
-                    showMsg("删除文件" + file_name);
-
-                    ui->file_list->removeRow(row);
-                    file_list.removeAt(item_id);
-                }
+                ui->file_list->removeRow(row);
+                file_list.removeAt(item_id);
             }
         }
-        else if (column == 4) {
-            // 重命名
-
-            // 询问修改后的文件名
-            QString new_name = QInputDialog::getText(this, "重命名", "请输入新的文件名");
-            if (new_name.isEmpty()) {
-                showMsg("你自己关了，无事发生");
-                return;
-            }
-            else {
-                if (is_dir) {
-                    QString dir_name = dir_list.at(item_id);
-                    showMsg("重命名文件夹" + dir_name + "为" + new_name);
-
-                    ui->file_list->item(row, 0)->setText(new_name);
-                    dir_list.replace(item_id, new_name);
-                }
-                else {
-                    QString file_name = file_list.at(item_id);
-                    showMsg("重命名文件" + file_name + "为" + new_name);
-
-                    ui->file_list->item(row, 0)->setText(new_name);
-                    file_list.replace(item_id, new_name);
-                }
-            }
+    }
+    else if (column == 4) {
+        // 重命名
+        bool ok;
+        QString new_name = QInputDialog::getText(this, "重命名", "请输入新的文件名", QLineEdit::Normal, QString(""), &ok);
+        if (!ok) {
+            // 点击取消或者直接关闭
+            return;
         }
-        else if (column == 5) {
-            // 复制
-            if (is_dir) {
-                QString dir_name = dir_list.at(item_id);
-                showMsg("复制文件夹成功：" + dir_name);
-                g_msg.copyfile_name = dir_name.toStdString();
-                g_msg.copyfile_dir_id = g_msg.get_cur_id();
-                g_msg.copyfile_status = PASTE_COPYDIR;
-            }
-            else {
-                QString file_name = file_list.at(item_id);
-                showMsg("复制文件成功：" + file_name);
-                g_msg.copyfile_name = file_name.toStdString();
-                g_msg.copyfile_dir_id = g_msg.get_cur_id();
-                g_msg.copyfile_status = PASTE_COPYFILE;
-            }
+        if (new_name.isEmpty()) {
+            showMsg(QStringLiteral("输入不能为空"));
+            return;
         }
-        else if (column == 6) {
-            // 剪切
-            if (is_dir) {
-                QString dir_name = dir_list.at(item_id);
-                showMsg("剪切文件夹成功：" + dir_name);
-                g_msg.copyfile_name = dir_name.toStdString();
-                g_msg.copyfile_dir_id = g_msg.get_cur_id();
-                g_msg.copyfile_status = PASTE_CUTDIR;
-            }
-            else {
-                QString file_name = file_list.at(item_id);
-                showMsg("剪切文件成功：" + file_name);
-                g_msg.copyfile_name = file_name.toStdString();
-                g_msg.copyfile_dir_id = g_msg.get_cur_id();
-                g_msg.copyfile_status = PASTE_CUTFILE;
-            }
+
+        if (is_dir) {
+            QString dir_name = dir_list.at(item_id);
+            showMsg("重命名文件夹" + dir_name + "为" + new_name);
+
+            ui->file_list->item(row, 0)->setText(new_name);
+            dir_list.replace(item_id, new_name);
+        }
+        else {
+            QString file_name = file_list.at(item_id);
+            showMsg("重命名文件" + file_name + "为" + new_name);
+
+            ui->file_list->item(row, 0)->setText(new_name);
+            file_list.replace(item_id, new_name);
+        }
+    }
+    else if (column == 5) {
+        // 复制
+        if (is_dir) {
+            QString dir_name = dir_list.at(item_id);
+            showMsg("copy dir: " + dir_name);
+            g_msg.copyfile_name = dir_name.toStdString();
+            g_msg.copyfile_dir_id = g_msg.get_cur_id();
+            g_msg.copyfile_status = PASTE_COPYDIR;
+            cout << g_msg.copyfile_dir_id;
+        }
+        else {
+            QString file_name = file_list.at(item_id);
+            showMsg("copy file: " + file_name);
+            g_msg.copyfile_name = file_name.toStdString();
+            g_msg.copyfile_dir_id = g_msg.get_cur_id();
+            g_msg.copyfile_status = PASTE_COPYFILE;
+        }
+    }
+    else if (column == 6) {
+        // 剪切
+        if (is_dir) {
+            QString dir_name = dir_list.at(item_id);
+            showMsg("cut dir: " + dir_name);
+            g_msg.copyfile_name = dir_name.toStdString();
+            g_msg.copyfile_dir_id = g_msg.get_cur_id();
+            g_msg.copyfile_status = PASTE_CUTDIR;
+        }
+        else {
+            QString file_name = file_list.at(item_id);
+            showMsg("cut file: " + file_name);
+            g_msg.copyfile_name = file_name.toStdString();
+            g_msg.copyfile_dir_id = g_msg.get_cur_id();
+            g_msg.copyfile_status = PASTE_CUTFILE;
         }
     }
 }
