@@ -40,6 +40,7 @@ struct Global_Msg {
     vector<LoadFileInfo> upload_file_list;
     vector<LoadFileInfo> download_file_list;
 
+    map<string, string> file_md5;
     map<string, int> file_size; // 文件md5对应的字节数
     map<string, int> block_num; // 文件md对应的总块数
     map<string, int> cur_idx;   // 当前已传输的块数

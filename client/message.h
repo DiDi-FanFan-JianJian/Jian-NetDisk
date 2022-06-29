@@ -65,7 +65,7 @@ struct UploadFileMessage
   UploadFileMessage(const char* msg) {
     memcpy(this, msg, sizeof(UploadFileMessage));
   }
-  char md5[33];  
+  char md5[33];
   int file_size; // 字节数
   int block_num; // 前端计算总块数
   int block_id;  // 从0开始编号
