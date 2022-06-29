@@ -2,6 +2,9 @@
 
 #include <QFileInfo>
 #include <QDir>
+#include <iostream>
+
+using namespace std;
 
 // 判断某个路径是文件还是文件夹
 bool isDir(const QString &path)
@@ -83,10 +86,11 @@ int getFileSize(QString file_name)
 }
 
 // 获取文件名
-QString getFileName(QString file_name)
+string getFileName(string path)
 {
+    QString file_name = QString::fromStdString(path);
     QFileInfo file_info(file_name);
-    return file_info.fileName();
+    return file_info.fileName().toStdString();
 }
 
 // 向某个文件指定位置写入内容（-1：尾，0：头，其他：指定位置）

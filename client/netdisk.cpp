@@ -86,10 +86,6 @@ void NetDisk::on_return_btn_clicked() {
 
 // 缺少文件路径分析 + 重名判断
 void NetDisk::on_upload_file_clicked() {
-    // getOpenFileName(QWidget *parent, const QString &caption, const QString &dir, const QString &filter, QString *selectedFilter, Options options)
-    //                      父类指针                标题              默认打开文件夹         文件过滤规则          默认的文件过滤规则         属性（显示文件夹等）
-    //  filter："images(*.png *jpeg *bmp);;text files(*.txt *.doc *.docx);;video files(*.avi *.mp4 *.wmv);;All files(*.*)"
-
     // 选择文件（限制只能选择文件）
     QString file_path = QFileDialog::getOpenFileName(this, QStringLiteral("选择文件"), ".", "All files(*.*)");
     if (file_path.isEmpty()) {
@@ -97,10 +93,8 @@ void NetDisk::on_upload_file_clicked() {
         return;
     }
     else {
-        showMsg("选择文件：" + file_path);
-
-        file_list.append(file_path);
-        renderFileList(file_list, dir_list);
+        string path = file_path.toStdString();
+        this->sock->init_file_task(path);
     }
 }
 
