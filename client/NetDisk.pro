@@ -10,10 +10,10 @@ LIBS += -lws2_32
 QMAKE_CFLAGS += -fexec-charset=GBK -finput-charset=GBK
 QMAKE_CXXFLAGS += -fexec-charset=GBK -finput-charset=GBK
 
-INCLUDEPATH += "C:\Program Files\OpenSSL-Win64\include"
+INCLUDEPATH += "D:\Program Files\OpenSSL-Win64\include"
 
-LIBS    += "C:\Program Files\OpenSSL-Win64\lib\libssl.lib" \
-           "C:\Program Files\OpenSSL-Win64\lib\libcrypto.lib"
+LIBS    += "D:\Program Files\OpenSSL-Win64\lib\libssl.lib" \
+           "D:\Program Files\OpenSSL-Win64\lib\libcrypto.lib"
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -26,7 +26,8 @@ SOURCES += \
     mysocket.cpp \
     netdisk.cpp \
     signinwidget.cpp \
-    signupdialog.cpp
+    signupdialog.cpp \
+    transferlistdialog.cpp
 
 HEADERS += \
     file_function.h \
@@ -36,12 +37,14 @@ HEADERS += \
     mysocket.h \
     netdisk.h \
     signinwidget.h \
-    signupdialog.h
+    signupdialog.h \
+    transferlistdialog.h
 
 FORMS += \
     netdisk.ui \
     signinwidget.ui \
-    signupdialog.ui
+    signupdialog.ui \
+    transferlistdialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
