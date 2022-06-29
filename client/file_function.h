@@ -29,14 +29,11 @@ bool createDir(const QString &dir_path, const QString &dir_name);
 // 在某个路径下创建文件
 bool createFile(const QString &file_path);
 
-// 获取文件MD5值
-QString getFileMD5(QString file_name);
-
 // 获取文件大小
 int getFileSize(QString file_name);
 
 // 获取文件名
-QString getFileName(QString file_name);
+string getFileName(string path);
 
 // 向某个文件指定位置写入内容（-1：尾，0：头，其他：指定位置）
 bool writeFile(const QString &file_path, const QString &content, int pos = -1);

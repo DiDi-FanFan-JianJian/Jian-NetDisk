@@ -2,6 +2,7 @@
 #include "message.h"
 #include "global_msg.h"
 #include "md5.h"
+#include "file_function.h"
 
 #include <QDebug>
 #include <iostream>
@@ -9,6 +10,7 @@
 #include <errno.h>
 #include <string>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
@@ -149,82 +151,6 @@ int SJ::MySocket::sendUserInfo(int type, const std::string &user_name, const std
         return -1;
     }
     return 0;
-}
-
-// 发送文件
-void SJ::MySocket::sendFile(const std::string &file_name)
-{
-    // 读文件
-    FILE *fp = fopen(file_name.c_str(), "r");
-    int size = 0;
-    // 获取文件大小
-    fseek(fp, 0, SEEK_END);
-    size = ftell(fp);
-
-    int block_num = size / BLOCK_SIZE + (size % BLOCK_SIZE ? 1 : 0);
-    int cur_idx = 1;
-    string md5 = getFileMd5(file_name.c_str());
-    char buf_send[this->MAX_BUF_SIZE];
-    while (true) {
-        getchar();
-
-        cout << "cur_idx: " << cur_idx << endl;
-        cout << "block_num: " << block_num << endl;
-        cout << "md5: " << md5 << endl;
-        cout << endl;
-
-        UploadFileMessage msg;
-        strcpy(msg.md5, md5.c_str());
-        msg.file_size = size;
-        msg.block_num = block_num;
-        msg.block_id = cur_idx;
-
-        // 发送文件信息
-        buf_send[0] = MSG_UPLOAD_FILE;
-        memcpy(buf_send + 1, &msg, sizeof(msg));
-        send(client, buf_send, sizeof(msg) + 1, 0);
-
-        cout << "send1" << endl;
-
-        recv(client, buf_send, sizeof(buf_send), 0);
-        UploadFileResponse res(buf_send);
-
-        cout << "res.checked " << res.checked << endl;
-        cout << "res.block_id " << res.block_id << endl << endl;
-
-        // 不成功就再次发送
-        if (!res.checked) {
-          cur_idx = res.block_id;
-          continue;
-        }
-
-        // 读取文件内容
-        UploadBlockMessage block_msg;
-        memset(block_msg.block_data, 0, BLOCK_SIZE);
-        fseek(fp, (cur_idx - 1) * BLOCK_SIZE, SEEK_SET);
-        fread(block_msg.block_data, min(BLOCK_SIZE, size - (cur_idx - 1) * BLOCK_SIZE), 1, fp);
-        strcpy(block_msg.md5, md5.c_str());
-        block_msg.block_id = cur_idx;
-        block_msg.size = min(BLOCK_SIZE, size - (cur_idx - 1) * BLOCK_SIZE);
-
-        // 发送文件内容
-        memset(buf_send, 0, sizeof(buf_send));
-        buf_send[0] = MSG_UPLOAD_BLOCK;
-        memcpy(buf_send + 1, &block_msg, sizeof(block_msg));
-        send(client, buf_send, sizeof(block_msg) + 1, 0);
-
-        cout << "send2: " << min(BLOCK_SIZE, size - (cur_idx - 1) * BLOCK_SIZE) << endl;
-
-        // 更新当前块索引
-        recv(client, buf_send, sizeof(buf_send), 0);
-        UploadBlockResponse block_res(buf_send);
-        cout << "block_res.next_block_id " << block_res.next_block_id << endl << endl;
-
-        cur_idx = block_res.next_block_id;
-        if (cur_idx == -1) {
-          break;
-        }
-    }
 }
 
 // 获取当前目录下文件
@@ -448,4 +374,87 @@ bool SJ::MySocket::rename_file(int id, string newname)
     this->recvMsg();
     RenameFileResponse res(this->recv_buf);
     return res.status;
+}
+
+int SJ::MySocket::sendBlock(const std::string &filename)
+{
+    string md5 = getFileMd5(filename);
+    char buf[MAX_BUF_SIZE];
+    // 初始化文件信息，客户端重启
+    if (!g_msg.file_size.count(md5)) {
+        int size = g_msg.file_size[md5] = getFileSize(QString::fromStdString(filename));
+        g_msg.block_num[md5] = size / BLOCK_SIZE + (size % BLOCK_SIZE ? 1 : 0);
+        g_msg.cur_idx[md5] = 0;
+    }
+
+    // 协商获取要传输的块
+    int idx = g_msg.cur_idx[md5] + 1;
+    while (idx <= g_msg.block_num[md5]) {
+        UploadFileMessage msg;
+        strcpy(msg.md5, md5.c_str());
+        msg.file_size = g_msg.file_size[md5];
+        msg.block_num = g_msg.block_num[md5];
+        msg.block_id = idx;
+        
+        buf[0] = MSG_UPLOAD_FILE;
+        memcpy(buf + 1, &msg, sizeof(msg));
+        send(client, buf, sizeof(msg) + 1, 0);
+
+        this->recvMsg();
+        UploadFileResponse res(this->recv_buf);
+        if (res.checked)
+            break;
+        idx = res.block_id;
+    }
+
+    // 所有块已经传输完
+    if (idx > g_msg.block_num[md5]) {
+        return 1;
+    }
+
+    // 传输一个文件块
+    UploadBlockMessage msg;
+    FILE* fp = fopen(filename.c_str(), "rb");
+    int read_size = min(BLOCK_SIZE, g_msg.file_size[md5] - (idx - 1) * BLOCK_SIZE);
+    fseek(fp, (idx - 1) * BLOCK_SIZE, SEEK_SET);
+    fread(msg.block_data, 1, read_size, fp);
+    fclose(fp);
+    strcpy(msg.md5, md5.c_str());
+    msg.block_id = idx;
+    msg.size = read_size;
+    
+    buf[0] = MSG_UPLOAD_BLOCK;
+    memcpy(buf + 1, &msg, sizeof(msg));
+    send(client, buf, sizeof(msg) + 1, 0);
+    
+    this->recvMsg();
+    UploadBlockResponse res(this->recv_buf);
+    g_msg.cur_idx[md5] = res.next_block_id;
+    return 1;
+}
+
+void SJ::MySocket::init_file_task(const string path)
+{
+    // 初始化
+    this->sendBlock(path);
+
+    // 在server创建文件结构
+    CreateFileDirMessage msg;
+    strcpy(msg.username, g_msg.username.c_str());
+    msg.pid = g_msg.get_cur_id();
+    strcpy(msg.md5, getFileMd5(path).c_str());
+    strcpy(msg.filename, getFileName(path).c_str());
+
+    char buf[MAX_BUF_SIZE];
+    buf[0] = MSG_CREATE_FILE_DIR;
+    memcpy(buf + 1, &msg, sizeof(msg));
+    send(client, buf, sizeof(msg) + 1, 0);
+
+    this->recvMsg();
+    CreateFileDirResponse res(this->recv_buf);
+
+    // 队列
+    LoadFileInfo info;
+    info.file_path = path;
+    g_msg.upload_file_list.push_back(info);
 }

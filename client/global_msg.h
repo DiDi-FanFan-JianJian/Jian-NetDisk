@@ -7,6 +7,8 @@
 #include <fstream>
 #include <io.h>
 #include <direct.h>
+#include <map>
+#include <queue>
 
 #define PASTE_NOFILE 0
 #define PASTE_COPYFILE 1
@@ -37,6 +39,10 @@ struct Global_Msg {
 
     vector<LoadFileInfo> upload_file_list;
     vector<LoadFileInfo> download_file_list;
+
+    map<string, int> file_size; // 文件md5对应的字节数
+    map<string, int> block_num; // 文件md对应的总块数
+    map<string, int> cur_idx;   // 当前已传输的块数
 
     string get_path() {
         string p = "/";
@@ -74,30 +80,30 @@ struct Global_Msg {
         if (upload_file_list.size() != 0 || download_file_list.size() != 0) {
             return;
         }
-        // 添加四个测试文件
-        for (int i = 0; i < 4; i++) {
-            LoadFileInfo info;
-            info.filename = "test" + to_string(i);
-            info.did = i;
-            info.fid = i;
-            info.finished_size = 0;
-            info.file_size = i * i + 1;
-            info.file_path = "test" + to_string(i);
-            info.working = false;
-            upload_file_list.push_back(info);
-        }
-        // 添加四个测试文件
-        for (int i = 0; i < 4; i++) {
-            LoadFileInfo info;
-            info.filename = "test" + to_string(i);
-            info.did = i;
-            info.fid = i;
-            info.finished_size = 0;
-            info.file_size = i * i + 1;
-            info.file_path = "test" + to_string(i);
-            info.working = false;
-            download_file_list.push_back(info);
-        }
+//        // 添加四个测试文件
+//        for (int i = 0; i < 4; i++) {
+//            LoadFileInfo info;
+//            info.filename = "test" + to_string(i);
+//            info.did = i;
+//            info.fid = i;
+//            info.finished_size = 0;
+//            info.file_size = i * i + 1;
+//            info.file_path = "test" + to_string(i);
+//            info.working = false;
+//            upload_file_list.push_back(info);
+//        }
+//        // 添加四个测试文件
+//        for (int i = 0; i < 4; i++) {
+//            LoadFileInfo info;
+//            info.filename = "test" + to_string(i);
+//            info.did = i;
+//            info.fid = i;
+//            info.finished_size = 0;
+//            info.file_size = i * i + 1;
+//            info.file_path = "test" + to_string(i);
+//            info.working = false;
+//            download_file_list.push_back(info);
+//        }
     }
 
     // 将所有的LoadFileInfo的工作状态设置为false
