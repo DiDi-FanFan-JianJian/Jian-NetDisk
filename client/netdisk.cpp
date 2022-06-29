@@ -139,11 +139,11 @@ void NetDisk::on_paste_btn_clicked()
         }
         else if (g_msg.copyfile_status == PASTE_CUTFILE) {
             // 剪切文件
-
+            showMsg(QString::fromStdString("cut file: " + g_msg.copyfile_name + "  dir_id: ") + dir_id);
         }
         else {
             // 剪切文件夹
-
+            showMsg(QString::fromStdString("copy dir: " + g_msg.copyfile_name + "  dir_id: ") + dir_id);
         }
     }
 }
