@@ -101,15 +101,14 @@ void NetDisk::on_upload_dir_clicked() {
 
 void NetDisk::on_new_dir_clicked()
 {
-    cout << "???" << endl;
     // 弹框询问文件夹名称
     QString dir_name = QInputDialog::getText(this, QStringLiteral("新建文件夹"), QStringLiteral("请输入文件夹名称"));
     if (dir_name.isEmpty()) {
         showMsg(QStringLiteral("你自己关了，无事发生"));
     }
     else {
-        showMsg(dir_name);
-        this->sock->create_dir(dir_name.toStdString());
+        if (!this->sock->create_dir(dir_name.toStdString()))
+            showMsg("dir exist!");
         reloadFile();
         renderFileList(file_list, dir_list);
     }
