@@ -387,6 +387,22 @@ bool SJ::MySocket::copy_dir(int src)
     return res.status;
 }
 
+bool SJ::MySocket::copy_file(int pid, int fid, string filename)
+{
+    char buf[MAX_BUF_SIZE] = {0};
+    buf[0] = MSG_COPY_FILE;
+    CopyFileMessage msg;
+    strcpy(msg.username, g_msg.username.c_str());
+    msg.pid = pid;
+    msg.fid = fid;
+    strcpy(msg.filename, filename.c_str());
+    memcpy(buf + 1, &msg, sizeof(msg));
+    send(client, buf, sizeof(msg) + 1, 0);
+    this->recvMsg();
+    CopyFileResponse res(this->recv_buf);
+    return res.status;
+}
+
 bool SJ::MySocket::delete_dir(int id)
 {
     char buf[MAX_BUF_SIZE] = {0};

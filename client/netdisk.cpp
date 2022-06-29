@@ -125,25 +125,25 @@ void NetDisk::on_paste_btn_clicked()
         showMsg("请先复制文件");
         return;
     }
-    // 弹框询问粘贴的名称
-    bool ok;
-    QString new_name = QInputDialog::getText(this, QStringLiteral("粘贴"), QStringLiteral("请输入新名字, 不输入以原名为准"), QLineEdit::Normal, QString(""), &ok);
-    if (!ok) {
-        // 关闭或者取消
-        return;
-    }
-    // 粘贴之后的名字
-    string after_name = g_msg.copyfile_name;
-    if (!new_name.isEmpty()) {
-        // 输入了新的名字就更新g_msg中的文件名
-        after_name = new_name.toStdString();
-    }
+
+//    // 弹框询问粘贴的名称
+//    bool ok;
+//    QString new_name = QInputDialog::getText(this, QStringLiteral("粘贴"), QStringLiteral("请输入新名字, 不输入以原名为准"), QLineEdit::Normal, QString(""), &ok);
+//    if (!ok) {
+//        // 关闭或者取消
+//        return;
+//    }
+//    // 粘贴之后的名字
+//    string after_name = g_msg.copyfile_name;
+//    if (!new_name.isEmpty()) {
+//        // 输入了新的名字就更新g_msg中的文件名
+//        after_name = new_name.toStdString();
+//    }
 
     QString dir_id = QString(g_msg.copyfile_dir_id);
-    cout << g_msg.copyfile_dir_id << endl;
     if (g_msg.copyfile_status == PASTE_COPYFILE) {
         // 复制文件
-        showMsg(QString::fromStdString("copy file name: " + g_msg.copyfile_name + "  after_name: " + after_name));
+        this->sock->copy_file(g_msg.get_cur_id(), g_msg.copyfile_id, g_msg.copyfile_name);
     }
     else if (g_msg.copyfile_status == PASTE_COPYDIR) {
         // 复制文件夹
@@ -386,7 +386,7 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
         // 复制
         if (is_dir) {
             QString dir_name = dir_list.at(item_id);
-            showMsg("copy dir: " + dir_name);
+            // showMsg("copy dir: " + dir_name);
             g_msg.copyfile_name = dir_name.toStdString();
             g_msg.copyfile_id = this->sock->get_dir_id(g_msg.copyfile_name);
             g_msg.copyfile_dir_id = g_msg.get_cur_id();
@@ -395,7 +395,7 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
         }
         else {
             QString file_name = file_list.at(item_id);
-            showMsg("copy file: " + file_name);
+            // showMsg("copy file: " + file_name);
             g_msg.copyfile_name = file_name.toStdString();
             g_msg.copyfile_id = this->sock->get_file_id(g_msg.copyfile_name);
             g_msg.copyfile_dir_id = g_msg.get_cur_id();
@@ -406,7 +406,7 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
         // 剪切
         if (is_dir) {
             QString dir_name = dir_list.at(item_id);
-            showMsg("cut dir: " + dir_name);
+            // showMsg("cut dir: " + dir_name);
             g_msg.copyfile_name = dir_name.toStdString();
             g_msg.copyfile_id = this->sock->get_dir_id(g_msg.copyfile_name);
             g_msg.copyfile_dir_id = g_msg.get_cur_id();
@@ -414,7 +414,7 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
         }
         else {
             QString file_name = file_list.at(item_id);
-            showMsg("cut file: " + file_name);
+            // showMsg("cut file: " + file_name);
             g_msg.copyfile_name = file_name.toStdString();
             g_msg.copyfile_id = this->sock->get_file_id(g_msg.copyfile_name);
             g_msg.copyfile_dir_id = g_msg.get_cur_id();
