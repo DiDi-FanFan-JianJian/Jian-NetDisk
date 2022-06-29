@@ -3,6 +3,8 @@
 #include "mysocket.h"
 #include "global_msg.h"
 
+#include "transferlistdialog.h"
+
 #include <QApplication>
 #include <QTextCodec>
 
@@ -14,6 +16,7 @@ int main(int argc, char *argv[])
     // gbk
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("gbk"));
     SignInWidget w;
+//    TransferListDialog w;
     w.show();
     return a.exec();
 }

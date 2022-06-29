@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QStringList>
+#include <QCloseEvent>
 
 #include "mysocket.h"
 
@@ -17,6 +18,9 @@ class NetDisk : public QMainWindow
 public:
     NetDisk(QWidget *parent = nullptr);
     ~NetDisk();
+
+protected:
+     void closeEvent(QCloseEvent *event);
 
 private slots:
     void on_refresh_btn_clicked();
@@ -34,6 +38,8 @@ private slots:
     void on_file_list_cellDoubleClicked(int row, int column);
 
     void on_paste_btn_clicked();
+
+    void on_transfer_list_menu_triggered();
 
 private:
     SJ::MySocket* sock;

@@ -1,6 +1,7 @@
 #include "netdisk.h"
 #include "ui_netdisk.h"
 #include "mysocket.h"
+#include "transferlistdialog.h"
 
 #include <QDebug>
 #include <QIcon>
@@ -37,6 +38,7 @@ NetDisk::NetDisk(QWidget *parent)
     , ui(new Ui::NetDisk)
 {
     this->sock = new SJ::MySocket("1.15.144.212", 8000);
+    g_msg.read_file_list();
     ui->setupUi(this);
     path = "root/";
     ui->now_path->setText(path);
@@ -46,6 +48,19 @@ NetDisk::NetDisk(QWidget *parent)
 NetDisk::~NetDisk()
 {
     delete ui;
+}
+
+void NetDisk::closeEvent(QCloseEvent *event)
+{
+    QMessageBox::StandardButton button;
+    button=QMessageBox::question(this,tr("退出程序"),QString(tr("确认退出程序")),QMessageBox::Yes|QMessageBox::No);
+    if(button==QMessageBox::No) {
+        event->ignore(); // 忽略退出信号，程序继续进行
+    }
+    else if(button==QMessageBox::Yes) {
+        event->accept(); // 接受退出信号，程序退出
+    }
+    g_msg.write_file_list();
 }
 
 void NetDisk::on_refresh_btn_clicked() {
@@ -437,3 +452,13 @@ void NetDisk::on_file_list_cellDoubleClicked(int row, int column)
         on_refresh_btn_clicked();
     }
 }
+
+void NetDisk::on_transfer_list_menu_triggered()
+{
+    g_msg.test_info();
+    TransferListDialog transfer_dialog;
+    this->hide();
+    transfer_dialog.exec();
+    this->show();
+}
+
