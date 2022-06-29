@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>970</width>
+    <height>652</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,44 +17,15 @@
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>20</x>
       <y>40</y>
-      <width>791</width>
-      <height>501</height>
+      <width>941</width>
+      <height>531</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QPushButton" name="copy_file_btn">
-         <property name="text">
-          <string>复制文件</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="copy_dir_btn">
-         <property name="text">
-          <string>复制文件夹</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="move_dir_btn">
-         <property name="text">
-          <string>移动文件</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="move_file_btn">
-         <property name="text">
-          <string>移动文件夹</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <layout class="QHBoxLayout" name="horizontalLayout_3"/>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -94,6 +65,13 @@
          </property>
          <property name="text">
           <string>新建文件夹</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="paste_btn">
+         <property name="text">
+          <string>粘贴</string>
          </property>
         </widget>
        </item>
@@ -160,7 +138,7 @@
         <number>2</number>
        </property>
        <property name="columnCount">
-        <number>4</number>
+        <number>7</number>
        </property>
        <attribute name="horizontalHeaderVisible">
         <bool>true</bool>
@@ -193,6 +171,21 @@
        <column>
         <property name="text">
          <string>删除</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>重命名</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>复制</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>剪切</string>
         </property>
        </column>
        <item row="0" column="0">
@@ -243,7 +236,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>970</width>
      <height>26</height>
     </rect>
    </property>
@@ -251,8 +244,9 @@
     <property name="title">
      <string>功能</string>
     </property>
-    <addaction name="change_password"/>
-    <addaction name="log_out"/>
+    <addaction name="download_list_menu"/>
+    <addaction name="upload_list_menu"/>
+    <addaction name="logout_menu"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -264,19 +258,24 @@
    <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="change_password">
+  <action name="download_list_menu">
    <property name="text">
-    <string>修改密码</string>
+    <string>下载列表</string>
    </property>
   </action>
-  <action name="log_out">
+  <action name="upload_list_menu">
    <property name="text">
-    <string>退出登录</string>
+    <string>上传列表</string>
    </property>
   </action>
   <action name="about">
    <property name="text">
     <string>项目介绍</string>
+   </property>
+  </action>
+  <action name="logout_menu">
+   <property name="text">
+    <string>退出登录</string>
    </property>
   </action>
  </widget>

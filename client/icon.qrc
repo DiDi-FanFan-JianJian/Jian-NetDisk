@@ -9,5 +9,7 @@
         <file>img/delete.png</file>
         <file>img/download.jpg</file>
         <file>img/rename.png</file>
+        <file>img/copy.png</file>
+        <file>img/cut.png</file>
     </qresource>
 </RCC>
