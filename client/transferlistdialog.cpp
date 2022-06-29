@@ -28,6 +28,12 @@ TransferListDialog::~TransferListDialog()
     delete ui;
 }
 
+void TransferListDialog::closeEvent(QCloseEvent *event)
+{
+    this->hide();
+    event->ignore(); // 忽略退出信号，程序继续进行
+}
+
 void TransferListDialog::my_timer_timeout()
 {
     // 将所有文件的finished_size + 1

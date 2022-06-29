@@ -38,6 +38,10 @@ NetDisk::NetDisk(QWidget *parent)
     , ui(new Ui::NetDisk)
 {
     this->sock = new SJ::MySocket("1.15.144.212", 8000);
+    this->transfer_dialog = new TransferListDialog(this);
+    this->transfer_dialog->hide();
+    this->transfer_dialog->setWindowFlags(this->transfer_dialog->windowFlags() | Qt::Tool);
+
     g_msg.read_file_list();
     ui->setupUi(this);
     path = "root/";
@@ -47,18 +51,19 @@ NetDisk::NetDisk(QWidget *parent)
 
 NetDisk::~NetDisk()
 {
+    delete transfer_dialog;
     delete ui;
 }
 
 void NetDisk::closeEvent(QCloseEvent *event)
 {
     QMessageBox::StandardButton button;
-    button=QMessageBox::question(this,tr("退出程序"),QString(tr("确认退出程序")),QMessageBox::Yes|QMessageBox::No);
+    button=QMessageBox::question(this, QStringLiteral("退出程序"), QStringLiteral("确认退出程序"), QMessageBox::Yes|QMessageBox::No);
     if(button==QMessageBox::No) {
         event->ignore(); // 忽略退出信号，程序继续进行
     }
     else if(button==QMessageBox::Yes) {
-        g_msg.write_file_list();
+        g_msg.write_file_list(); // 写入文件列表
         event->accept(); // 接受退出信号，程序退出
     }
 }
@@ -79,12 +84,12 @@ void NetDisk::on_return_btn_clicked() {
     renderFileList(file_list, dir_list);
 }
 
-// 缺少文件路径分析
+// 缺少文件路径分析 + 重名判断
 void NetDisk::on_upload_file_clicked() {
     // 选择文件（限制只能选择文件）
-    QString file_path = QFileDialog::getOpenFileName(this, "选择文件", ".", "All files(*.*)");
+    QString file_path = QFileDialog::getOpenFileName(this, QStringLiteral("选择文件"), ".", "All files(*.*)");
     if (file_path.isEmpty()) {
-        showMsg("你自己关了，无事发生");
+        // 取消选择或者关闭窗口
         return;
     }
     else {
@@ -93,12 +98,13 @@ void NetDisk::on_upload_file_clicked() {
     }
 }
 
-// 缺少文件路径分析
+// 缺少文件路径分析 + 重名判断
 void NetDisk::on_upload_dir_clicked() {
     // 选择文件夹（限制只能选择文件夹）
-    QString dir_name = QFileDialog::getExistingDirectory(this, "选择文件夹", "D:/");
+    QString dir_name = QFileDialog::getExistingDirectory(this, QStringLiteral("选择文件夹"), "D:/");
     if (dir_name.isEmpty()) {
-        showMsg("你自己关了，无事发生");
+        // 取消选择或者关闭窗口
+        return;
     }
     else {
         showMsg(dir_name);
@@ -108,6 +114,7 @@ void NetDisk::on_upload_dir_clicked() {
     }
 }
 
+// 缺少重名判断
 void NetDisk::on_new_dir_clicked()
 {
     // 弹框询问文件夹名称
@@ -119,38 +126,40 @@ void NetDisk::on_new_dir_clicked()
         }
         else {
             showMsg(dir_name);
-            this->sock->create_dir(dir_name.toStdString());
+            // this->sock->create_dir(dir_name.toStdString());
             reloadFile();
             renderFileList(file_list, dir_list);
         }
     }
 }
 
-
+// 缺少重名判断
 void NetDisk::on_paste_btn_clicked()
 {
     // 判断有没有复制
     if (g_msg.copyfile_status == PASTE_NOFILE) {
-        showMsg("请先复制文件");
+        showMsg(QStringLiteral("请先复制文件"));
         return;
     }
 
     QString dir_id = QString(g_msg.copyfile_dir_id);
     if (g_msg.copyfile_status == PASTE_COPYFILE) {
         // 复制文件
-        this->sock->copy_file(g_msg.get_cur_id(), g_msg.copyfile_id, g_msg.copyfile_name);
+        // this->sock->copy_file(g_msg.get_cur_id(), g_msg.copyfile_id, g_msg.copyfile_name);
+        showMsg(dir_id);
     }
     else if (g_msg.copyfile_status == PASTE_COPYDIR) {
         // 复制文件夹
-        this->sock->copy_dir(g_msg.copyfile_id);
+        // this->sock->copy_dir(g_msg.copyfile_id);
+        showMsg(dir_id);
     }
     else if (g_msg.copyfile_status == PASTE_CUTFILE) {
         // 剪切文件
-        this->sock->move_file(g_msg.copyfile_id, g_msg.copyfile_dir_id);
+        // this->sock->move_file(g_msg.copyfile_id, g_msg.copyfile_dir_id);
     }
     else {
         // 剪切文件夹
-        this->sock->move_dir(g_msg.copyfile_id, g_msg.copyfile_dir_id);
+        // this->sock->move_dir(g_msg.copyfile_id, g_msg.copyfile_dir_id);
     }
     reloadFile();
     renderFileList(file_list, dir_list);
@@ -301,7 +310,7 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
     // 执行对应操作
     if (column == 2) {
         // 下载文件/文件夹
-        QString download_path = QFileDialog::getExistingDirectory(this, "选择文件夹", "C:/");
+        QString download_path = QFileDialog::getExistingDirectory(this, QStringLiteral("选择文件夹"), "C:/");
         if (download_path.isEmpty()) {
             // 取消或者关闭对话框
             return;
@@ -436,10 +445,6 @@ void NetDisk::on_file_list_cellDoubleClicked(int row, int column)
 void NetDisk::on_transfer_list_menu_triggered()
 {
     g_msg.test_info();
-    TransferListDialog* transfer_dialog = new TransferListDialog(this);
-    // this->hide();
-    transfer_dialog->setWindowFlags(transfer_dialog->windowFlags() | Qt::Tool);
-    transfer_dialog->show();
-    // this->show();
+    this->transfer_dialog->show();
 }
 

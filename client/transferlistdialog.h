@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QTimer>
+#include <QCloseEvent>
 
 namespace Ui {
 class TransferListDialog;
@@ -24,6 +25,9 @@ public:
 
 private slots:
     void my_timer_timeout();
+
+protected:
+     void closeEvent(QCloseEvent *event);
 
 private:
     Ui::TransferListDialog *ui;

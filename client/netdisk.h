@@ -6,6 +6,7 @@
 #include <QCloseEvent>
 
 #include "mysocket.h"
+#include "transferlistdialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class NetDisk; }
@@ -44,6 +45,7 @@ private slots:
 private:
     SJ::MySocket* sock;
     Ui::NetDisk *ui;
+    TransferListDialog *transfer_dialog;
     QStringList file_list, dir_list;
     QString download_file, upload_file;
     QString user, path;
