@@ -16,7 +16,7 @@
 
 using namespace std;
 
-#define BUFSIZE 4096
+#define BUFSIZE 1024 * 201
 #define SERV_PORT 8000
 #define OPEN_MAX 1024
 
@@ -133,7 +133,7 @@ int main()
             perror("epoll_ctl");
           close(sockfd);
           printf("client[%d] closed connection\n", j);
-        }
+        } 
         else
         { /*非空则处理客户端信息*/
           cout << "received from " << sockfd << ": " << (int)buf[0] << endl;
