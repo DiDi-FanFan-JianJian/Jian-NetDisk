@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <io.h>
+#include <direct.h>
 
 #define PASTE_NOFILE 0
 #define PASTE_COPYFILE 1
@@ -97,10 +99,10 @@ struct Global_Msg {
 
     // 将所有的LoadFileInfo的工作状态设置为false
     void set_all_file_working_false() {
-        for (auto it: upload_file_list) {
+        for (auto &&it: upload_file_list) {
             it.working = false;
         }
-        for (auto it: download_file_list) {
+        for (auto &&it: download_file_list) {
             it.working = false;
         }
     }
@@ -108,9 +110,16 @@ struct Global_Msg {
     void write_file_list() {
         // 写之前先将所有的工作状态设置为false
         set_all_file_working_false();
+
+        // c++判断文件夹C:\\netdisk\\username是否存在，不存在则递归创建
+        string prefix = "C:\\netdisk\\" + username;
+	    if (_access(prefix.c_str(), 0) == -1) {
+            _mkdir(prefix.c_str());
+        }
+        
         // 写入C:\netdisk\username\upload_file_list.txt
         ofstream ofs("C:\\netdisk\\" + username + "\\upload_file_list.txt");
-        for (auto it: upload_file_list) {
+        for (auto &&it: upload_file_list) {
             ofs << it.filename << " " << it.did << " " << it.fid << " " << it.finished_size << " " << it.file_size << " " << it.file_path << " " << it.working << endl;
         }
         ofs.close();

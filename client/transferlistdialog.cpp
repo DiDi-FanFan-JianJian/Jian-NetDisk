@@ -31,10 +31,10 @@ TransferListDialog::~TransferListDialog()
 void TransferListDialog::my_timer_timeout()
 {
     // 将所有文件的finished_size + 1
-    for (auto it: g_msg.upload_file_list) {
+    for (auto &&it: g_msg.upload_file_list) {
         it.finished_size++;
     }
-    for (auto it: g_msg.download_file_list) {
+    for (auto &&it: g_msg.download_file_list) {
         it.finished_size++;
     }
     // 渲染文件列表
