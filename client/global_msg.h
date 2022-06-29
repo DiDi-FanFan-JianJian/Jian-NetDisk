@@ -28,6 +28,7 @@ struct Global_Msg {
 
     int copyfile_dir_id;  // 复制(剪切) 的 文件(文件夹) 的目录id
     string copyfile_name; // 复制(剪切) 的 文件(文件夹) 原名
+    int copyfile_id;
     int copyfile_status;  // PASTE_NOFILE   PASTE_COPYFILE    PASTE_CUTFILE   PASTE_COPYDIR   PASTE_CUTDIR
 
 

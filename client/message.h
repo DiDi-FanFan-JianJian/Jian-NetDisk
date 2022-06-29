@@ -26,6 +26,8 @@ constexpr int MSG_GET_FILE_INFO = 15;
 constexpr int MSG_DOWNLOAD_BLOCK = 16;
 constexpr int MSG_COPY_FILE = 17;
 constexpr int MSG_COPY_DIR = 18;
+constexpr int MSG_RENAME_FILE = 19;
+constexpr int MSG_RENAME_DIR = 20;
 
 // 注册 登录
 struct LoginMessage
@@ -63,7 +65,7 @@ struct UploadFileMessage
   UploadFileMessage(const char* msg) {
     memcpy(this, msg, sizeof(UploadFileMessage));
   }
-  char md5[33];
+  char md5[33];  
   int file_size; // 字节数
   int block_num; // 前端计算总块数
   int block_id;  // 从0开始编号
@@ -226,6 +228,7 @@ struct DeleteDirMessage
     memcpy(this, msg, sizeof(DeleteDirMessage));
   }
   int id; // 目录编号
+  int did; // 删除文件时的目录编号
 };
 
 typedef LoginResponse DeleteDirResponse;
@@ -287,3 +290,20 @@ struct CopyDirMessage
 };
 
 typedef LoginResponse CopyDirResponse;
+
+// 改名
+struct RenameDirMessage
+{
+  RenameDirMessage() {}
+  RenameDirMessage(const char* msg) {
+    memcpy(this, msg, sizeof(RenameDirMessage));
+  }
+  int id; // 目录编号
+  int did; // 修改文件时的目录编号
+  char newname[NAME_SIZE]; // 新名称
+};
+
+typedef LoginResponse RenameDirResponse;
+
+typedef RenameDirMessage RenameFileMessage;
+typedef RenameDirResponse RenameFileResponse;

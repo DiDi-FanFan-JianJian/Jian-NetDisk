@@ -52,12 +52,15 @@ namespace SJ
         bool createFileDir(const string& filename, int fid, int dir);
 
         // 其他（移动、复制、重命名、删除）
-        bool copy_file();
-        bool copy_dir();
+        bool copy_file(int pid, int fid, string filename);
+        bool copy_dir(int src);
         bool move_file(int id, int src);
         bool move_dir(int id, int src);
-        bool delete_file();
-        bool delete_dir();
+        bool delete_file(int id, int did);
+        bool delete_dir(int id);
+        bool rename_file(int id, string filename);
+        bool rename_dir(int id, string filename);
+
         int recvMsg();
 
     private:
