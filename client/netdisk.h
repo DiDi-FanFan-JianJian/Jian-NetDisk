@@ -33,13 +33,7 @@ private slots:
 
     void on_file_list_cellDoubleClicked(int row, int column);
 
-    void on_copy_dir_btn_clicked();
-
-    void on_move_file_btn_clicked();
-
-    void on_copy_file_btn_clicked();
-
-    void on_move_dir_btn_clicked();
+    void on_paste_btn_clicked();
 
 private:
     SJ::MySocket* sock;

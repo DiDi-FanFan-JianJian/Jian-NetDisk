@@ -311,3 +311,64 @@ bool SJ::MySocket::cd_dir(string dirname)
     g_msg.cur_dir.push_back(res.dir);
     return res.status;
 }
+
+int SJ::MySocket::get_dir_id(string dirname)
+{
+    char buf[MAX_BUF_SIZE] = {0};
+    buf[0] = MSG_GET_DIR_ID;
+    GetDirIDMessage msg;
+    strcpy(msg.username, g_msg.username.c_str());
+    strcpy(msg.dirname, dirname.c_str());
+    msg.pid = g_msg.get_cur_id();
+    memcpy(buf + 1, &msg, sizeof(msg));
+    send(client, buf, sizeof(msg), 0);
+    this->recvMsg();
+    GetDirIDResponse res(this->recv_buf);
+    return res.dir;
+}
+
+int SJ::MySocket::get_file_id(string filename)
+{
+    char buf[MAX_BUF_SIZE] = {0};
+    buf[0] = MSG_GET_FILE_ID;
+    GetFileIDMessage msg;
+    strcpy(msg.username, g_msg.username.c_str());
+    strcpy(msg.filename, filename.c_str());
+    msg.pid = g_msg.get_cur_id();
+    memcpy(buf + 1, &msg, sizeof(msg));
+    send(client, buf, sizeof(msg), 0);
+    this->recvMsg();
+    GetFileIDResponse res(this->recv_buf);
+    return res.dir;
+}
+
+bool SJ::MySocket::move_dir(int id, int src)
+{
+    char buf[MAX_BUF_SIZE] = {0};
+    buf[0] = MSG_MOVE_DIR;
+    MoveDirMessage msg;
+    msg.id = id;
+    msg.src = src;
+    msg.dst = g_msg.get_cur_id();
+    memcpy(buf + 1, &msg, sizeof(msg));
+    send(client, buf, sizeof(msg), 0);
+    this->recvMsg();
+    MoveDirResponse res(this->recv_buf);
+    return res.status;
+}
+
+bool SJ::MySocket::move_file(int id, int src)
+{
+    char buf[MAX_BUF_SIZE] = {0};
+    buf[0] = MSG_MOVE_FILE;
+    MoveFileMessage msg;
+    msg.id = id;
+    msg.src = src;
+    msg.dst = g_msg.get_cur_id();
+    memcpy(buf + 1, &msg, sizeof(msg));
+    send(client, buf, sizeof(msg), 0);
+    this->recvMsg();
+    MoveFileResponse res(this->recv_buf);
+    return res.status;
+}
+

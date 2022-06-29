@@ -39,6 +39,8 @@ namespace SJ
         vector<string> get_cur_files();
         bool create_dir(string dirname);
         bool cd_dir(string dirname);
+        int get_dir_id(string dirname);
+        int get_file_id(string filename);
 
         // 文件传输（上传下载）
         int sendFileInfo(const std::string &file_name, const std::string &file_size);
@@ -47,10 +49,15 @@ namespace SJ
         void recvFile(const std::string &file_name);
         int sendBlock(const std::string &file_name, int block_id);
         int recvBlock(const std::string &file_name, int block_id);
+        bool createFileDir(const string& filename, int fid, int dir);
 
         // 其他（移动、复制、重命名、删除）
-        int sendMsg(const std::string &message);
-        int recvMsg(const std::string &message);
+        bool copy_file();
+        bool copy_dir();
+        bool move_file(int id, int src);
+        bool move_dir(int id, int src);
+        bool delete_file();
+        bool delete_dir();
         int recvMsg();
 
     private:

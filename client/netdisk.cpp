@@ -101,215 +101,70 @@ void NetDisk::on_upload_dir_clicked() {
 
 void NetDisk::on_new_dir_clicked()
 {
-    cout << "???" << endl;
     // 弹框询问文件夹名称
-    QString dir_name = QInputDialog::getText(this, QStringLiteral("新建文件夹"), QStringLiteral("请输入文件夹名称"));
-    if (dir_name.isEmpty()) {
-        showMsg(QStringLiteral("你自己关了，无事发生"));
-    }
-    else {
-        showMsg(dir_name);
-        this->sock->create_dir(dir_name.toStdString());
-        reloadFile();
-        renderFileList(file_list, dir_list);
-    }
-}
-
-// 以下同样缺少路径分析
-void NetDisk::on_copy_dir_btn_clicked()
-{
-    // 弹框询问文件夹名称、目标文件夹
-    QString src, dst;
-    QDialog *dialog = new QDialog(this);
-    dialog->setWindowTitle("复制文件夹");
-    QGridLayout *layout = new QGridLayout(dialog);
-    layout->setSpacing(10);
-    QLabel *label1 = new QLabel(dialog);
-    label1->setText("源文件夹：");
-    QLineEdit *lineEdit1 = new QLineEdit(dialog);
-    lineEdit1->setText("");
-    QLabel *label2 = new QLabel(dialog);
-    label2->setText("目标文件夹：");
-    QLineEdit *lineEdit2 = new QLineEdit(dialog);
-    lineEdit2->setText("");
-    QPushButton *btn = new QPushButton(dialog);
-    btn->setText("确定");
-    connect(btn, &QPushButton::clicked, [=]() { dialog->accept(); });
-
-    // 将QLabel、QLineEdit、QPushButton添加到QGridLayout中，并设置行数为0，列数为0，并设置行距为10，列距为10
-    layout->addWidget(label1, 0, 0);
-    layout->addWidget(lineEdit1, 0, 1);
-    layout->addWidget(label2, 1, 0);
-    layout->addWidget(lineEdit2, 1, 1);
-    layout->addWidget(btn, 2, 0, 1, 2);
-    dialog->setLayout(layout);
-    dialog->show();
-
-    // 当点击确定按钮时，获取文本内容，并显示到消息框中
-    if (dialog->exec() == QDialog::Accepted) {
-        src = lineEdit1->text();
-        dst = lineEdit2->text();
-        showMsg(src + "文件夹复制到" + dst);
-
-        if (dst == path) {
-
-            dir_list.append(src);
+    bool ok;
+    QString dir_name = QInputDialog::getText(this, QStringLiteral("新建文件夹"), QStringLiteral("请输入文件夹名称"), QLineEdit::Normal, QString(""), &ok);
+    if (ok) {
+        if (dir_name.isEmpty()) {
+            showMsg(QStringLiteral("输入不能为空"));
+        }
+        else {
+            showMsg(dir_name);
+            this->sock->create_dir(dir_name.toStdString());
+            reloadFile();
             renderFileList(file_list, dir_list);
         }
     }
-    else {
-        showMsg("你自己关了，无事发生");
-    }
 }
 
-void NetDisk::on_copy_file_btn_clicked()
+
+void NetDisk::on_paste_btn_clicked()
 {
-    // 弹框询问文件名称、目标文件夹
-    QString src, dst;
-    QDialog *dialog = new QDialog(this);
-    dialog->setWindowTitle("复制文件");
-    QGridLayout *layout = new QGridLayout(dialog);
-    layout->setSpacing(10);
-    QLabel *label1 = new QLabel(dialog);
-    label1->setText("源文件：");
-    QLineEdit *lineEdit1 = new QLineEdit(dialog);
-    lineEdit1->setText("");
-    QLabel *label2 = new QLabel(dialog);
-    label2->setText("目标文件夹：");
-    QLineEdit *lineEdit2 = new QLineEdit(dialog);
-    lineEdit2->setText("");
-    QPushButton *btn = new QPushButton(dialog);
-    btn->setText("确定");
-    connect(btn, &QPushButton::clicked, [=]() { dialog->accept(); });
+    // 判断有没有复制
+    if (g_msg.copyfile_status == PASTE_NOFILE) {
+        showMsg("请先复制文件");
+        return;
+    }
+    // 弹框询问粘贴的名称
+    bool ok;
+    QString new_name = QInputDialog::getText(this, QStringLiteral("粘贴"), QStringLiteral("请输入新名字, 不输入以原名为准"), QLineEdit::Normal, QString(""), &ok);
+    if (!ok) {
+        // 关闭或者取消
+        return;
+    }
+    // 粘贴之后的名字
+    string after_name = g_msg.copyfile_name;
+    if (!new_name.isEmpty()) {
+        // 输入了新的名字就更新g_msg中的文件名
+        after_name = new_name.toStdString();
+    }
 
-    // 将QLabel、QLineEdit、QPushButton添加到QGridLayout中，并设置行数为0，列数为0，并设置行距为10，列距为10
-    layout->addWidget(label1, 0, 0);
-    layout->addWidget(lineEdit1, 0, 1);
-    layout->addWidget(label2, 1, 0);
-    layout->addWidget(lineEdit2, 1, 1);
-    layout->addWidget(btn, 2, 0, 1, 2);
-    dialog->setLayout(layout);
-    dialog->show();
-
-    // 当点击确定按钮时，获取文本内容，并显示到消息框中
-    if (dialog->exec() == QDialog::Accepted) {
-        src = lineEdit1->text();
-        dst = lineEdit2->text();
-        showMsg(src + "文件复制到" + dst);
-
-        if (dst == path) {
-
-            file_list.append(src);
-            renderFileList(file_list, dir_list);
-        }
+    QString dir_id = QString(g_msg.copyfile_dir_id);
+    cout << g_msg.copyfile_dir_id << endl;
+    if (g_msg.copyfile_status == PASTE_COPYFILE) {
+        // 复制文件
+        showMsg(QString::fromStdString("copy file name: " + g_msg.copyfile_name + "  after_name: " + after_name));
+    }
+    else if (g_msg.copyfile_status == PASTE_COPYDIR) {
+        // 复制文件夹
+        showMsg(QString::fromStdString("copy dir name: " + g_msg.copyfile_name + "  after_name: " + after_name));
+    }
+    else if (g_msg.copyfile_status == PASTE_CUTFILE) {
+        // 剪切文件
     }
     else {
-        showMsg("你自己关了，无事发生");
+        // 剪切文件夹
     }
+
 }
-
-void NetDisk::on_move_dir_btn_clicked()
-{
-    // 弹框询问文件夹名称、目标文件夹
-    QString src, dst;
-    QDialog *dialog = new QDialog(this);
-    dialog->setWindowTitle("移动文件夹");
-    QGridLayout *layout = new QGridLayout(dialog);
-    layout->setSpacing(10);
-    QLabel *label1 = new QLabel(dialog);
-    label1->setText("源文件夹：");
-    QLineEdit *lineEdit1 = new QLineEdit(dialog);
-    lineEdit1->setText("");
-    QLabel *label2 = new QLabel(dialog);
-    label2->setText("目标文件夹：");
-    QLineEdit *lineEdit2 = new QLineEdit(dialog);
-    lineEdit2->setText("");
-    QPushButton *btn = new QPushButton(dialog);
-    btn->setText("确定");
-    connect(btn, &QPushButton::clicked, [=]() { dialog->accept(); });
-
-    // 将QLabel、QLineEdit、QPushButton添加到QGridLayout中，并设置行数为0，列数为0，并设置行距为10，列距为10
-    layout->addWidget(label1, 0, 0);
-    layout->addWidget(lineEdit1, 0, 1);
-    layout->addWidget(label2, 1, 0);
-    layout->addWidget(lineEdit2, 1, 1);
-    layout->addWidget(btn, 2, 0, 1, 2);
-    dialog->setLayout(layout);
-    dialog->show();
-
-    // 当点击确定按钮时，获取文本内容，并显示到消息框中
-    if (dialog->exec() == QDialog::Accepted) {
-        src = lineEdit1->text();
-        dst = lineEdit2->text();
-        showMsg(src + "文件夹移动到" + dst);
-
-        // 是否需要更新文件列表
-        if (dst == path) {
-
-            dir_list.append(src);
-            renderFileList(file_list, dir_list);
-        }
-    }
-    else {
-        showMsg("你自己关了，无事发生");
-    }
-}
-
-void NetDisk::on_move_file_btn_clicked()
-{
-    // 弹框询问文件(文件夹)名称、目标文件夹
-    QString src, dst;
-    QDialog *dialog = new QDialog(this);
-    dialog->setWindowTitle("移动文件");
-    QGridLayout *layout = new QGridLayout(dialog);
-    layout->setSpacing(10);
-    QLabel *label1 = new QLabel(dialog);
-    label1->setText("源文件：");
-    QLineEdit *lineEdit1 = new QLineEdit(dialog);
-    lineEdit1->setText("");
-    QLabel *label2 = new QLabel(dialog);
-    label2->setText("目标文件夹：");
-    QLineEdit *lineEdit2 = new QLineEdit(dialog);
-    lineEdit2->setText("");
-    QPushButton *btn = new QPushButton(dialog);
-    btn->setText("确定");
-    connect(btn, &QPushButton::clicked, [=]() { dialog->accept(); });
-
-    // 将QLabel、QLineEdit、QPushButton添加到QGridLayout中，并设置行数为0，列数为0，并设置行距为10，列距为10
-    layout->addWidget(label1, 0, 0);
-    layout->addWidget(lineEdit1, 0, 1);
-    layout->addWidget(label2, 1, 0);
-    layout->addWidget(lineEdit2, 1, 1);
-    layout->addWidget(btn, 2, 0, 1, 2);
-    dialog->setLayout(layout);
-    dialog->show();
-
-    // 当点击确定按钮时，获取文本内容，并显示到消息框中
-    if (dialog->exec() == QDialog::Accepted) {
-        src = lineEdit1->text();
-        dst = lineEdit2->text();
-        showMsg(src + "文件移动到" + dst);
-
-        // 是否需要更新文件列表
-        if (dst == path) {
-
-            file_list.append(src);
-            renderFileList(file_list, dir_list);
-        }
-    }
-    else {
-        showMsg("你自己关了，无事发生");
-    }
-}
-
 
 // 渲染文件列表
 void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
     // 使用QTableWidget控件显示文件列表
     ui->file_list->clear();
-    ui->file_list->setColumnCount(5);
+    ui->file_list->setColumnCount(7);
     ui->file_list->setRowCount(file_list.size() + dir_list.size());
-    ui->file_list->setHorizontalHeaderLabels(QStringList() << "文件名" << "大小" << "下载" << "删除" << "重命名");
+    ui->file_list->setHorizontalHeaderLabels(QStringList() << "文件名" << "大小" << "下载" << "删除" << "重命名" << "复制" << "剪切");
     for (int i = 0; i < file_list.size(); i++) {
         // 文件名，给file_name设置icon，并且设置不可编辑
         QTableWidgetItem *file_name = new QTableWidgetItem(file_list.at(i));
@@ -321,8 +176,9 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
         QTableWidgetItem *file_size = new QTableWidgetItem("1.0KB");
         file_size->setFlags(Qt::ItemIsEnabled);
         ui->file_list->setItem(i, 1, file_size);
-        // 下载图案
+
         QPixmap *pixmap;
+        // 下载图案
         pixmap = new QPixmap(":img/download.png");
         QLabel *download_label = new QLabel();
         QPixmap download_img = pixmap->scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -346,6 +202,22 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
         rename_label->setAlignment(Qt::AlignHCenter);
         ui->file_list->setCellWidget(i, 4, rename_label);
         delete pixmap;
+        // 复制图案
+        pixmap = new QPixmap(":img/copy.png");
+        QLabel *copy_label = new QLabel();
+        QPixmap copy_img = pixmap->scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        copy_label->setPixmap(copy_img);
+        copy_label->setAlignment(Qt::AlignHCenter);
+        ui->file_list->setCellWidget(i, 5, copy_label);
+        delete pixmap;
+        // 剪切图案
+        pixmap = new QPixmap(":img/cut.png");
+        QLabel *cut_label = new QLabel();
+        QPixmap cut_img = pixmap->scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        cut_label->setPixmap(cut_img);
+        cut_label->setAlignment(Qt::AlignHCenter);
+        ui->file_list->setCellWidget(i, 6, cut_label);
+        delete pixmap;
     }
     for (int i = 0; i < dir_list.size(); i++) {
         // 文件名，给file_name设置icon
@@ -358,8 +230,8 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
         QTableWidgetItem *file_size = new QTableWidgetItem("文件夹");
         file_size->setFlags(Qt::ItemIsEnabled);
         ui->file_list->setItem(i + file_list.size(), 1, file_size);
-        // 下载图案
         QPixmap *pixmap;
+        // 下载图案
         pixmap = new QPixmap(":img/download.png");
         QLabel *download_label = new QLabel();
         QPixmap download_img = pixmap->scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -383,6 +255,22 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
         rename_label->setAlignment(Qt::AlignHCenter);
         ui->file_list->setCellWidget(i + file_list.size(), 4, rename_label);
         delete pixmap;
+        // 复制图案
+        pixmap = new QPixmap(":img/copy.png");
+        QLabel *copy_label = new QLabel();
+        QPixmap copy_img = pixmap->scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        copy_label->setPixmap(copy_img);
+        copy_label->setAlignment(Qt::AlignHCenter);
+        ui->file_list->setCellWidget(i + file_list.size(), 5, copy_label);
+        delete pixmap;
+        // 剪切图案
+        pixmap = new QPixmap(":img/cut.png");
+        QLabel *cut_label = new QLabel();
+        QPixmap cut_img = pixmap->scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        cut_label->setPixmap(cut_img);
+        cut_label->setAlignment(Qt::AlignHCenter);
+        ui->file_list->setCellWidget(i + file_list.size(), 6, cut_label);
+        delete pixmap;
     }
 }
 
@@ -396,105 +284,136 @@ void NetDisk::showMsg(QString msg) {
 // table中的按钮
 void NetDisk::on_file_list_cellClicked(int row, int column)
 {
-    if (column >= 2 ) {
-        int item_id, is_dir;
-        // 计算文件/文件夹的id
-        if (row < file_list.length()) {
-            item_id = row;
-            is_dir = 0;
+    if (column < 2 ) {
+        // 点击第一列、第二列无效果
+        return;
+    }
+
+    // 计算文件/文件夹的id
+    int item_id, is_dir;
+    if (row < file_list.length()) {
+        item_id = row;
+        is_dir = 0;
+    }
+    else {
+        item_id = row - file_list.length();
+        is_dir = 1;
+    }
+
+    // 执行对应操作
+    if (column == 2) {
+        // 下载文件/文件夹
+        QString download_path = QFileDialog::getExistingDirectory(this, "选择文件夹", "C:/");
+        if (download_path.isEmpty()) {
+            // 取消或者关闭对话框
+            return;
+        }
+
+        if (is_dir) {
+            QString dir_name = dir_list.at(item_id);
+            showMsg("下载文件夹" + dir_name + "到指定位置" + download_path);
         }
         else {
-            item_id = row - file_list.length();
-            is_dir = 1;
-        }
-
-        if (column == 2) {
-            // 下载文件/文件夹
-            if (is_dir) {
-                QString dir_name = dir_list.at(item_id);
-                QString download_path = QFileDialog::getExistingDirectory(this, "选择文件夹", "D:/");
-
-                if (download_path.isEmpty()) {
-                    showMsg("你自己关了，无事发生");
-                    return;
-                }
-                else {
-                    showMsg("下载文件夹" + dir_name + "到指定位置" + download_path);
-                }
-            }
-            else {
-                QString file_name = file_list.at(item_id);
-                QString download_path = QFileDialog::getExistingDirectory(this, "选择文件夹", "D:/");
-
-                if (download_path.isEmpty()) {
-                    showMsg("你自己关了，无事发生");
-                    return;
-                }
-                else {
-                    showMsg("下载文件" + file_name + "到指定位置" + download_path);
-                }
-            }
-        }
-        else if (column == 3) {
-            // 删除文件/文件夹
-            if (is_dir) {
-                QString dir_name = dir_list.at(item_id);
-                // 询问是否删除
-                QMessageBox msgbox;
-                msgbox.setText("是否删除文件夹" + dir_name);
-                msgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-                msgbox.setDefaultButton(QMessageBox::No);
-                int ret = msgbox.exec();
-                if (ret == QMessageBox::Yes) {
-                    // 删除文件夹
-                    showMsg("删除文件夹" + dir_name);
-
-                    ui->file_list->removeRow(row);
-                    dir_list.removeAt(item_id);
-                }
-            }
-            else {
-                QString file_name = file_list.at(item_id);
-                // 询问是否删除
-                QMessageBox msgbox;
-                msgbox.setText("是否删除文件" + file_name);
-                msgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-                msgbox.setDefaultButton(QMessageBox::No);
-                int ret = msgbox.exec();
-                if (ret == QMessageBox::Yes) {
-                    // 删除文件
-                    showMsg("删除文件" + file_name);
-
-                    ui->file_list->removeRow(row);
-                    file_list.removeAt(item_id);
-                }
-            }
-        }
-        else if (column == 4) {
-            // 重命名
             QString file_name = file_list.at(item_id);
-            // 询问修改后的文件名
-            QString new_name = QInputDialog::getText(this, "重命名", "请输入新的文件名");
-            if (new_name.isEmpty()) {
-                showMsg("你自己关了，无事发生");
-                return;
+            showMsg("下载文件" + file_name + "到指定位置" + download_path);
+        }
+    }
+    else if (column == 3) {
+        // 删除文件/文件夹
+        if (is_dir) {
+            QString dir_name = dir_list.at(item_id);
+            // 询问是否删除
+            QMessageBox msgbox;
+            msgbox.setText("是否删除文件夹" + dir_name);
+            msgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgbox.setDefaultButton(QMessageBox::No);
+            int ret = msgbox.exec();
+            if (ret == QMessageBox::Yes) {
+                // 删除文件夹
+                showMsg("删除文件夹" + dir_name);
+
+                ui->file_list->removeRow(row);
+                dir_list.removeAt(item_id);
             }
-            else {
-                if (is_dir) {
-                    showMsg("重命名文件夹" + file_name + "为" + new_name);
+        }
+        else {
+            QString file_name = file_list.at(item_id);
+            // 询问是否删除
+            QMessageBox msgbox;
+            msgbox.setText("是否删除文件" + file_name);
+            msgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgbox.setDefaultButton(QMessageBox::No);
+            int ret = msgbox.exec();
+            if (ret == QMessageBox::Yes) {
+                // 删除文件
+                showMsg("删除文件" + file_name);
 
-                    ui->file_list->item(row, 0)->setText(new_name);
-                    dir_list.replace(item_id, new_name);
-                }
-                else {
-                    showMsg("重命名文件" + file_name + "为" + new_name);
-
-                    ui->file_list->item(row, 0)->setText(new_name);
-                    file_list.replace(item_id, new_name);
-                }
+                ui->file_list->removeRow(row);
+                file_list.removeAt(item_id);
             }
+        }
+    }
+    else if (column == 4) {
+        // 重命名
+        bool ok;
+        QString new_name = QInputDialog::getText(this, "重命名", "请输入新的文件名", QLineEdit::Normal, QString(""), &ok);
+        if (!ok) {
+            // 点击取消或者直接关闭
+            return;
+        }
+        if (new_name.isEmpty()) {
+            showMsg(QStringLiteral("输入不能为空"));
+            return;
+        }
 
+        if (is_dir) {
+            QString dir_name = dir_list.at(item_id);
+            showMsg("重命名文件夹" + dir_name + "为" + new_name);
 
+            ui->file_list->item(row, 0)->setText(new_name);
+            dir_list.replace(item_id, new_name);
+        }
+        else {
+            QString file_name = file_list.at(item_id);
+            showMsg("重命名文件" + file_name + "为" + new_name);
+
+            ui->file_list->item(row, 0)->setText(new_name);
+            file_list.replace(item_id, new_name);
+        }
+    }
+    else if (column == 5) {
+        // 复制
+        if (is_dir) {
+            QString dir_name = dir_list.at(item_id);
+            showMsg("copy dir: " + dir_name);
+            g_msg.copyfile_name = dir_name.toStdString();
+            g_msg.copyfile_dir_id = g_msg.get_cur_id();
+            g_msg.copyfile_status = PASTE_COPYDIR;
+            cout << g_msg.copyfile_dir_id;
+        }
+        else {
+            QString file_name = file_list.at(item_id);
+            showMsg("copy file: " + file_name);
+            g_msg.copyfile_name = file_name.toStdString();
+            g_msg.copyfile_dir_id = g_msg.get_cur_id();
+            g_msg.copyfile_status = PASTE_COPYFILE;
+        }
+    }
+    else if (column == 6) {
+        // 剪切
+        if (is_dir) {
+            QString dir_name = dir_list.at(item_id);
+            showMsg("cut dir: " + dir_name);
+            g_msg.copyfile_name = dir_name.toStdString();
+            g_msg.copyfile_dir_id = g_msg.get_cur_id();
+            g_msg.copyfile_status = PASTE_CUTDIR;
+        }
+        else {
+            QString file_name = file_list.at(item_id);
+            showMsg("cut file: " + file_name);
+            g_msg.copyfile_name = file_name.toStdString();
+            g_msg.copyfile_dir_id = g_msg.get_cur_id();
+            g_msg.copyfile_status = PASTE_CUTFILE;
         }
     }
 }
@@ -511,4 +430,3 @@ void NetDisk::on_file_list_cellDoubleClicked(int row, int column)
         on_refresh_btn_clicked();
     }
 }
-

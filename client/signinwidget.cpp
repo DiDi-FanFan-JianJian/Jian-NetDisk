@@ -36,7 +36,7 @@ void SignInWidget::on_sign_in_btn_clicked()
 {
     // 如果用户名和密码都不为空，则发送登录请求
     if (sign_in_account.isEmpty() || sign_in_password.isEmpty()) {
-        showMsg("请输入用户名和密码");
+        showMsg(QStringLiteral("请输入用户名和密码"));
         return;
     }
     // 发送登录请求，获取登录结果
@@ -56,10 +56,10 @@ void SignInWidget::on_sign_in_btn_clicked()
         client->show();
     }
     else if (res.status == LoginResponse::passwd_error) {
-        showMsg("密码错误!");
+        showMsg(QStringLiteral("密码错误!"));
     }
     else {
-        showMsg("用户不存在!");
+        showMsg(QStringLiteral("用户不存在!"));
     }
 }
 
