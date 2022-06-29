@@ -169,7 +169,10 @@ vector<string> SJ::MySocket::get_cur_dirs()
     this->recvMsg();
     GetDirsResponse res1(this->recv_buf);
     for (int i = 0; i < res1.num; ++i) {
-        ans.push_back(res1.dirname[i]);
+        // ans.push_back(res1.dirname[i]);
+        // 转utf-8
+        string utf = g_msg.GbkToUtf8(res1.dirname[i]);
+        ans.push_back(utf);
     }
 
     return ans;
@@ -190,7 +193,10 @@ vector<string> SJ::MySocket::get_cur_files()
     this->recvMsg();
     GetFilesResponse res2(this->recv_buf);
     for (int i = 0; i < res2.num; ++i) {
-        ans.push_back(res2.dirname[i]);
+        // ans.push_back(res2.dirname[i]);
+        // 转utf-8
+        string utf = g_msg.GbkToUtf8(res2.dirname[i]);
+        ans.push_back(utf);
     }
 
     return ans;
@@ -198,11 +204,13 @@ vector<string> SJ::MySocket::get_cur_files()
 
 bool SJ::MySocket::create_dir(string dirname)
 {
+    string gbk = g_msg.Utf8ToGbk(dirname.c_str());
+
     char buf[MAX_BUF_SIZE] = {0};
     buf[0] = MSG_CREATE_DIR;
     CreateDirMessage msg;
     strcpy(msg.username, g_msg.username.c_str());
-    strcpy(msg.dirname, dirname.c_str());
+    strcpy(msg.dirname, gbk.c_str());
     msg.pid = g_msg.get_cur_id();
     memcpy(buf + 1, &msg, sizeof(msg));
     send(client, buf, sizeof(msg) + 1, 0);
@@ -213,11 +221,13 @@ bool SJ::MySocket::create_dir(string dirname)
 
 bool SJ::MySocket::cd_dir(string dirname)
 {
+    string gbk = g_msg.Utf8ToGbk(dirname.c_str());
+
     char buf[MAX_BUF_SIZE] = {0};
     buf[0] = MSG_GET_DIR_ID;
     GetDirIDMessage msg;
     strcpy(msg.username, g_msg.username.c_str());
-    strcpy(msg.dirname, dirname.c_str());
+    strcpy(msg.dirname, gbk.c_str());
     msg.pid = g_msg.get_cur_id();
     memcpy(buf + 1, &msg, sizeof(msg));
     send(client, buf, sizeof(msg) + 1, 0);
@@ -231,11 +241,13 @@ bool SJ::MySocket::cd_dir(string dirname)
 
 int SJ::MySocket::get_dir_id(string dirname)
 {
+    string gbk = g_msg.Utf8ToGbk(dirname.c_str());
+
     char buf[MAX_BUF_SIZE] = {0};
     buf[0] = MSG_GET_DIR_ID;
     GetDirIDMessage msg;
     strcpy(msg.username, g_msg.username.c_str());
-    strcpy(msg.dirname, dirname.c_str());
+    strcpy(msg.dirname, gbk.c_str());
     msg.pid = g_msg.get_cur_id();
     memcpy(buf + 1, &msg, sizeof(msg));
     send(client, buf, sizeof(msg) + 1, 0);
@@ -246,11 +258,13 @@ int SJ::MySocket::get_dir_id(string dirname)
 
 int SJ::MySocket::get_file_id(string filename)
 {
+    string gbk = g_msg.Utf8ToGbk(filename.c_str());
+
     char buf[MAX_BUF_SIZE] = {0};
     buf[0] = MSG_GET_FILE_ID;
     GetFileIDMessage msg;
     strcpy(msg.username, g_msg.username.c_str());
-    strcpy(msg.filename, filename.c_str());
+    strcpy(msg.filename, gbk.c_str());
     msg.pid = g_msg.get_cur_id();
     memcpy(buf + 1, &msg, sizeof(msg));
     send(client, buf, sizeof(msg) + 1, 0);
@@ -306,13 +320,15 @@ bool SJ::MySocket::copy_dir(int src)
 
 bool SJ::MySocket::copy_file(int pid, int fid, string filename)
 {
+    string gbk = g_msg.Utf8ToGbk(filename.c_str());
+
     char buf[MAX_BUF_SIZE] = {0};
     buf[0] = MSG_COPY_FILE;
     CopyFileMessage msg;
     strcpy(msg.username, g_msg.username.c_str());
     msg.pid = pid;
     msg.fid = fid;
-    strcpy(msg.filename, filename.c_str());
+    strcpy(msg.filename, gbk.c_str());
     memcpy(buf + 1, &msg, sizeof(msg));
     send(client, buf, sizeof(msg) + 1, 0);
     this->recvMsg();
@@ -349,11 +365,13 @@ bool SJ::MySocket::delete_file(int id, int did)
 
 bool SJ::MySocket::rename_dir(int id, string newname)
 {
+    string gbk = g_msg.Utf8ToGbk(newname.c_str());
+
     char buf[MAX_BUF_SIZE] = {0};
     buf[0] = MSG_RENAME_DIR;
     RenameDirMessage msg;
     msg.id = id;
-    strcpy(msg.newname, newname.c_str());
+    strcpy(msg.newname, gbk.c_str());
     memcpy(buf + 1, &msg, sizeof(msg));
     send(client, buf, sizeof(msg) + 1, 0);
     this->recvMsg();
@@ -363,12 +381,14 @@ bool SJ::MySocket::rename_dir(int id, string newname)
 
 bool SJ::MySocket::rename_file(int id, string newname)
 {
+    string gbk = g_msg.Utf8ToGbk(newname.c_str());
+
     char buf[MAX_BUF_SIZE] = {0};
     buf[0] = MSG_RENAME_FILE;
     RenameFileMessage msg;
     msg.id = id;
     msg.did = g_msg.get_cur_id();
-    strcpy(msg.newname, newname.c_str());
+    strcpy(msg.newname, gbk.c_str());
     memcpy(buf + 1, &msg, sizeof(msg));
     send(client, buf, sizeof(msg) + 1, 0);
     this->recvMsg();
@@ -378,11 +398,11 @@ bool SJ::MySocket::rename_file(int id, string newname)
 
 int SJ::MySocket::sendBlock(const std::string &filename)
 {
-    string md5 = getFileMd5(filename);
+    string md5 = getFileMd5(filename); // 使用utf-8
     char buf[MAX_BUF_SIZE];
     // 初始化文件信息，客户端重启
     if (!g_msg.file_size.count(md5)) {
-        int size = g_msg.file_size[md5] = getFileSize(QString::fromStdString(filename));
+        int size = g_msg.file_size[md5] = getFileSize(QString::fromStdString(filename)); // 使用utf-8
         g_msg.block_num[md5] = size / BLOCK_SIZE + (size % BLOCK_SIZE ? 1 : 0);
         g_msg.cur_idx[md5] = 0;
     }
@@ -391,7 +411,7 @@ int SJ::MySocket::sendBlock(const std::string &filename)
     int idx = g_msg.cur_idx[md5] + 1;
     while (idx <= g_msg.block_num[md5]) {
         UploadFileMessage msg;
-        strcpy(msg.md5, md5.c_str());
+        strcpy(msg.md5, g_msg.Utf8ToGbk(md5.c_str()).c_str()); // 使用gbk传给数据库
         msg.file_size = g_msg.file_size[md5];
         msg.block_num = g_msg.block_num[md5];
         msg.block_id = idx;
@@ -414,12 +434,12 @@ int SJ::MySocket::sendBlock(const std::string &filename)
 
     // 传输一个文件块
     UploadBlockMessage msg;
-    FILE* fp = fopen(filename.c_str(), "rb");
+    FILE* fp = fopen(g_msg.Utf8ToGbk(filename.c_str()).c_str(), "rb"); // 使用gbk打开文件
     int read_size = min(BLOCK_SIZE, g_msg.file_size[md5] - (idx - 1) * BLOCK_SIZE);
     fseek(fp, (idx - 1) * BLOCK_SIZE, SEEK_SET);
     fread(msg.block_data, 1, read_size, fp);
     fclose(fp);
-    strcpy(msg.md5, md5.c_str());
+    strcpy(msg.md5, g_msg.Utf8ToGbk(md5.c_str()).c_str());
     msg.block_id = idx;
     msg.size = read_size;
     
@@ -436,14 +456,14 @@ int SJ::MySocket::sendBlock(const std::string &filename)
 void SJ::MySocket::init_file_task(const string path)
 {
     // 初始化
-    this->sendBlock(path);
+    this->sendBlock(path); // utf-8传入参数
 
     // 在server创建文件结构
     CreateFileDirMessage msg;
     strcpy(msg.username, g_msg.username.c_str());
     msg.pid = g_msg.get_cur_id();
-    strcpy(msg.md5, getFileMd5(path).c_str());
-    strcpy(msg.filename, getFileName(path).c_str());
+    strcpy(msg.md5, g_msg.Utf8ToGbk(getFileMd5(path).c_str()).c_str());
+    strcpy(msg.filename, g_msg.Utf8ToGbk(getFileName(path).c_str()).c_str());
 
     char buf[MAX_BUF_SIZE];
     buf[0] = MSG_CREATE_FILE_DIR;
@@ -455,7 +475,7 @@ void SJ::MySocket::init_file_task(const string path)
 
     // 队列
     LoadFileInfo info;
-    info.filename = getFileName(path);
+    info.filename = getFileName(path); // 都是utf-8
     info.did = info.fid = info.file_size = info.finished_size = info.working = 1;
     info.file_path = path;
     g_msg.upload_file_list.push_back(info);

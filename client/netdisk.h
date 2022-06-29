@@ -53,5 +53,11 @@ private:
     void showMsg(QString msg);
     void renderFileList(QStringList file_list, QStringList dir_list);
     void reloadFile();
+    // 检查当前路径是否存在相同名字
+    bool checkSameName(QString name);
+    // 检查当前目录是否是copy的文件夹的子目录
+    bool checkSubDir();
+    // 分析文件名
+    QString getFileName(QString file_path);
 };
 #endif // NETDISK_H

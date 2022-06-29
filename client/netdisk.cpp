@@ -84,7 +84,7 @@ void NetDisk::on_return_btn_clicked() {
     renderFileList(file_list, dir_list);
 }
 
-// 缺少文件路径分析 + 重名判断
+// 大文件（具体的函数中的编码有个地方不是很确定）
 void NetDisk::on_upload_file_clicked() {
     // 选择文件（限制只能选择文件）
     QString file_path = QFileDialog::getOpenFileName(this, QStringLiteral("选择文件"), ".", "All files(*.*)");
@@ -92,29 +92,45 @@ void NetDisk::on_upload_file_clicked() {
         // 取消选择或者关闭窗口
         return;
     }
+    else if (checkSameName(getFileName(file_path))) {
+        showMsg(QStringLiteral("文件名已存在"));
+        return;
+    }
     else {
         string path = file_path.toStdString();
+        // showMsg(QString::fromStdString(path));
         this->sock->init_file_task(path);
     }
 }
 
-// 缺少文件路径分析 + 重名判断
+// 还没实现具体函数
 void NetDisk::on_upload_dir_clicked() {
     // 选择文件夹（限制只能选择文件夹）
-    QString dir_name = QFileDialog::getExistingDirectory(this, QStringLiteral("选择文件夹"), "D:/");
-    if (dir_name.isEmpty()) {
+    QString dir_path = QFileDialog::getExistingDirectory(this, QStringLiteral("选择文件夹"), ".");
+    if (dir_path.isEmpty()) {
         // 取消选择或者关闭窗口
         return;
     }
     else {
-        showMsg(dir_name);
-
-        dir_list.append(dir_name);
-        renderFileList(file_list, dir_list);
+        QString dir_name = getFileName(dir_path);
+        if (dir_name.isEmpty()) {
+            // 应该是传了C盘的路径（C:/）
+            showMsg(QStringLiteral("？？？"));
+            return;
+        }
+        else if (checkSameName(dir_name)) {
+            showMsg(QStringLiteral("文件夹名已存在"));
+            return;
+        }
+        else {
+            // showMsg(dir_name);
+            dir_list.append(dir_name);
+            renderFileList(file_list, dir_list);
+        }
     }
 }
 
-// 缺少重名判断
+// 完成
 void NetDisk::on_new_dir_clicked()
 {
     // 弹框询问文件夹名称
@@ -124,16 +140,22 @@ void NetDisk::on_new_dir_clicked()
         if (dir_name.isEmpty()) {
             showMsg(QStringLiteral("输入不能为空"));
         }
+        else if (dir_name.contains("/") || dir_name.contains("\\")) {
+            showMsg(QStringLiteral("文件夹名称不能包含/或\\"));
+        }
+        else if (checkSameName(dir_name)) {
+            showMsg(QStringLiteral("文件名已存在"));
+        }
         else {
-            showMsg(dir_name);
-            // this->sock->create_dir(dir_name.toStdString());
+            showMsg(QStringLiteral("新建文件夹成功"));
+            this->sock->create_dir(dir_name.toStdString());
             reloadFile();
             renderFileList(file_list, dir_list);
         }
     }
 }
 
-// 缺少重名判断
+// 完成（后面可以考虑删除了复制/剪切的文件）
 void NetDisk::on_paste_btn_clicked()
 {
     // 判断有没有复制
@@ -141,37 +163,62 @@ void NetDisk::on_paste_btn_clicked()
         showMsg(QStringLiteral("请先复制文件"));
         return;
     }
+    // 判断有没有重名
+    if (checkSameName(QString::fromStdString(g_msg.copyfile_name))) {
+        showMsg(QStringLiteral("文件名已存在"));
+        return;
+    }
 
-    QString dir_id = QString(g_msg.copyfile_dir_id);
     if (g_msg.copyfile_status == PASTE_COPYFILE) {
         // 复制文件
-        // this->sock->copy_file(g_msg.get_cur_id(), g_msg.copyfile_id, g_msg.copyfile_name);
-        showMsg(dir_id);
+        this->sock->copy_file(g_msg.get_cur_id(), g_msg.copyfile_id, g_msg.copyfile_name);
     }
     else if (g_msg.copyfile_status == PASTE_COPYDIR) {
         // 复制文件夹
-        // this->sock->copy_dir(g_msg.copyfile_id);
-        showMsg(dir_id);
+        if (checkSubDir()) {
+            showMsg(QStringLiteral("不能复制到子文件夹"));
+            return;
+        }
+        else {
+            this->sock->copy_dir(g_msg.copyfile_id);
+        }
     }
     else if (g_msg.copyfile_status == PASTE_CUTFILE) {
         // 剪切文件
-        // this->sock->move_file(g_msg.copyfile_id, g_msg.copyfile_dir_id);
+        this->sock->move_file(g_msg.copyfile_id, g_msg.copyfile_dir_id);
     }
     else {
         // 剪切文件夹
-        // this->sock->move_dir(g_msg.copyfile_id, g_msg.copyfile_dir_id);
+        if (checkSubDir()) {
+            showMsg(QStringLiteral("不能剪切到子文件夹"));
+            return;
+        }
+        else {
+            this->sock->move_dir(g_msg.copyfile_id, g_msg.copyfile_dir_id);
+        }
     }
     reloadFile();
     renderFileList(file_list, dir_list);
 }
 
-// 渲染文件列表
+// 渲染文件列表（大小还没完成）
 void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
     // 使用QTableWidget控件显示文件列表
     ui->file_list->clear();
     ui->file_list->setColumnCount(7);
     ui->file_list->setRowCount(file_list.size() + dir_list.size());
-    ui->file_list->setHorizontalHeaderLabels(QStringList() << "文件名" << "大小" << "下载" << "删除" << "重命名" << "复制" << "剪切");
+    // 设置表头
+    QStringList header;
+    header.append(QStringLiteral("文件名"));
+    header.append(QStringLiteral("大小"));
+    header.append(QStringLiteral("下载"));
+    header.append(QStringLiteral("删除"));
+    header.append(QStringLiteral("重命名"));
+    header.append(QStringLiteral("复制"));
+    header.append(QStringLiteral("剪切"));
+    ui->file_list->setHorizontalHeaderLabels(header);
+
+    // 文件名和大小
     for (int i = 0; i < file_list.size(); i++) {
         // 文件名，给file_name设置icon，并且设置不可编辑
         QTableWidgetItem *file_name = new QTableWidgetItem(file_list.at(i));
@@ -183,7 +230,22 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
         QTableWidgetItem *file_size = new QTableWidgetItem("1.0KB");
         file_size->setFlags(Qt::ItemIsEnabled);
         ui->file_list->setItem(i, 1, file_size);
-
+    }
+    // 文件夹名
+    for (int i = 0; i < dir_list.size(); i++) {
+        // 文件名，给file_name设置icon
+        QTableWidgetItem *file_name = new QTableWidgetItem(dir_list.at(i));
+        QIcon icon(":img/dir_icon.jpg");
+        file_name->setIcon(icon);
+        file_name->setFlags(Qt::ItemIsEnabled);
+        ui->file_list->setItem(i + file_list.size(), 0, file_name);
+        // 文件大小
+        QTableWidgetItem *file_size = new QTableWidgetItem(QStringLiteral("文件夹"));
+        file_size->setFlags(Qt::ItemIsEnabled);
+        ui->file_list->setItem(i + file_list.size(), 1, file_size);
+    }
+    // 所有的图标
+    for (int i = 0; i < file_list.size() + dir_list.size(); i++) {
         QPixmap *pixmap;
         // 下载图案
         pixmap = new QPixmap(":img/download.png");
@@ -226,59 +288,6 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
         ui->file_list->setCellWidget(i, 6, cut_label);
         delete pixmap;
     }
-    for (int i = 0; i < dir_list.size(); i++) {
-        // 文件名，给file_name设置icon
-        QTableWidgetItem *file_name = new QTableWidgetItem(dir_list.at(i));
-        QIcon icon(":img/dir_icon.jpg");
-        file_name->setIcon(icon);
-        file_name->setFlags(Qt::ItemIsEnabled);
-        ui->file_list->setItem(i + file_list.size(), 0, file_name);
-        // 文件大小
-        QTableWidgetItem *file_size = new QTableWidgetItem("文件夹");
-        file_size->setFlags(Qt::ItemIsEnabled);
-        ui->file_list->setItem(i + file_list.size(), 1, file_size);
-        QPixmap *pixmap;
-        // 下载图案
-        pixmap = new QPixmap(":img/download.png");
-        QLabel *download_label = new QLabel();
-        QPixmap download_img = pixmap->scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        download_label->setPixmap(download_img);
-        download_label->setAlignment(Qt::AlignCenter);
-        ui->file_list->setCellWidget(i + file_list.size(), 2, download_label);
-        delete pixmap;
-        // 删除图案
-        pixmap = new QPixmap(":img/delete.png");
-        QLabel *delete_label = new QLabel();
-        QPixmap delete_img = pixmap->scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        delete_label->setPixmap(delete_img);
-        delete_label->setAlignment(Qt::AlignHCenter);
-        ui->file_list->setCellWidget(i + file_list.size(), 3, delete_label);
-        delete pixmap;
-        // 重命名图案
-        pixmap = new QPixmap(":img/rename.png");
-        QLabel *rename_label = new QLabel();
-        QPixmap rename_img = pixmap->scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        rename_label->setPixmap(rename_img);
-        rename_label->setAlignment(Qt::AlignHCenter);
-        ui->file_list->setCellWidget(i + file_list.size(), 4, rename_label);
-        delete pixmap;
-        // 复制图案
-        pixmap = new QPixmap(":img/copy.png");
-        QLabel *copy_label = new QLabel();
-        QPixmap copy_img = pixmap->scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        copy_label->setPixmap(copy_img);
-        copy_label->setAlignment(Qt::AlignHCenter);
-        ui->file_list->setCellWidget(i + file_list.size(), 5, copy_label);
-        delete pixmap;
-        // 剪切图案
-        pixmap = new QPixmap(":img/cut.png");
-        QLabel *cut_label = new QLabel();
-        QPixmap cut_img = pixmap->scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        cut_label->setPixmap(cut_img);
-        cut_label->setAlignment(Qt::AlignHCenter);
-        ui->file_list->setCellWidget(i + file_list.size(), 6, cut_label);
-        delete pixmap;
-    }
 }
 
 // 显示消息
@@ -289,6 +298,11 @@ void NetDisk::showMsg(QString msg) {
 }
 
 // table中的按钮
+// 下载：待完成
+// 删除：处理删除文件夹（？）   删除文件没有连接sock
+// 重命名：完成
+// 复制：完成
+// 剪切：完成
 void NetDisk::on_file_list_cellClicked(int row, int column)
 {
     if (column < 2 ) {
@@ -310,7 +324,7 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
     // 执行对应操作
     if (column == 2) {
         // 下载文件/文件夹
-        QString download_path = QFileDialog::getExistingDirectory(this, QStringLiteral("选择文件夹"), "C:/");
+        QString download_path = QFileDialog::getExistingDirectory(this, QStringLiteral("选择文件夹"), ".");
         if (download_path.isEmpty()) {
             // 取消或者关闭对话框
             return;
@@ -340,7 +354,6 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
                 showMsg("删除文件夹" + dir_name);
                 int id = this->sock->get_dir_id(dir_name.toStdString());
                 this->sock->delete_dir(id);
-                cout << dir_name.toStdString() << " " << id << endl;
             }
         }
         else {
@@ -363,7 +376,7 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
     else if (column == 4) {
         // 重命名
         bool ok;
-        QString new_name = QInputDialog::getText(this, "重命名", "请输入新的文件名", QLineEdit::Normal, QString(""), &ok);
+        QString new_name = QInputDialog::getText(this, QStringLiteral("重命名"), QStringLiteral("请输入新的文件名"), QLineEdit::Normal, QString(""), &ok);
         if (!ok) {
             // 点击取消或者直接关闭
             return;
@@ -372,16 +385,27 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
             showMsg(QStringLiteral("输入不能为空"));
             return;
         }
-
+        if (checkSameName(new_name)) {
+            showMsg(QStringLiteral("文件名已存在"));
+            return;
+        }
         if (is_dir) {
             QString dir_name = dir_list.at(item_id);
-            showMsg("重命名文件夹" + dir_name + "为" + new_name);
+            if (dir_name == new_name) {
+                showMsg(QStringLiteral("文件夹名不能与原名相同"));
+                return;
+            }
+            showMsg(QStringLiteral("修改文件夹名称成功"));
             int id = this->sock->get_dir_id(dir_name.toStdString());
             this->sock->rename_dir(id, new_name.toStdString());
         }
         else {
             QString file_name = file_list.at(item_id);
-            showMsg("重命名文件" + file_name + "为" + new_name);
+            if (file_name == new_name) {
+                showMsg(QStringLiteral("文件名不能与原名相同"));
+                return;
+            }
+            showMsg(QStringLiteral("修改文件名称成功"));
             int id = this->sock->get_file_id(file_name.toStdString());
             this->sock->rename_file(id, new_name.toStdString());
         }
@@ -395,7 +419,6 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
             g_msg.copyfile_id = this->sock->get_dir_id(g_msg.copyfile_name);
             g_msg.copyfile_dir_id = g_msg.get_cur_id();
             g_msg.copyfile_status = PASTE_COPYDIR;
-            cout << g_msg.copyfile_dir_id;
         }
         else {
             QString file_name = file_list.at(item_id);
@@ -429,7 +452,7 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
     renderFileList(file_list, dir_list);
 }
 
-// 双击进入文件夹
+// 双击进入文件夹：完成（编码处理通过）
 void NetDisk::on_file_list_cellDoubleClicked(int row, int column)
 {
     if (row >= file_list.length() && column < 2) {
@@ -444,7 +467,38 @@ void NetDisk::on_file_list_cellDoubleClicked(int row, int column)
 
 void NetDisk::on_transfer_list_menu_triggered()
 {
-    g_msg.test_info();
+    // g_msg.test_info();
     this->transfer_dialog->show();
 }
 
+bool NetDisk::checkSameName(QString name)
+{
+    for (int i = 0; i < file_list.length(); i++) {
+        if (file_list[i] == name) {
+            return true;
+        }
+    }
+    for (int i = 0; i < dir_list.length(); i++) {
+        if (dir_list[i] == name) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool NetDisk::checkSubDir()
+{
+    // 遍历cur_dir，其中如果有copyed_id，则说明是在子目录下，不能copy
+    for (unsigned i = 0; i < g_msg.cur_dir.size(); i++) {
+        if (g_msg.cur_dir[i] == g_msg.copyfile_id) {
+            return true;
+        }
+    }
+    return false;
+}
+
+QString NetDisk::getFileName(QString name)
+{
+    int i = name.lastIndexOf("/");
+    return name.mid(i + 1);
+}

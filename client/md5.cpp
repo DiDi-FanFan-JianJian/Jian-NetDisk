@@ -2,6 +2,7 @@
 
 string getFileMd5(string path)
 {
+    // path «utf-8±‡¬Î
     QString filePath = QString::fromStdString(path);
     QFile localFile(filePath);
 
