@@ -125,6 +125,7 @@ string router::handle_upload_file(const char* m)
   cout << "file_size: " << msg.file_size << endl;
   cout << "block_num: " << msg.block_num << endl;
   cout << "block_id: " << msg.block_id << endl;
+  cout << "cur_block: " << this->cur_block[msg.md5] << endl;
   cout << endl;
 
   // 判断文件是否存在
@@ -184,7 +185,7 @@ string router::handle_upload_block(const char* m)
   fseek(fp, write_pose, SEEK_SET);
   fwrite(msg.block_data, sizeof(char), msg.size, fp);
   UploadBlockResponse res;
-  res.next_block_id = (this->cur_block[msg.md5] >= this->tot_block[msg.md5]) ? -1 : this->cur_block[msg.md5] + 1;
+  res.next_block_id = this->cur_block[msg.md5] + 1;
   fclose(fp);
   return struct_to_string(res);
 }

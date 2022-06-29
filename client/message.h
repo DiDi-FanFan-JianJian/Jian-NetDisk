@@ -3,7 +3,7 @@
 #include <string>
 using namespace std;
 
-constexpr int BLOCK_SIZE = 5;
+constexpr int BLOCK_SIZE = 1024 * 16;
 constexpr int NAME_SIZE = 20;
 constexpr int FILE_NUM = 50; // 文件夹下文件最大数量
 
@@ -65,7 +65,7 @@ struct UploadFileMessage
   UploadFileMessage(const char* msg) {
     memcpy(this, msg, sizeof(UploadFileMessage));
   }
-  char md5[33];  
+  char md5[33];
   int file_size; // 字节数
   int block_num; // 前端计算总块数
   int block_id;  // 从0开始编号

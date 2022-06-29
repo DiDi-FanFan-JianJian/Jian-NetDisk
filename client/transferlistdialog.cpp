@@ -13,6 +13,7 @@ TransferListDialog::TransferListDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::TransferListDialog)
 {
+    this->sock = new SJ::MySocket("1.15.144.212", 8000);
     ui->setupUi(this);
     // 定时器，每隔一秒渲染一次文件列表
     my_timer = new QTimer(this);
@@ -37,11 +38,16 @@ void TransferListDialog::closeEvent(QCloseEvent *event)
 void TransferListDialog::my_timer_timeout()
 {
     // 将所有文件的finished_size + 1
-    for (auto &&it: g_msg.upload_file_list) {
-        it.finished_size++;
-    }
-    for (auto &&it: g_msg.download_file_list) {
-        it.finished_size++;
+    if (g_msg.upload_file_list.size()) {
+        auto& fir = g_msg.upload_file_list[0];
+        auto md5 = g_msg.file_md5[fir.file_path];
+        this->sock->sendBlock(fir.file_path);
+        if (g_msg.cur_idx[md5] > g_msg.block_num[md5]) {
+            g_msg.upload_file_list.erase(g_msg.upload_file_list.begin());
+        }
+        else {
+            fir.finished_size = min(g_msg.cur_idx[g_msg.file_md5[fir.file_path]], g_msg.block_num[md5]);
+        }
     }
     // 渲染文件列表
     renderFileList();

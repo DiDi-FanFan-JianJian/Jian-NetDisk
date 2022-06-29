@@ -5,6 +5,8 @@
 #include <QTimer>
 #include <QCloseEvent>
 
+#include "mysocket.h"
+
 namespace Ui {
 class TransferListDialog;
 }
@@ -30,6 +32,7 @@ protected:
      void closeEvent(QCloseEvent *event);
 
 private:
+    SJ::MySocket* sock;
     Ui::TransferListDialog *ui;
     // 定时器，每隔一秒渲染一次文件列表
     QTimer *my_timer;

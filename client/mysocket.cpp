@@ -402,13 +402,14 @@ int SJ::MySocket::sendBlock(const std::string &filename)
     char buf[MAX_BUF_SIZE];
     // 初始化文件信息，客户端重启
     if (!g_msg.file_size.count(md5)) {
+        g_msg.file_md5[filename] = md5;
         int size = g_msg.file_size[md5] = getFileSize(QString::fromStdString(filename)); // 使用utf-8
         g_msg.block_num[md5] = size / BLOCK_SIZE + (size % BLOCK_SIZE ? 1 : 0);
-        g_msg.cur_idx[md5] = 0;
+        g_msg.cur_idx[md5] = 1;
     }
 
     // 协商获取要传输的块
-    int idx = g_msg.cur_idx[md5] + 1;
+    int idx = g_msg.cur_idx[md5];
     while (idx <= g_msg.block_num[md5]) {
         UploadFileMessage msg;
         strcpy(msg.md5, g_msg.Utf8ToGbk(md5.c_str()).c_str()); // 使用gbk传给数据库
@@ -416,6 +417,7 @@ int SJ::MySocket::sendBlock(const std::string &filename)
         msg.block_num = g_msg.block_num[md5];
         msg.block_id = idx;
         
+        memset(buf, 0, sizeof(buf));
         buf[0] = MSG_UPLOAD_FILE;
         memcpy(buf + 1, &msg, sizeof(msg));
         send(client, buf, sizeof(msg) + 1, 0);
@@ -428,12 +430,14 @@ int SJ::MySocket::sendBlock(const std::string &filename)
     }
 
     // 所有块已经传输完
+    g_msg.cur_idx[md5] = idx;
     if (idx > g_msg.block_num[md5]) {
         return 1;
     }
 
     // 传输一个文件块
     UploadBlockMessage msg;
+    memset(msg.block_data, 0, sizeof(msg.block_data));
     FILE* fp = fopen(g_msg.Utf8ToGbk(filename.c_str()).c_str(), "rb"); // 使用gbk打开文件
     int read_size = min(BLOCK_SIZE, g_msg.file_size[md5] - (idx - 1) * BLOCK_SIZE);
     fseek(fp, (idx - 1) * BLOCK_SIZE, SEEK_SET);
@@ -442,9 +446,10 @@ int SJ::MySocket::sendBlock(const std::string &filename)
     strcpy(msg.md5, g_msg.Utf8ToGbk(md5.c_str()).c_str());
     msg.block_id = idx;
     msg.size = read_size;
-    
+
+    memset(buf, 0, sizeof(buf));
     buf[0] = MSG_UPLOAD_BLOCK;
-    memcpy(buf + 1, &msg, sizeof(msg));
+    memcpy(buf + 1, &msg, sizeof(msg) + 1);
     send(client, buf, sizeof(msg) + 1, 0);
     
     this->recvMsg();
@@ -465,7 +470,7 @@ void SJ::MySocket::init_file_task(const string path)
     strcpy(msg.md5, g_msg.Utf8ToGbk(getFileMd5(path).c_str()).c_str());
     strcpy(msg.filename, g_msg.Utf8ToGbk(getFileName(path).c_str()).c_str());
 
-    char buf[MAX_BUF_SIZE];
+    char buf[MAX_BUF_SIZE] = {0};
     buf[0] = MSG_CREATE_FILE_DIR;
     memcpy(buf + 1, &msg, sizeof(msg));
     send(client, buf, sizeof(msg) + 1, 0);
@@ -476,7 +481,9 @@ void SJ::MySocket::init_file_task(const string path)
     // 队列
     LoadFileInfo info;
     info.filename = getFileName(path); // 都是utf-8
-    info.did = info.fid = info.file_size = info.finished_size = info.working = 1;
+    info.did = info.fid = 1;
+    info.file_size = g_msg.block_num[g_msg.file_md5[path]];
+    info.finished_size = info.working = 1;
     info.file_path = path;
     g_msg.upload_file_list.push_back(info);
 }

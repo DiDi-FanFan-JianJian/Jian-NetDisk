@@ -14,7 +14,7 @@ namespace SJ
     class MySocket
     {
     public:
-        static const int MAX_BUF_SIZE = 1024 * 4;
+        static const int MAX_BUF_SIZE = 1024 * 200;
         char recv_buf[MAX_BUF_SIZE];
 
     public:

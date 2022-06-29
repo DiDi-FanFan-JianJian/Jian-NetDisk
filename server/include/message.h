@@ -3,7 +3,7 @@
 #include <string>
 using namespace std;
 
-constexpr int BLOCK_SIZE = 5;
+constexpr int BLOCK_SIZE = 1024 * 16;
 constexpr int NAME_SIZE = 20;
 constexpr int FILE_NUM = 50; // 文件夹下文件最大数量
 
