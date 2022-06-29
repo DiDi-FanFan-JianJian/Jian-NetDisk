@@ -141,20 +141,6 @@ void NetDisk::on_paste_btn_clicked()
         return;
     }
 
-//    // 弹框询问粘贴的名称
-//    bool ok;
-//    QString new_name = QInputDialog::getText(this, QStringLiteral("粘贴"), QStringLiteral("请输入新名字, 不输入以原名为准"), QLineEdit::Normal, QString(""), &ok);
-//    if (!ok) {
-//        // 关闭或者取消
-//        return;
-//    }
-//    // 粘贴之后的名字
-//    string after_name = g_msg.copyfile_name;
-//    if (!new_name.isEmpty()) {
-//        // 输入了新的名字就更新g_msg中的文件名
-//        after_name = new_name.toStdString();
-//    }
-
     QString dir_id = QString(g_msg.copyfile_dir_id);
     if (g_msg.copyfile_status == PASTE_COPYFILE) {
         // 复制文件

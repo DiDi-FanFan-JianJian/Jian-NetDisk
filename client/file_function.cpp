@@ -71,17 +71,6 @@ bool createFile(const QString &file_path)
     return false;
 }
 
-// 获取文件MD5值
-QString getFileMD5(QString file_name)
-{
-    std::string str_md5;
-    if (get_file_md5(file_name.toStdString(), str_md5) < 0)
-    {
-        return "";
-    }
-    return QString::fromStdString(str_md5);
-}
-
 // 获取文件大小
 int getFileSize(QString file_name)
 {
