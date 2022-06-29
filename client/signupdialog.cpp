@@ -14,7 +14,7 @@ SignUpDialog::SignUpDialog(QWidget *parent) :
 {
     this->sock = new SJ::MySocket("1.15.144.212", 8000);
     ui->setupUi(this);
-    // ç¦æ­¢ä½¿ç”¨ä¸­æ–‡
+    // ½ûÖ¹Ê¹ÓÃÖĞÎÄ
     ui->sign_up_account->setAttribute(Qt::WA_InputMethodEnabled, false);
 }
 
@@ -51,21 +51,21 @@ bool SignUpDialog::isWeak(const QString password)
         return true;
 
     int flag = 0;
-    // åŒ…å«å°å†™å­—æ¯
+    // °üº¬Ğ¡Ğ´×ÖÄ¸
     for (int i = 0; i < password.size(); ++i)
         if ((password[i] >= 'a') && (password[i] <= 'z'))
         {
             ++flag;
             break;
         }
-    // åŒ…å«å¤§å†™å­—æ¯
+    // °üº¬´óĞ´×ÖÄ¸
     for (int i = 0; i < password.size(); ++i)
         if ((password[i] >= 'A') && (password[i] <= 'Z'))
         {
             ++flag;
             break;
         }
-    // åŒ…å«æ•°å­—
+    // °üº¬Êı×Ö
     for (int i = 0; i < password.size(); ++i)
         if ((password[i] >= '0') && (password[i] <= '9'))
         {
@@ -80,30 +80,30 @@ bool SignUpDialog::isWeak(const QString password)
 void SignUpDialog::on_sign_up_btn_clicked()
 {
     if (sign_up_account.isEmpty() || sign_up_password1.isEmpty() || sign_up_password2.isEmpty()) {
-        showMsg("è¡¨å•å¡«å†™ä¸å®Œæ•´");
+        showMsg("±íµ¥ÌîĞ´²»ÍêÕû");
         return;
     }
     if (sign_up_password1 != sign_up_password2) {
-        showMsg("ä¸¤æ¬¡è¾“å…¥çš„å¯†ç ä¸ä¸€è‡´");
+        showMsg("Á½´ÎÊäÈëµÄÃÜÂë²»Ò»ÖÂ");
         return;
     }
     if (isWeak(sign_up_password1)) {
-        showMsg("å¯†ç å¼ºåº¦å¤ªå¼±ï¼ˆå¯†ç é•¿åº¦ä¸º8-16ä½ï¼Œå¿…é¡»åŒæ—¶åŒ…å«æ•°å­—/å°å†™å­—æ¯/å¤§å†™å­—æ¯ï¼‰");
+        showMsg("ÃÜÂëÇ¿¶ÈÌ«Èõ£¨ÃÜÂë³¤¶ÈÎª8-16Î»£¬±ØĞëÍ¬Ê±°üº¬Êı×Ö/Ğ¡Ğ´×ÖÄ¸/´óĞ´×ÖÄ¸£©");
         return;
     }
 
-    // åˆ¤æ–­socketæ˜¯å¦è¿æ¥ï¼Œæœªè¿æ¥åˆ™é‡æ–°è¿æ¥
+    // ÅĞ¶ÏsocketÊÇ·ñÁ¬½Ó£¬Î´Á¬½ÓÔòÖØĞÂÁ¬½Ó
     sock->sendUserInfo(MSG_TYPE_REGISTER, sign_up_account.toStdString(), sign_up_password1.toStdString());
     sock->recvMsg();
     auto res = LoginResponse(sock->recv_buf);
     if (res.status == LoginResponse::success) {
-        showMsg("æ³¨å†ŒæˆåŠŸ");
+        showMsg("×¢²á³É¹¦");
         this->accept();
     }
     else if (res.status == LoginResponse::user_exist) {
-        showMsg("è¯¥ç”¨æˆ·åå·²å­˜åœ¨!");
+        showMsg("¸ÃÓÃ»§ÃûÒÑ´æÔÚ!");
     }
     else {
-        showMsg("æ³¨å†Œå¤±è´¥");
+        showMsg("×¢²áÊ§°Ü");
     }
 }

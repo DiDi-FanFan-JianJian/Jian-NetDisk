@@ -1,14 +1,18 @@
 #include "mysocket.h"
 #include "message.h"
 #include "md5.h"
+#include "global_msg.h"
 
 #include <QDebug>
 #include <iostream>
 #include <fstream>
 #include <errno.h>
 #include <string>
+#include <vector>
 
 using namespace std;
+
+extern Global_Msg g_msg;
 
 SJ::MySocket::MySocket()
 {
@@ -230,4 +234,80 @@ void SJ::MySocket::sendFile(const std::string &file_name)
           break;
         }
     }
+}
+
+// 获取当前目录下文件
+vector<string> SJ::MySocket::get_cur_dirs()
+{
+    vector<string> ans;
+    char buf[MAX_BUF_SIZE] = {0};
+
+    // 获取所有目录
+    buf[0] = MSG_GET_DIRS;
+    GetDirsMessage msg1;
+    strcpy(msg1.username, g_msg.username.c_str());
+    msg1.pid = g_msg.get_cur_id();
+    memcpy(buf + 1, &msg1, sizeof(msg1));
+    send(client, buf, sizeof(msg1) + 1, 0);
+    this->recvMsg();
+    GetDirsResponse res1(this->recv_buf);
+    for (int i = 0; i < res1.num; ++i) {
+        ans.push_back(res1.dirname[i]);
+    }
+
+    return ans;
+}
+
+vector<string> SJ::MySocket::get_cur_files()
+{
+    vector<string> ans;
+    char buf[MAX_BUF_SIZE] = {0};
+
+    // 获取所有文件
+    buf[0] = MSG_GET_FILES;
+    GetFilesMessage msg2;
+    strcpy(msg2.username, g_msg.username.c_str());
+    msg2.pid = g_msg.get_cur_id();
+    memcpy(buf + 1, &msg2, sizeof(msg2));
+    send(client, buf, sizeof(msg2) + 1, 0);
+    this->recvMsg();
+    GetFilesResponse res2(this->recv_buf);
+    for (int i = 0; i < res2.num; ++i) {
+        ans.push_back(res2.dirname[i]);
+    }
+
+    return ans;
+}
+
+bool SJ::MySocket::create_dir(string dirname)
+{
+    char buf[MAX_BUF_SIZE] = {0};
+    buf[0] = MSG_CREATE_DIR;
+    CreateDirMessage msg;
+    strcpy(msg.username, g_msg.username.c_str());
+    strcpy(msg.dirname, dirname.c_str());
+    msg.pid = g_msg.get_cur_id();
+    memcpy(buf + 1, &msg, sizeof(msg));
+    send(client, buf, sizeof(msg) + 1, 0);
+    this->recvMsg();
+    CreateDirResponse res(this->recv_buf);
+    return res.status == CreateDirResponse::success;
+}
+
+bool SJ::MySocket::cd_dir(string dirname)
+{
+    char buf[MAX_BUF_SIZE] = {0};
+    buf[0] = MSG_GET_DIR_ID;
+    GetDirIDMessage msg;
+    strcpy(msg.username, g_msg.username.c_str());
+    strcpy(msg.dirname, dirname.c_str());
+    msg.pid = g_msg.get_cur_id();
+    memcpy(buf + 1, &msg, sizeof(msg));
+    send(client, buf, sizeof(msg), 0);
+    this->recvMsg();
+    GetDirIDResponse res(this->recv_buf);
+
+    g_msg.path.push_back(dirname);
+    g_msg.cur_dir.push_back(res.dir);
+    return res.status;
 }

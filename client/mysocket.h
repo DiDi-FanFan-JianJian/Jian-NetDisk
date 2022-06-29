@@ -4,6 +4,9 @@
 #include <ws2tcpip.h>
 #include <Winsock2.h>
 #include <string>
+#include <vector>
+
+using namespace std;
 
 namespace SJ
 {
@@ -30,6 +33,12 @@ namespace SJ
         int sendUserInfo(int type, const std::string &user_name, const std::string &user_password);
         int getSignin(std::string &user_name, std::string &user_password);
         int getSignUp(std::string &user_name, std::string &user_password);
+
+        // 目录
+        vector<string> get_cur_dirs();
+        vector<string> get_cur_files();
+        bool create_dir(string dirname);
+        bool cd_dir(string dirname);
 
         // 文件传输（上传下载）
         int sendFileInfo(const std::string &file_name, const std::string &file_size);

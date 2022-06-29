@@ -15,24 +15,20 @@
 extern Global_Msg g_msg;
 
 // 添加测试文件/文件夹
-void NetDisk::testFile()
+void NetDisk::reloadFile()
 {
-    file_list.append("test.txt");
-    file_list.append("test.jpg");
-    file_list.append("test.png");
-    file_list.append("test.mp3");
-    file_list.append("test.mp4");
-    file_list.append("test.avi");
-    file_list.append("test.doc");
-    file_list.append("test.docx");
-    file_list.append("test.xls");
-    file_list.append("test.xlsx");
-    dir_list.append("test");
-    dir_list.append("test2");
-    dir_list.append("test3");
+    dir_list.clear();
+    file_list.clear();
+    auto list1 = this->sock->get_cur_dirs();
+    for (auto it: list1) {
+        dir_list.append(QString::fromStdString(it));
+    }
+    auto list2 = this->sock->get_cur_files();
+    for (auto it: list2) {
+        file_list.append(QString::fromStdString(it));
+    }
     // 渲染文件列表
     renderFileList(file_list, dir_list);
-    cout << g_msg.username << " " << g_msg.cur_dir << endl;
 }
 
 
@@ -40,10 +36,11 @@ NetDisk::NetDisk(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::NetDisk)
 {
+    this->sock = new SJ::MySocket("1.15.144.212", 8000);
     ui->setupUi(this);
     path = "root/";
     ui->now_path->setText(path);
-    testFile();
+    reloadFile();
 }
 
 NetDisk::~NetDisk()
@@ -52,18 +49,18 @@ NetDisk::~NetDisk()
 }
 
 void NetDisk::on_refresh_btn_clicked() {
-    showMsg("刷新列表");
-
     // 渲染文件列表
     ui->now_path->setText(path);
+    reloadFile();
     renderFileList(file_list, dir_list);
 }
 
 void NetDisk::on_return_btn_clicked() {
-    showMsg("返回上一级");
-
+    g_msg.go_back();
+    path = QString::fromStdString(g_msg.get_path());
     // 渲染文件列表
     ui->now_path->setText(path);
+    reloadFile();
     renderFileList(file_list, dir_list);
 }
 
@@ -104,15 +101,16 @@ void NetDisk::on_upload_dir_clicked() {
 
 void NetDisk::on_new_dir_clicked()
 {
+    cout << "???" << endl;
     // 弹框询问文件夹名称
-    QString dir_name = QInputDialog::getText(this, "新建文件夹", "请输入文件夹名称");
+    QString dir_name = QInputDialog::getText(this, QStringLiteral("新建文件夹"), QStringLiteral("请输入文件夹名称"));
     if (dir_name.isEmpty()) {
-        showMsg("你自己关了，无事发生");
+        showMsg(QStringLiteral("你自己关了，无事发生"));
     }
     else {
         showMsg(dir_name);
-
-        dir_list.append(dir_name);
+        this->sock->create_dir(dir_name.toStdString());
+        reloadFile();
         renderFileList(file_list, dir_list);
     }
 }
@@ -507,9 +505,9 @@ void NetDisk::on_file_list_cellDoubleClicked(int row, int column)
     if (row >= file_list.length() && column < 2) {
         // 进入其中
         QString dir_name = dir_list.at(row - file_list.length());
-        showMsg("进入文件夹" + dir_name);
-
-        path += dir_name + "/";
+        this->sock->cd_dir(dir_name.toStdString());
+        reloadFile();
+        path = QString::fromStdString(g_msg.get_path());
         on_refresh_btn_clicked();
     }
 }

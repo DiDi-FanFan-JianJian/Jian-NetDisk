@@ -45,11 +45,11 @@ void SignInWidget::on_sign_in_btn_clicked()
     auto res = LoginResponse(sock->recv_buf);
     if (res.status == LoginResponse::success) {
         // 登录成功，到主页面
-        showMsg("登陆成功!");
+        showMsg(QStringLiteral("登录成功!"));
         // 记录全局信息
         g_msg.username = this->sign_in_account.toStdString();
         g_msg.path.push_back("root");
-        g_msg.cur_dir = res.dir;
+        g_msg.cur_dir.push_back(res.dir);
 
         NetDisk *client = new NetDisk();
         this->close();
