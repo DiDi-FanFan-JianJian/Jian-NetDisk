@@ -10,10 +10,10 @@ LIBS += -lws2_32
 QMAKE_CFLAGS += -fexec-charset=GBK -finput-charset=GBK
 QMAKE_CXXFLAGS += -fexec-charset=GBK -finput-charset=GBK
 
-#INCLUDEPATH += "C:\Program Files\OpenSSL-Win64\include"
+INCLUDEPATH += "C:\Program Files\OpenSSL-Win64\include"
 
-#LIBS    += "C:\Program Files\OpenSSL-Win64\lib\libssl.lib" \
-#           "C:\Program Files\OpenSSL-Win64\lib\libcrypto.lib"
+LIBS    += "C:\Program Files\OpenSSL-Win64\lib\libssl.lib" \
+           "C:\Program Files\OpenSSL-Win64\lib\libcrypto.lib"
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
