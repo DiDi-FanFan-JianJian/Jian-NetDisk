@@ -455,6 +455,8 @@ void SJ::MySocket::init_file_task(const string path)
 
     // ╤сап
     LoadFileInfo info;
+    info.filename = getFileName(path);
+    info.did = info.fid = info.file_size = info.finished_size = info.working = 1;
     info.file_path = path;
     g_msg.upload_file_list.push_back(info);
 }
