@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "mysocket.h"
+#include "global_msg.h"
 
 namespace Ui {
 class SignInWidget;
@@ -33,7 +34,7 @@ private:
     SJ::MySocket* sock;
     Ui::SignInWidget *ui;
 
-    // ç™»å½•çš„ç”¨æˆ·åã€å¯†ç 
+    // µÇÂ¼µÄÓÃ»§Ãû¡¢ÃÜÂë
     QString sign_in_account, sign_in_password;
 
     void showMsg(QString msg);

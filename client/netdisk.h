@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QStringList>
 
+#include "mysocket.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class NetDisk; }
 QT_END_NAMESPACE
@@ -40,6 +42,7 @@ private slots:
     void on_move_dir_btn_clicked();
 
 private:
+    SJ::MySocket* sock;
     Ui::NetDisk *ui;
     QStringList file_list, dir_list;
     QString download_file, upload_file;
@@ -47,6 +50,6 @@ private:
 
     void showMsg(QString msg);
     void renderFileList(QStringList file_list, QStringList dir_list);
-    void testFile();
+    void reloadFile();
 };
 #endif // NETDISK_H

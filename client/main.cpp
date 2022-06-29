@@ -1,17 +1,19 @@
 #include "signinwidget.h"
 #include "netdisk.h"
 #include "mysocket.h"
+#include "global_msg.h"
 
 #include <QApplication>
+#include <QTextCodec>
 
-SJ::MySocket sock("1.15.144.212", 8000);
+Global_Msg g_msg;
 
 int main(int argc, char *argv[])
 {
-
     QApplication a(argc, argv);
+    // gbk
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("gbk"));
     SignInWidget w;
-//    NetDisk w;
     w.show();
     return a.exec();
 }

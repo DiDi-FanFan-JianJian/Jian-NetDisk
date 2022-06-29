@@ -1,6 +1,6 @@
 <?php
 // 数据库信息
-$db_host = "1.15.144.212"; //主机
+$db_host = "localhost"; //主机
 $db_username = "root"; //数据库用户名
 $db_password = "root123"; //数据库密码
 $db_name = "netdisk";
@@ -234,7 +234,7 @@ function get_file_list($dir_id)
 // files        (id, size, md5, path（文件实际存储位置）, count);
 
 // dirs         (id, uid, pid, name（文件夹名字）, create_time, update_time);
-// file_dir    (id, fid, did, filename（文件名）, create_time, update_time);
+// file_dir    (id, fid, did, uid, filename（文件名）, create_time, update_time);
 
 
 // 操作函数
@@ -264,9 +264,9 @@ function insert_dir($id, $uid, $pid, $name)
     }
 }
 // 插入文件
-function insert_file($md5, $dir_id, $fname, $size, $addfile)
+function insert_file($uid, $md5, $dir_id, $fname, $size, $addfile)
 {
-    $savepath = "D:\\\\tem\\\\";
+    $savepath = "/home/netdisk/files/";
     global $mysql;
     if ($addfile != 'miao') {
         // 没有该文件，插入文件
@@ -276,7 +276,7 @@ function insert_file($md5, $dir_id, $fname, $size, $addfile)
 
         // 插入文件到文件夹中
         $tem_id = get_next_id('file_dir');
-        $sql = "insert into file_dir(id, fid, did, filename, create_time, update_time) values ('$tem_id', '$fid', '$dir_id', '$fname', now(), now())";
+        $sql = "insert into file_dir(uid, id, fid, did, filename, create_time, update_time) values ('$uid', '$tem_id', '$fid', '$dir_id', '$fname', now(), now())";
         $result = $mysql->query($sql);
         if ($result) {
             return true;
@@ -292,7 +292,7 @@ function insert_file($md5, $dir_id, $fname, $size, $addfile)
 
         // 插入文件到文件夹中
         $tem_id = get_next_id('file_dir');
-        $sql = "insert into file_dir(id, fid, did, filename, create_time, update_time) values ('$tem_id', '$fid', '$dir_id', '$fname', now(), now())";
+        $sql = "insert into file_dir(uid, id, fid, did, filename, create_time, update_time) values ('$uid', '$tem_id', '$fid', '$dir_id', '$fname', now(), now())";
         $result = $mysql->query($sql);
         if ($result) {
             return true;
@@ -305,7 +305,6 @@ function insert_file($md5, $dir_id, $fname, $size, $addfile)
 function rename_file($id, $new_name)
 {
     global $mysql;
-    // 计算更新时间
     $sql = "update file_dir set filename = '$new_name', update_time = now() where id = '$id'";
     $result = $mysql->query($sql);
     if ($result) {
@@ -348,10 +347,10 @@ function paste_file_by_clip($unique_id, $fname, $dir_id) {
     }
 }
 // 复制文件
-function paste_file_by_copy($fid, $fname, $dir_id) {
+function paste_file_by_copy($uid, $fid, $fname, $dir_id) {
     global $mysql;
     $tem_id = get_next_id('file_dir');
-    $sql = "insert into file_dir(id, fid, did, filename, create_time, update_time) values ('$tem_id', '$fid', '$dir_id', '$fname', now(), now())";
+    $sql = "insert into file_dir(uid, id, fid, did, filename, create_time, update_time) values ('$uid' ,'$tem_id', '$fid', '$dir_id', '$fname', now(), now())";
     $result = $mysql->query($sql);
     if ($result) {
         $sql = "update files set count = count + 1 where id = '$fid'";

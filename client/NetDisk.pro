@@ -6,6 +6,10 @@ CONFIG += c++17
 
 LIBS += -lws2_32
 
+# gbk±àÂë
+QMAKE_CFLAGS += -fexec-charset=GBK -finput-charset=GBK
+QMAKE_CXXFLAGS += -fexec-charset=GBK -finput-charset=GBK
+
 INCLUDEPATH += "C:\Program Files\OpenSSL-Win64\include"
 
 LIBS    += "C:\Program Files\OpenSSL-Win64\lib\libssl.lib" \
@@ -26,6 +30,7 @@ SOURCES += \
 
 HEADERS += \
     file_function.h \
+    global_msg.h \
     md5.h \
     message.h \
     mysocket.h \

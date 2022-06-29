@@ -16,11 +16,10 @@
     // 处理新建文件：在uid用户的upath下新建filename的文件
     function handle_new_file($fname, $md5, $addfile)
     {
-        $savepath = "D:\\tem\\";
+        $savepath = "/home/netdisk/files/";
         $dir_id = $_SESSION['dir_id'];
 
         if (($_FILES["file"]["error"] > 0 && $_FILES["file"]["error"] != 4) || (!$md5 && $_FILES["file"]["error"] > 0)) {
-            //echo '上传错误';
             switch ($_FILES["file"]["error"]) {
                 case 1:
                     echo "<script>alert('上传的文件超过了php.ini中upload_max_filesize选项限制的值');</script>";
@@ -49,15 +48,14 @@
                 // 处理文件信息
                 if ($addfile != "miao") {
                     if (!move_uploaded_file($_FILES["file"]["tmp_name"], $savepath . $md5)) {
-                        echo "<script>alert('文件上传失败！');</script>";
+                        echo "<script>alert('文件移动失败！');</script>";
                         return;
                     }
                 }
-
                 // 处理数据库信息
                 if ($addfile == "miao") {
                     // 秒传：文件大小不重要
-                    if (insert_file($md5, $dir_id, $fname, 0, $addfile)) {
+                    if (insert_file($_SESSION['uid'], $md5, $dir_id, $fname, 0, $addfile)) {
                         echo "<script>alert('文件秒传成功！');</script>";
                     } else {
                         echo "<script>alert('文件秒传失败！');</script>";
@@ -65,7 +63,7 @@
                 }
                 else {
                     // 不是秒传：需要文件大小
-                    if (insert_file($md5, $dir_id, $fname, $_FILES["file"]["size"], $addfile)) {
+                    if (insert_file($_SESSION['uid'], $md5, $dir_id, $fname, $_FILES["file"]["size"], $addfile)) {
                         echo "<script>alert('文件上传成功！');</script>";
                     } else {
                         echo "<script>alert('文件上传失败！');</script>";
@@ -78,7 +76,7 @@
     // 处理删除文件：在uid用户的upath下删除filename的文件
     function handle_delete_file($id)
     {
-        $savepath = "D:\\tem\\";
+        $savepath = "/home/netdisk/files/";
 
         $dir_id = $_SESSION['dir_id'];
         $fid = get_fid_by_unique_id($id);
@@ -94,6 +92,11 @@
                 // 删除文件
                 unlink($savepath . $md5);
                 $is_last = 1;
+                if ($fid == $_SESSION['copyed_id']) {
+                    $_SESSION['copyed_id'] = -1;
+                    $_SESSION['copyed_name'] = "";
+                    $_SESSION['is_clip'] = 0;
+                }
             }
             // 删除数据库信息
             if (delete_file($id, $fid, $is_last)) {
@@ -110,9 +113,6 @@
         $dir_name = $_POST['path'];
         $_SESSION['path'] = $dir_name;
         $_SESSION['dir_id'] = get_dir_id($_SESSION['uid'], $dir_name);
-        echo $_SESSION['dir_id'];
-        // 输出目录名
-        echo "<script>alert('目录名：$dir_name');</script>";
     }
     else if (isset($_POST['paste'])) { // 将copyed_id粘贴到当前path下（复制或者剪切）
         // 获取粘贴的文件id
@@ -134,7 +134,7 @@
                 }
             }
             else {
-                if (paste_file_by_copy($copyed_id, $copyed_name, $_SESSION['dir_id'])) {
+                if (paste_file_by_copy($_SESSION['uid'], $copyed_id, $copyed_name, $_SESSION['dir_id'])) {
                     echo "<script>alert('文件复制成功！');</script>";
                 } else {
                     echo "<script>alert('文件复制失败！');</script>";
@@ -199,8 +199,6 @@
     else if (isset($_POST['add_dir_name'])) { // 创建新目录
         // 获取目录名
         $dir_name = $_POST['add_dir_name'];
-        echo "<script>alert('创建目录：$dir_name');</script>";
-        // 判断当前目录是否存在该目录
         if (is_same_name($_SESSION['dir_id'], $dir_name)) {
             echo "<script>alert('目录名已存在！');</script>";
         }

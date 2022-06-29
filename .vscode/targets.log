@@ -8,7 +8,7 @@ make.exe all --print-data-base --no-builtin-variables --no-builtin-rules --quest
 # This program built for i686-pc-mingw32
  
 
-# Make data base, printed on Tue Jun 28 09:38:34 2022
+# Make data base, printed on Wed Jun 29 08:58:51 2022
 
 # Variables
 
@@ -67,9 +67,10 @@ NVM_SYMLINK = D:\mynvm
 # environment
 PROGRAMDATA = C:\ProgramData
 # environment
-VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-d43a83b9-dadf-466f-9e99-c78a72e76004-sock
+VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-793b9006-771c-4244-a2d7-74cbef028561-sock
 # environment
-VSCODE_CWD = D:\Microsoft VS Code
+VS 
+CODE_CWD = D:\Microsoft VS Code
 # environment
 PATH = C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\libnvvp;D:\VMware\bin\;C:\ProgramData\Oracle\Java\javapath;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files\Python38\Scripts\;C:\Program Files\Python38\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NGX;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\dotnet\;C:\Program Files\Java\jdk1.8.0_05\jre\bin;C:\Program Files\Java\jdk1.8.0_05\bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Mozilla Firefox;D:\ssh;D:\Git\cmd;D:\CMake\bin;D:\node_js\;D:\vivado\Vivado\2016.2\bin;E:\codeforces\;E:\yarn\bin\;E:\vcpkg;D:\xshell\;D:\xftp\;C:\Program Files\NVIDIA Corporation\Nsight Compute 2019.5.0\;D:\MongoDB\bin\;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\ProgramData\chocolatey\bin;D:\nvm;D:\mynvm;D:\nvm\v16.13.0\;D:\Dev-Cpp\MinGW64\bin;D:\anaconda;D:\anaconda\Library\mingw-w64\bin;D:\anaconda\Library\usr\bin;D:\anaconda\Library\bin;D:\anaconda\Scripts;E:\Ruby\Ruby30-x64\bin;D:\Scripts\;D:\;C:\Users\86131\AppData\Local\Programs\AdoptOpenJDK\bin;C:\Users\86131\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Bandizip\;D:\Microsoft VS Code\bin;D:\PyCharm Community Edition 2019.3.1\bin;;D:\PyCharm 2020.1\bin;;D:\IntelliJ IDEA Educational Edition 2020.1\bin;;D:\CLion 2020.1\bin;;D:\digitLogic\win32pe;C:\Users\86131\AppData\Local\GitHubDesktop\bin;D:\texlive\2020\bin\win32;E:\WebStorm\WebStorm 2020.3.1\bin;;E:\IntelliJ\IntelliJ IDEA 2020.3.2\bin;;C:\Users\86131\AppData\Roaming\npm;C:\Users\86131\AppData\Local\Yarn\bin;E:\os-64\NASM;E:\os-64\MinGW\bin;E:\vcpkg;D:\nvm;D:\mynvm
 # environment
@@ -101,7 +102,7 @@ INTELLIJ IDEA = E:\IntelliJ\IntelliJ IDEA 2020.3.2\bin;
 # automatic
 %F = $(notdir $%)
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_8464_KYLMFIIBALZPXEXC
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_42612_MNEFHGZSELLMRQZS
 # environment
 CUDA_PATH_V10_2 = C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2
 # environment
@@ -233,7 +234,7 @@ PROCESSOR_LEVEL = 6
 # environment
 FPS_BROWSER_APP_PROFILE_STRING = Internet Explorer
 # environment
-VSCODE_PID = 8464
+VSCODE_PID = 42612
 # environment
 USERDOMAIN_ROAMINGPROFILE = MAGIC-PC
 # variable set hash-table stats:
@@ -263,7 +264,7 @@ USERDOMAIN_ROAMINGPROFILE = MAGIC-PC
 # D:\CLion 2020.1\bin: could not be stat'd.
 # C:\Windows\System32\Wbem (key C:/Windows/System32/Wbem, mtime 1652279611): 156 files, no impossibilities.
 # . (key d:/Jian-NetDisk, mtime 1656344251): 12 files, no impossibilities.
-# D:\xftp\ (key D:/xftp/, mtime 1655747077): 27 files, no impossibilities.
+# D:\xftp\ (key D:/xftp/, mtime 1656438038): 27 files, no impossibilities.
 # C:\Program Files\NVIDIA Corporation\Nsight Compute 2019.5.0\ (key C:/Program Files/NVIDIA Corporation/Nsight Compute 2019.5.0/, mtime 1646547233): 10 files, no impossibilities.
 # C:\Users\86131\AppData\Local\Programs\AdoptOpenJDK\bin (key C:/Users/86131/AppData/Local/Programs/AdoptOpenJDK/bin, mtime 1568168839): 52 files, no impossibilities.
 # C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common (key C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common, mtime 1562007579): 10 files, no impossibilities.
@@ -301,7 +302,7 @@ USERDOMAIN_ROAMINGPROFILE = MAGIC-PC
 # D:\anaconda\Scripts (key D:/anaconda/Scripts, mtime 1646548455): 349 files, no impossibilities.
 # C:\ProgramData\DockerDesktop\version-bin: could not be stat'd.
 # D:\IntelliJ IDEA Educational Edition 2020.1\bin: could not be stat'd.
-# C:\Windows\system32 (key C:/Windows/system32, mtime 1656336972): 3176 files, no impossibilities.
+# C:\Windows\system32 (key C:/Windows/system32, mtime 1656380461): 3176 files, no impossibilities.
 # D:\ssh (key D:/ssh, mtime 1644736177): 3 files, no impossibilities.
 # C:\Users\86131\AppData\Local\Yarn\bin (key C:/Users/86131/AppData/Local/Yarn/bin, mtime 1626790428): 2 files, no impossibilities.
 # C:\Program Files\Python38\ (key C:/Program Files/Python38/, mtime 1617792903): 22 files, no impossibilities.
@@ -374,7 +375,7 @@ GNUmakefile:
 # strcache size: total = 0 / max = 0 / min = 4096 / avg = 0
 # strcache free: total = 0 / max = 0 / min = 4096 / avg = 0
 
-# Finished Make data base on Tue Jun 28 09:38:34 2022
+# Finished Make data base on Wed Jun 29 08:58:51 2022
 
  
 make.exe: *** No rule to make target `all'.  Stop.

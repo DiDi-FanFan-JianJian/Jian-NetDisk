@@ -4,6 +4,9 @@
 #include <ws2tcpip.h>
 #include <Winsock2.h>
 #include <string>
+#include <vector>
+
+using namespace std;
 
 namespace SJ
 {
@@ -18,7 +21,7 @@ namespace SJ
         MySocket();
         MySocket(std::string ip, int port);
         ~MySocket();
-        // 杩炴帴鐩稿叧
+        // 连接相关
         int getConnect();
         int disConnect();
         int reConnect();
@@ -26,12 +29,18 @@ namespace SJ
         bool hasError();
         void printError();
 
-        // 鐢ㄦ埛璐﹀彿锛堢櫥褰曟敞鍐岋級
+        // 用户账号（登录注册）
         int sendUserInfo(int type, const std::string &user_name, const std::string &user_password);
         int getSignin(std::string &user_name, std::string &user_password);
         int getSignUp(std::string &user_name, std::string &user_password);
 
-        // 鏂囦欢浼犺緭锛堜笂浼犱笅杞斤級
+        // 目录
+        vector<string> get_cur_dirs();
+        vector<string> get_cur_files();
+        bool create_dir(string dirname);
+        bool cd_dir(string dirname);
+
+        // 文件传输（上传下载）
         int sendFileInfo(const std::string &file_name, const std::string &file_size);
         int recvFileInfo(std::string &file_name, std::string &file_size);
         void sendFile(const std::string &file_name);
@@ -39,7 +48,7 @@ namespace SJ
         int sendBlock(const std::string &file_name, int block_id);
         int recvBlock(const std::string &file_name, int block_id);
 
-        // 鍏朵粬锛堢Щ鍔ㄣ�佸鍒躲�侀噸鍛藉悕銆佸垹闄わ級
+        // 其他（移动、复制、重命名、删除）
         int sendMsg(const std::string &message);
         int recvMsg(const std::string &message);
         int recvMsg();

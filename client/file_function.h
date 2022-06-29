@@ -7,44 +7,44 @@
 #include <QTextStream>
 #include "md5.h"
 
-// åˆ¤æ–­æŸä¸ªè·¯å¾„æ˜¯æ–‡ä»¶è¿˜æ˜¯æ–‡ä»¶å¤¹
+// ÅĞ¶ÏÄ³¸öÂ·¾¶ÊÇÎÄ¼ş»¹ÊÇÎÄ¼ş¼Ğ
 bool isDir(const QString &path);
 bool isFile(const QString &path);
 
-// åˆ¤æ–­æŸä¸ªè·¯å¾„ä¸‹æ–‡ä»¶å¤¹æ˜¯å¦å­˜åœ¨
+// ÅĞ¶ÏÄ³¸öÂ·¾¶ÏÂÎÄ¼ş¼ĞÊÇ·ñ´æÔÚ
 bool isDirExist(const QString &dir_path);
 
-// åˆ¤æ–­æŸä¸ªè·¯å¾„ä¸‹æ–‡ä»¶æ˜¯å¦å­˜åœ¨
+// ÅĞ¶ÏÄ³¸öÂ·¾¶ÏÂÎÄ¼şÊÇ·ñ´æÔÚ
 bool isFileExist(const QString &file_path);
 
-// è·å–æŸä¸ªè·¯å¾„ä¸‹æ‰€æœ‰æ–‡ä»¶å¤¹
+// »ñÈ¡Ä³¸öÂ·¾¶ÏÂËùÓĞÎÄ¼ş¼Ğ
 QStringList getDirList(const QString &dir_path);
 
-// è·å–æŸä¸ªè·¯å¾„ä¸‹æ‰€æœ‰æ–‡ä»¶
+// »ñÈ¡Ä³¸öÂ·¾¶ÏÂËùÓĞÎÄ¼ş
 QStringList getFileList(const QString &dir_path);
 
-// åœ¨æŸä¸ªè·¯å¾„ä¸‹åˆ›å»ºæ–‡ä»¶å¤¹
+// ÔÚÄ³¸öÂ·¾¶ÏÂ´´½¨ÎÄ¼ş¼Ğ
 bool createDir(const QString &dir_path, const QString &dir_name);
 
-// åœ¨æŸä¸ªè·¯å¾„ä¸‹åˆ›å»ºæ–‡ä»¶
+// ÔÚÄ³¸öÂ·¾¶ÏÂ´´½¨ÎÄ¼ş
 bool createFile(const QString &file_path);
 
-// è·å–æ–‡ä»¶MD5å€¼
+// »ñÈ¡ÎÄ¼şMD5Öµ
 QString getFileMD5(QString file_name);
 
-// è·å–æ–‡ä»¶å¤§å°
+// »ñÈ¡ÎÄ¼ş´óĞ¡
 int getFileSize(QString file_name);
 
-// è·å–æ–‡ä»¶å
+// »ñÈ¡ÎÄ¼şÃû
 QString getFileName(QString file_name);
 
-// å‘æŸä¸ªæ–‡ä»¶æŒ‡å®šä½ç½®å†™å…¥å†…å®¹ï¼ˆ-1ï¼šå°¾ï¼Œ0ï¼šå¤´ï¼Œå…¶ä»–ï¼šæŒ‡å®šä½ç½®ï¼‰
+// ÏòÄ³¸öÎÄ¼şÖ¸¶¨Î»ÖÃĞ´ÈëÄÚÈİ£¨-1£ºÎ²£¬0£ºÍ·£¬ÆäËû£ºÖ¸¶¨Î»ÖÃ£©
 bool writeFile(const QString &file_path, const QString &content, int pos = -1);
 
-// ä»æŸä¸ªæ–‡ä»¶è¯»å–æŒ‡å®šä½ç½®çš„æŒ‡å®šæ•°é‡çš„å†…å®¹
+// ´ÓÄ³¸öÎÄ¼ş¶ÁÈ¡Ö¸¶¨Î»ÖÃµÄÖ¸¶¨ÊıÁ¿µÄÄÚÈİ
 QString readFile(const QString &file_path, int pos, int size, QString &content);
 
-// å°†æ–‡ä»¶ä¸­çš„'/'æ›¿æ¢ä¸º'\'
+// ½«ÎÄ¼şÖĞµÄ'/'Ìæ»»Îª'\'
 QString slash2backslash(QString file_name);
 
 #endif // FILE_FUNCTION_H

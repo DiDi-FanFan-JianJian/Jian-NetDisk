@@ -10,26 +10,24 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 
+#include "global_msg.h"
 
-extern SJ::MySocket& my_socket;
+extern Global_Msg g_msg;
 
-// æ·»åŠ æµ‹è¯•æ–‡ä»¶/æ–‡ä»¶å¤¹
-void NetDisk::testFile()
+// Ìí¼Ó²âÊÔÎÄ¼ş/ÎÄ¼ş¼Ğ
+void NetDisk::reloadFile()
 {
-    file_list.append("test.txt");
-    file_list.append("test.jpg");
-    file_list.append("test.png");
-    file_list.append("test.mp3");
-    file_list.append("test.mp4");
-    file_list.append("test.avi");
-    file_list.append("test.doc");
-    file_list.append("test.docx");
-    file_list.append("test.xls");
-    file_list.append("test.xlsx");
-    dir_list.append("test");
-    dir_list.append("test2");
-    dir_list.append("test3");
-    // æ¸²æŸ“æ–‡ä»¶åˆ—è¡¨
+    dir_list.clear();
+    file_list.clear();
+    auto list1 = this->sock->get_cur_dirs();
+    for (auto it: list1) {
+        dir_list.append(QString::fromStdString(it));
+    }
+    auto list2 = this->sock->get_cur_files();
+    for (auto it: list2) {
+        file_list.append(QString::fromStdString(it));
+    }
+    // äÖÈ¾ÎÄ¼şÁĞ±í
     renderFileList(file_list, dir_list);
 }
 
@@ -38,10 +36,11 @@ NetDisk::NetDisk(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::NetDisk)
 {
+    this->sock = new SJ::MySocket("1.15.144.212", 8000);
     ui->setupUi(this);
     path = "root/";
     ui->now_path->setText(path);
-    testFile();
+    reloadFile();
 }
 
 NetDisk::~NetDisk()
@@ -50,47 +49,47 @@ NetDisk::~NetDisk()
 }
 
 void NetDisk::on_refresh_btn_clicked() {
-    showMsg("åˆ·æ–°åˆ—è¡¨");
-
-    // æ¸²æŸ“æ–‡ä»¶åˆ—è¡¨
+    // äÖÈ¾ÎÄ¼şÁĞ±í
     ui->now_path->setText(path);
+    reloadFile();
     renderFileList(file_list, dir_list);
 }
 
 void NetDisk::on_return_btn_clicked() {
-    showMsg("è¿”å›ä¸Šä¸€çº§");
-
-    // æ¸²æŸ“æ–‡ä»¶åˆ—è¡¨
+    g_msg.go_back();
+    path = QString::fromStdString(g_msg.get_path());
+    // äÖÈ¾ÎÄ¼şÁĞ±í
     ui->now_path->setText(path);
+    reloadFile();
     renderFileList(file_list, dir_list);
 }
 
-// ç¼ºå°‘æ–‡ä»¶è·¯å¾„åˆ†æ
+// È±ÉÙÎÄ¼şÂ·¾¶·ÖÎö
 void NetDisk::on_upload_file_clicked() {
     // getOpenFileName(QWidget *parent, const QString &caption, const QString &dir, const QString &filter, QString *selectedFilter, Options options)
-    //                      çˆ¶ç±»æŒ‡é’ˆ                æ ‡é¢˜              é»˜è®¤æ‰“å¼€æ–‡ä»¶å¤¹         æ–‡ä»¶è¿‡æ»¤è§„åˆ™          é»˜è®¤çš„æ–‡ä»¶è¿‡æ»¤è§„åˆ™         å±æ€§ï¼ˆæ˜¾ç¤ºæ–‡ä»¶å¤¹ç­‰ï¼‰
-    //  filterï¼š"images(*.png *jpeg *bmp);;text files(*.txt *.doc *.docx);;video files(*.avi *.mp4 *.wmv);;All files(*.*)"
+    //                      ¸¸ÀàÖ¸Õë                ±êÌâ              Ä¬ÈÏ´ò¿ªÎÄ¼ş¼Ğ         ÎÄ¼ş¹ıÂË¹æÔò          Ä¬ÈÏµÄÎÄ¼ş¹ıÂË¹æÔò         ÊôĞÔ£¨ÏÔÊ¾ÎÄ¼ş¼ĞµÈ£©
+    //  filter£º"images(*.png *jpeg *bmp);;text files(*.txt *.doc *.docx);;video files(*.avi *.mp4 *.wmv);;All files(*.*)"
 
-    // é€‰æ‹©æ–‡ä»¶ï¼ˆé™åˆ¶åªèƒ½é€‰æ‹©æ–‡ä»¶ï¼‰
-    QString file_path = QFileDialog::getOpenFileName(this, "é€‰æ‹©æ–‡ä»¶", ".", "All files(*.*)");
+    // Ñ¡ÔñÎÄ¼ş£¨ÏŞÖÆÖ»ÄÜÑ¡ÔñÎÄ¼ş£©
+    QString file_path = QFileDialog::getOpenFileName(this, "Ñ¡ÔñÎÄ¼ş", ".", "All files(*.*)");
     if (file_path.isEmpty()) {
-        showMsg("ä½ è‡ªå·±å…³äº†ï¼Œæ— äº‹å‘ç”Ÿ");
+        showMsg("Äã×Ô¼º¹ØÁË£¬ÎŞÊÂ·¢Éú");
         return;
     }
     else {
-        showMsg("é€‰æ‹©æ–‡ä»¶ï¼š" + file_path);
+        showMsg("Ñ¡ÔñÎÄ¼ş£º" + file_path);
 
         file_list.append(file_path);
         renderFileList(file_list, dir_list);
     }
 }
 
-// ç¼ºå°‘æ–‡ä»¶è·¯å¾„åˆ†æ
+// È±ÉÙÎÄ¼şÂ·¾¶·ÖÎö
 void NetDisk::on_upload_dir_clicked() {
-    // é€‰æ‹©æ–‡ä»¶å¤¹ï¼ˆé™åˆ¶åªèƒ½é€‰æ‹©æ–‡ä»¶å¤¹ï¼‰
-    QString dir_name = QFileDialog::getExistingDirectory(this, "é€‰æ‹©æ–‡ä»¶å¤¹", "D:/");
+    // Ñ¡ÔñÎÄ¼ş¼Ğ£¨ÏŞÖÆÖ»ÄÜÑ¡ÔñÎÄ¼ş¼Ğ£©
+    QString dir_name = QFileDialog::getExistingDirectory(this, "Ñ¡ÔñÎÄ¼ş¼Ğ", "D:/");
     if (dir_name.isEmpty()) {
-        showMsg("ä½ è‡ªå·±å…³äº†ï¼Œæ— äº‹å‘ç”Ÿ");
+        showMsg("Äã×Ô¼º¹ØÁË£¬ÎŞÊÂ·¢Éú");
     }
     else {
         showMsg(dir_name);
@@ -102,41 +101,42 @@ void NetDisk::on_upload_dir_clicked() {
 
 void NetDisk::on_new_dir_clicked()
 {
-    // å¼¹æ¡†è¯¢é—®æ–‡ä»¶å¤¹åç§°
-    QString dir_name = QInputDialog::getText(this, "æ–°å»ºæ–‡ä»¶å¤¹", "è¯·è¾“å…¥æ–‡ä»¶å¤¹åç§°");
+    cout << "???" << endl;
+    // µ¯¿òÑ¯ÎÊÎÄ¼ş¼ĞÃû³Æ
+    QString dir_name = QInputDialog::getText(this, QStringLiteral("ĞÂ½¨ÎÄ¼ş¼Ğ"), QStringLiteral("ÇëÊäÈëÎÄ¼ş¼ĞÃû³Æ"));
     if (dir_name.isEmpty()) {
-        showMsg("ä½ è‡ªå·±å…³äº†ï¼Œæ— äº‹å‘ç”Ÿ");
+        showMsg(QStringLiteral("Äã×Ô¼º¹ØÁË£¬ÎŞÊÂ·¢Éú"));
     }
     else {
         showMsg(dir_name);
-
-        dir_list.append(dir_name);
+        this->sock->create_dir(dir_name.toStdString());
+        reloadFile();
         renderFileList(file_list, dir_list);
     }
 }
 
-// ä»¥ä¸‹åŒæ ·ç¼ºå°‘è·¯å¾„åˆ†æ
+// ÒÔÏÂÍ¬ÑùÈ±ÉÙÂ·¾¶·ÖÎö
 void NetDisk::on_copy_dir_btn_clicked()
 {
-    // å¼¹æ¡†è¯¢é—®æ–‡ä»¶å¤¹åç§°ã€ç›®æ ‡æ–‡ä»¶å¤¹
+    // µ¯¿òÑ¯ÎÊÎÄ¼ş¼ĞÃû³Æ¡¢Ä¿±êÎÄ¼ş¼Ğ
     QString src, dst;
     QDialog *dialog = new QDialog(this);
-    dialog->setWindowTitle("å¤åˆ¶æ–‡ä»¶å¤¹");
+    dialog->setWindowTitle("¸´ÖÆÎÄ¼ş¼Ğ");
     QGridLayout *layout = new QGridLayout(dialog);
     layout->setSpacing(10);
     QLabel *label1 = new QLabel(dialog);
-    label1->setText("æºæ–‡ä»¶å¤¹ï¼š");
+    label1->setText("Ô´ÎÄ¼ş¼Ğ£º");
     QLineEdit *lineEdit1 = new QLineEdit(dialog);
     lineEdit1->setText("");
     QLabel *label2 = new QLabel(dialog);
-    label2->setText("ç›®æ ‡æ–‡ä»¶å¤¹ï¼š");
+    label2->setText("Ä¿±êÎÄ¼ş¼Ğ£º");
     QLineEdit *lineEdit2 = new QLineEdit(dialog);
     lineEdit2->setText("");
     QPushButton *btn = new QPushButton(dialog);
-    btn->setText("ç¡®å®š");
+    btn->setText("È·¶¨");
     connect(btn, &QPushButton::clicked, [=]() { dialog->accept(); });
 
-    // å°†QLabelã€QLineEditã€QPushButtonæ·»åŠ åˆ°QGridLayoutä¸­ï¼Œå¹¶è®¾ç½®è¡Œæ•°ä¸º0ï¼Œåˆ—æ•°ä¸º0ï¼Œå¹¶è®¾ç½®è¡Œè·ä¸º10ï¼Œåˆ—è·ä¸º10
+    // ½«QLabel¡¢QLineEdit¡¢QPushButtonÌí¼Óµ½QGridLayoutÖĞ£¬²¢ÉèÖÃĞĞÊıÎª0£¬ÁĞÊıÎª0£¬²¢ÉèÖÃĞĞ¾àÎª10£¬ÁĞ¾àÎª10
     layout->addWidget(label1, 0, 0);
     layout->addWidget(lineEdit1, 0, 1);
     layout->addWidget(label2, 1, 0);
@@ -145,11 +145,11 @@ void NetDisk::on_copy_dir_btn_clicked()
     dialog->setLayout(layout);
     dialog->show();
 
-    // å½“ç‚¹å‡»ç¡®å®šæŒ‰é’®æ—¶ï¼Œè·å–æ–‡æœ¬å†…å®¹ï¼Œå¹¶æ˜¾ç¤ºåˆ°æ¶ˆæ¯æ¡†ä¸­
+    // µ±µã»÷È·¶¨°´Å¥Ê±£¬»ñÈ¡ÎÄ±¾ÄÚÈİ£¬²¢ÏÔÊ¾µ½ÏûÏ¢¿òÖĞ
     if (dialog->exec() == QDialog::Accepted) {
         src = lineEdit1->text();
         dst = lineEdit2->text();
-        showMsg(src + "æ–‡ä»¶å¤¹å¤åˆ¶åˆ°" + dst);
+        showMsg(src + "ÎÄ¼ş¼Ğ¸´ÖÆµ½" + dst);
 
         if (dst == path) {
 
@@ -158,31 +158,31 @@ void NetDisk::on_copy_dir_btn_clicked()
         }
     }
     else {
-        showMsg("ä½ è‡ªå·±å…³äº†ï¼Œæ— äº‹å‘ç”Ÿ");
+        showMsg("Äã×Ô¼º¹ØÁË£¬ÎŞÊÂ·¢Éú");
     }
 }
 
 void NetDisk::on_copy_file_btn_clicked()
 {
-    // å¼¹æ¡†è¯¢é—®æ–‡ä»¶åç§°ã€ç›®æ ‡æ–‡ä»¶å¤¹
+    // µ¯¿òÑ¯ÎÊÎÄ¼şÃû³Æ¡¢Ä¿±êÎÄ¼ş¼Ğ
     QString src, dst;
     QDialog *dialog = new QDialog(this);
-    dialog->setWindowTitle("å¤åˆ¶æ–‡ä»¶");
+    dialog->setWindowTitle("¸´ÖÆÎÄ¼ş");
     QGridLayout *layout = new QGridLayout(dialog);
     layout->setSpacing(10);
     QLabel *label1 = new QLabel(dialog);
-    label1->setText("æºæ–‡ä»¶ï¼š");
+    label1->setText("Ô´ÎÄ¼ş£º");
     QLineEdit *lineEdit1 = new QLineEdit(dialog);
     lineEdit1->setText("");
     QLabel *label2 = new QLabel(dialog);
-    label2->setText("ç›®æ ‡æ–‡ä»¶å¤¹ï¼š");
+    label2->setText("Ä¿±êÎÄ¼ş¼Ğ£º");
     QLineEdit *lineEdit2 = new QLineEdit(dialog);
     lineEdit2->setText("");
     QPushButton *btn = new QPushButton(dialog);
-    btn->setText("ç¡®å®š");
+    btn->setText("È·¶¨");
     connect(btn, &QPushButton::clicked, [=]() { dialog->accept(); });
 
-    // å°†QLabelã€QLineEditã€QPushButtonæ·»åŠ åˆ°QGridLayoutä¸­ï¼Œå¹¶è®¾ç½®è¡Œæ•°ä¸º0ï¼Œåˆ—æ•°ä¸º0ï¼Œå¹¶è®¾ç½®è¡Œè·ä¸º10ï¼Œåˆ—è·ä¸º10
+    // ½«QLabel¡¢QLineEdit¡¢QPushButtonÌí¼Óµ½QGridLayoutÖĞ£¬²¢ÉèÖÃĞĞÊıÎª0£¬ÁĞÊıÎª0£¬²¢ÉèÖÃĞĞ¾àÎª10£¬ÁĞ¾àÎª10
     layout->addWidget(label1, 0, 0);
     layout->addWidget(lineEdit1, 0, 1);
     layout->addWidget(label2, 1, 0);
@@ -191,11 +191,11 @@ void NetDisk::on_copy_file_btn_clicked()
     dialog->setLayout(layout);
     dialog->show();
 
-    // å½“ç‚¹å‡»ç¡®å®šæŒ‰é’®æ—¶ï¼Œè·å–æ–‡æœ¬å†…å®¹ï¼Œå¹¶æ˜¾ç¤ºåˆ°æ¶ˆæ¯æ¡†ä¸­
+    // µ±µã»÷È·¶¨°´Å¥Ê±£¬»ñÈ¡ÎÄ±¾ÄÚÈİ£¬²¢ÏÔÊ¾µ½ÏûÏ¢¿òÖĞ
     if (dialog->exec() == QDialog::Accepted) {
         src = lineEdit1->text();
         dst = lineEdit2->text();
-        showMsg(src + "æ–‡ä»¶å¤åˆ¶åˆ°" + dst);
+        showMsg(src + "ÎÄ¼ş¸´ÖÆµ½" + dst);
 
         if (dst == path) {
 
@@ -204,31 +204,31 @@ void NetDisk::on_copy_file_btn_clicked()
         }
     }
     else {
-        showMsg("ä½ è‡ªå·±å…³äº†ï¼Œæ— äº‹å‘ç”Ÿ");
+        showMsg("Äã×Ô¼º¹ØÁË£¬ÎŞÊÂ·¢Éú");
     }
 }
 
 void NetDisk::on_move_dir_btn_clicked()
 {
-    // å¼¹æ¡†è¯¢é—®æ–‡ä»¶å¤¹åç§°ã€ç›®æ ‡æ–‡ä»¶å¤¹
+    // µ¯¿òÑ¯ÎÊÎÄ¼ş¼ĞÃû³Æ¡¢Ä¿±êÎÄ¼ş¼Ğ
     QString src, dst;
     QDialog *dialog = new QDialog(this);
-    dialog->setWindowTitle("ç§»åŠ¨æ–‡ä»¶å¤¹");
+    dialog->setWindowTitle("ÒÆ¶¯ÎÄ¼ş¼Ğ");
     QGridLayout *layout = new QGridLayout(dialog);
     layout->setSpacing(10);
     QLabel *label1 = new QLabel(dialog);
-    label1->setText("æºæ–‡ä»¶å¤¹ï¼š");
+    label1->setText("Ô´ÎÄ¼ş¼Ğ£º");
     QLineEdit *lineEdit1 = new QLineEdit(dialog);
     lineEdit1->setText("");
     QLabel *label2 = new QLabel(dialog);
-    label2->setText("ç›®æ ‡æ–‡ä»¶å¤¹ï¼š");
+    label2->setText("Ä¿±êÎÄ¼ş¼Ğ£º");
     QLineEdit *lineEdit2 = new QLineEdit(dialog);
     lineEdit2->setText("");
     QPushButton *btn = new QPushButton(dialog);
-    btn->setText("ç¡®å®š");
+    btn->setText("È·¶¨");
     connect(btn, &QPushButton::clicked, [=]() { dialog->accept(); });
 
-    // å°†QLabelã€QLineEditã€QPushButtonæ·»åŠ åˆ°QGridLayoutä¸­ï¼Œå¹¶è®¾ç½®è¡Œæ•°ä¸º0ï¼Œåˆ—æ•°ä¸º0ï¼Œå¹¶è®¾ç½®è¡Œè·ä¸º10ï¼Œåˆ—è·ä¸º10
+    // ½«QLabel¡¢QLineEdit¡¢QPushButtonÌí¼Óµ½QGridLayoutÖĞ£¬²¢ÉèÖÃĞĞÊıÎª0£¬ÁĞÊıÎª0£¬²¢ÉèÖÃĞĞ¾àÎª10£¬ÁĞ¾àÎª10
     layout->addWidget(label1, 0, 0);
     layout->addWidget(lineEdit1, 0, 1);
     layout->addWidget(label2, 1, 0);
@@ -237,13 +237,13 @@ void NetDisk::on_move_dir_btn_clicked()
     dialog->setLayout(layout);
     dialog->show();
 
-    // å½“ç‚¹å‡»ç¡®å®šæŒ‰é’®æ—¶ï¼Œè·å–æ–‡æœ¬å†…å®¹ï¼Œå¹¶æ˜¾ç¤ºåˆ°æ¶ˆæ¯æ¡†ä¸­
+    // µ±µã»÷È·¶¨°´Å¥Ê±£¬»ñÈ¡ÎÄ±¾ÄÚÈİ£¬²¢ÏÔÊ¾µ½ÏûÏ¢¿òÖĞ
     if (dialog->exec() == QDialog::Accepted) {
         src = lineEdit1->text();
         dst = lineEdit2->text();
-        showMsg(src + "æ–‡ä»¶å¤¹ç§»åŠ¨åˆ°" + dst);
+        showMsg(src + "ÎÄ¼ş¼ĞÒÆ¶¯µ½" + dst);
 
-        // æ˜¯å¦éœ€è¦æ›´æ–°æ–‡ä»¶åˆ—è¡¨
+        // ÊÇ·ñĞèÒª¸üĞÂÎÄ¼şÁĞ±í
         if (dst == path) {
 
             dir_list.append(src);
@@ -251,31 +251,31 @@ void NetDisk::on_move_dir_btn_clicked()
         }
     }
     else {
-        showMsg("ä½ è‡ªå·±å…³äº†ï¼Œæ— äº‹å‘ç”Ÿ");
+        showMsg("Äã×Ô¼º¹ØÁË£¬ÎŞÊÂ·¢Éú");
     }
 }
 
 void NetDisk::on_move_file_btn_clicked()
 {
-    // å¼¹æ¡†è¯¢é—®æ–‡ä»¶(æ–‡ä»¶å¤¹)åç§°ã€ç›®æ ‡æ–‡ä»¶å¤¹
+    // µ¯¿òÑ¯ÎÊÎÄ¼ş(ÎÄ¼ş¼Ğ)Ãû³Æ¡¢Ä¿±êÎÄ¼ş¼Ğ
     QString src, dst;
     QDialog *dialog = new QDialog(this);
-    dialog->setWindowTitle("ç§»åŠ¨æ–‡ä»¶");
+    dialog->setWindowTitle("ÒÆ¶¯ÎÄ¼ş");
     QGridLayout *layout = new QGridLayout(dialog);
     layout->setSpacing(10);
     QLabel *label1 = new QLabel(dialog);
-    label1->setText("æºæ–‡ä»¶ï¼š");
+    label1->setText("Ô´ÎÄ¼ş£º");
     QLineEdit *lineEdit1 = new QLineEdit(dialog);
     lineEdit1->setText("");
     QLabel *label2 = new QLabel(dialog);
-    label2->setText("ç›®æ ‡æ–‡ä»¶å¤¹ï¼š");
+    label2->setText("Ä¿±êÎÄ¼ş¼Ğ£º");
     QLineEdit *lineEdit2 = new QLineEdit(dialog);
     lineEdit2->setText("");
     QPushButton *btn = new QPushButton(dialog);
-    btn->setText("ç¡®å®š");
+    btn->setText("È·¶¨");
     connect(btn, &QPushButton::clicked, [=]() { dialog->accept(); });
 
-    // å°†QLabelã€QLineEditã€QPushButtonæ·»åŠ åˆ°QGridLayoutä¸­ï¼Œå¹¶è®¾ç½®è¡Œæ•°ä¸º0ï¼Œåˆ—æ•°ä¸º0ï¼Œå¹¶è®¾ç½®è¡Œè·ä¸º10ï¼Œåˆ—è·ä¸º10
+    // ½«QLabel¡¢QLineEdit¡¢QPushButtonÌí¼Óµ½QGridLayoutÖĞ£¬²¢ÉèÖÃĞĞÊıÎª0£¬ÁĞÊıÎª0£¬²¢ÉèÖÃĞĞ¾àÎª10£¬ÁĞ¾àÎª10
     layout->addWidget(label1, 0, 0);
     layout->addWidget(lineEdit1, 0, 1);
     layout->addWidget(label2, 1, 0);
@@ -284,13 +284,13 @@ void NetDisk::on_move_file_btn_clicked()
     dialog->setLayout(layout);
     dialog->show();
 
-    // å½“ç‚¹å‡»ç¡®å®šæŒ‰é’®æ—¶ï¼Œè·å–æ–‡æœ¬å†…å®¹ï¼Œå¹¶æ˜¾ç¤ºåˆ°æ¶ˆæ¯æ¡†ä¸­
+    // µ±µã»÷È·¶¨°´Å¥Ê±£¬»ñÈ¡ÎÄ±¾ÄÚÈİ£¬²¢ÏÔÊ¾µ½ÏûÏ¢¿òÖĞ
     if (dialog->exec() == QDialog::Accepted) {
         src = lineEdit1->text();
         dst = lineEdit2->text();
-        showMsg(src + "æ–‡ä»¶ç§»åŠ¨åˆ°" + dst);
+        showMsg(src + "ÎÄ¼şÒÆ¶¯µ½" + dst);
 
-        // æ˜¯å¦éœ€è¦æ›´æ–°æ–‡ä»¶åˆ—è¡¨
+        // ÊÇ·ñĞèÒª¸üĞÂÎÄ¼şÁĞ±í
         if (dst == path) {
 
             file_list.append(src);
@@ -298,30 +298,30 @@ void NetDisk::on_move_file_btn_clicked()
         }
     }
     else {
-        showMsg("ä½ è‡ªå·±å…³äº†ï¼Œæ— äº‹å‘ç”Ÿ");
+        showMsg("Äã×Ô¼º¹ØÁË£¬ÎŞÊÂ·¢Éú");
     }
 }
 
 
-// æ¸²æŸ“æ–‡ä»¶åˆ—è¡¨
+// äÖÈ¾ÎÄ¼şÁĞ±í
 void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
-    // ä½¿ç”¨QTableWidgetæ§ä»¶æ˜¾ç¤ºæ–‡ä»¶åˆ—è¡¨
+    // Ê¹ÓÃQTableWidget¿Ø¼şÏÔÊ¾ÎÄ¼şÁĞ±í
     ui->file_list->clear();
     ui->file_list->setColumnCount(5);
     ui->file_list->setRowCount(file_list.size() + dir_list.size());
-    ui->file_list->setHorizontalHeaderLabels(QStringList() << "æ–‡ä»¶å" << "å¤§å°" << "ä¸‹è½½" << "åˆ é™¤" << "é‡å‘½å");
+    ui->file_list->setHorizontalHeaderLabels(QStringList() << "ÎÄ¼şÃû" << "´óĞ¡" << "ÏÂÔØ" << "É¾³ı" << "ÖØÃüÃû");
     for (int i = 0; i < file_list.size(); i++) {
-        // æ–‡ä»¶åï¼Œç»™file_nameè®¾ç½®iconï¼Œå¹¶ä¸”è®¾ç½®ä¸å¯ç¼–è¾‘
+        // ÎÄ¼şÃû£¬¸øfile_nameÉèÖÃicon£¬²¢ÇÒÉèÖÃ²»¿É±à¼­
         QTableWidgetItem *file_name = new QTableWidgetItem(file_list.at(i));
         QIcon icon(":img/file_icon.png");
         file_name->setIcon(icon);
         file_name->setFlags(Qt::ItemIsEnabled);
         ui->file_list->setItem(i, 0, file_name);
-        // æ–‡ä»¶å¤§å°
+        // ÎÄ¼ş´óĞ¡
         QTableWidgetItem *file_size = new QTableWidgetItem("1.0KB");
         file_size->setFlags(Qt::ItemIsEnabled);
         ui->file_list->setItem(i, 1, file_size);
-        // ä¸‹è½½å›¾æ¡ˆ
+        // ÏÂÔØÍ¼°¸
         QPixmap *pixmap;
         pixmap = new QPixmap(":img/download.png");
         QLabel *download_label = new QLabel();
@@ -330,7 +330,7 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
         download_label->setAlignment(Qt::AlignCenter);
         ui->file_list->setCellWidget(i, 2, download_label);
         delete pixmap;
-        // åˆ é™¤å›¾æ¡ˆ
+        // É¾³ıÍ¼°¸
         pixmap = new QPixmap(":img/delete.png");
         QLabel *delete_label = new QLabel();
         QPixmap delete_img = pixmap->scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -338,7 +338,7 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
         delete_label->setAlignment(Qt::AlignHCenter);
         ui->file_list->setCellWidget(i, 3, delete_label);
         delete pixmap;
-        // é‡å‘½åå›¾æ¡ˆ
+        // ÖØÃüÃûÍ¼°¸
         pixmap = new QPixmap(":img/rename.png");
         QLabel *rename_label = new QLabel();
         QPixmap rename_img = pixmap->scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -348,17 +348,17 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
         delete pixmap;
     }
     for (int i = 0; i < dir_list.size(); i++) {
-        // æ–‡ä»¶åï¼Œç»™file_nameè®¾ç½®icon
+        // ÎÄ¼şÃû£¬¸øfile_nameÉèÖÃicon
         QTableWidgetItem *file_name = new QTableWidgetItem(dir_list.at(i));
         QIcon icon(":img/dir_icon.jpg");
         file_name->setIcon(icon);
         file_name->setFlags(Qt::ItemIsEnabled);
         ui->file_list->setItem(i + file_list.size(), 0, file_name);
-        // æ–‡ä»¶å¤§å°
-        QTableWidgetItem *file_size = new QTableWidgetItem("æ–‡ä»¶å¤¹");
+        // ÎÄ¼ş´óĞ¡
+        QTableWidgetItem *file_size = new QTableWidgetItem("ÎÄ¼ş¼Ğ");
         file_size->setFlags(Qt::ItemIsEnabled);
         ui->file_list->setItem(i + file_list.size(), 1, file_size);
-        // ä¸‹è½½å›¾æ¡ˆ
+        // ÏÂÔØÍ¼°¸
         QPixmap *pixmap;
         pixmap = new QPixmap(":img/download.png");
         QLabel *download_label = new QLabel();
@@ -367,7 +367,7 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
         download_label->setAlignment(Qt::AlignCenter);
         ui->file_list->setCellWidget(i + file_list.size(), 2, download_label);
         delete pixmap;
-        // åˆ é™¤å›¾æ¡ˆ
+        // É¾³ıÍ¼°¸
         pixmap = new QPixmap(":img/delete.png");
         QLabel *delete_label = new QLabel();
         QPixmap delete_img = pixmap->scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -375,7 +375,7 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
         delete_label->setAlignment(Qt::AlignHCenter);
         ui->file_list->setCellWidget(i + file_list.size(), 3, delete_label);
         delete pixmap;
-        // é‡å‘½åå›¾æ¡ˆ
+        // ÖØÃüÃûÍ¼°¸
         pixmap = new QPixmap(":img/rename.png");
         QLabel *rename_label = new QLabel();
         QPixmap rename_img = pixmap->scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -386,19 +386,19 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
     }
 }
 
-// æ˜¾ç¤ºæ¶ˆæ¯
+// ÏÔÊ¾ÏûÏ¢
 void NetDisk::showMsg(QString msg) {
     QMessageBox msgbox;
     msgbox.setText(msg);
     msgbox.exec();
 }
 
-// tableä¸­çš„æŒ‰é’®
+// tableÖĞµÄ°´Å¥
 void NetDisk::on_file_list_cellClicked(int row, int column)
 {
     if (column >= 2 ) {
         int item_id, is_dir;
-        // è®¡ç®—æ–‡ä»¶/æ–‡ä»¶å¤¹çš„id
+        // ¼ÆËãÎÄ¼ş/ÎÄ¼ş¼ĞµÄid
         if (row < file_list.length()) {
             item_id = row;
             is_dir = 0;
@@ -409,45 +409,45 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
         }
 
         if (column == 2) {
-            // ä¸‹è½½æ–‡ä»¶/æ–‡ä»¶å¤¹
+            // ÏÂÔØÎÄ¼ş/ÎÄ¼ş¼Ğ
             if (is_dir) {
                 QString dir_name = dir_list.at(item_id);
-                QString download_path = QFileDialog::getExistingDirectory(this, "é€‰æ‹©æ–‡ä»¶å¤¹", "D:/");
+                QString download_path = QFileDialog::getExistingDirectory(this, "Ñ¡ÔñÎÄ¼ş¼Ğ", "D:/");
 
                 if (download_path.isEmpty()) {
-                    showMsg("ä½ è‡ªå·±å…³äº†ï¼Œæ— äº‹å‘ç”Ÿ");
+                    showMsg("Äã×Ô¼º¹ØÁË£¬ÎŞÊÂ·¢Éú");
                     return;
                 }
                 else {
-                    showMsg("ä¸‹è½½æ–‡ä»¶å¤¹" + dir_name + "åˆ°æŒ‡å®šä½ç½®" + download_path);
+                    showMsg("ÏÂÔØÎÄ¼ş¼Ğ" + dir_name + "µ½Ö¸¶¨Î»ÖÃ" + download_path);
                 }
             }
             else {
                 QString file_name = file_list.at(item_id);
-                QString download_path = QFileDialog::getExistingDirectory(this, "é€‰æ‹©æ–‡ä»¶å¤¹", "D:/");
+                QString download_path = QFileDialog::getExistingDirectory(this, "Ñ¡ÔñÎÄ¼ş¼Ğ", "D:/");
 
                 if (download_path.isEmpty()) {
-                    showMsg("ä½ è‡ªå·±å…³äº†ï¼Œæ— äº‹å‘ç”Ÿ");
+                    showMsg("Äã×Ô¼º¹ØÁË£¬ÎŞÊÂ·¢Éú");
                     return;
                 }
                 else {
-                    showMsg("ä¸‹è½½æ–‡ä»¶" + file_name + "åˆ°æŒ‡å®šä½ç½®" + download_path);
+                    showMsg("ÏÂÔØÎÄ¼ş" + file_name + "µ½Ö¸¶¨Î»ÖÃ" + download_path);
                 }
             }
         }
         else if (column == 3) {
-            // åˆ é™¤æ–‡ä»¶/æ–‡ä»¶å¤¹
+            // É¾³ıÎÄ¼ş/ÎÄ¼ş¼Ğ
             if (is_dir) {
                 QString dir_name = dir_list.at(item_id);
-                // è¯¢é—®æ˜¯å¦åˆ é™¤
+                // Ñ¯ÎÊÊÇ·ñÉ¾³ı
                 QMessageBox msgbox;
-                msgbox.setText("æ˜¯å¦åˆ é™¤æ–‡ä»¶å¤¹" + dir_name);
+                msgbox.setText("ÊÇ·ñÉ¾³ıÎÄ¼ş¼Ğ" + dir_name);
                 msgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
                 msgbox.setDefaultButton(QMessageBox::No);
                 int ret = msgbox.exec();
                 if (ret == QMessageBox::Yes) {
-                    // åˆ é™¤æ–‡ä»¶å¤¹
-                    showMsg("åˆ é™¤æ–‡ä»¶å¤¹" + dir_name);
+                    // É¾³ıÎÄ¼ş¼Ğ
+                    showMsg("É¾³ıÎÄ¼ş¼Ğ" + dir_name);
 
                     ui->file_list->removeRow(row);
                     dir_list.removeAt(item_id);
@@ -455,15 +455,15 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
             }
             else {
                 QString file_name = file_list.at(item_id);
-                // è¯¢é—®æ˜¯å¦åˆ é™¤
+                // Ñ¯ÎÊÊÇ·ñÉ¾³ı
                 QMessageBox msgbox;
-                msgbox.setText("æ˜¯å¦åˆ é™¤æ–‡ä»¶" + file_name);
+                msgbox.setText("ÊÇ·ñÉ¾³ıÎÄ¼ş" + file_name);
                 msgbox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
                 msgbox.setDefaultButton(QMessageBox::No);
                 int ret = msgbox.exec();
                 if (ret == QMessageBox::Yes) {
-                    // åˆ é™¤æ–‡ä»¶
-                    showMsg("åˆ é™¤æ–‡ä»¶" + file_name);
+                    // É¾³ıÎÄ¼ş
+                    showMsg("É¾³ıÎÄ¼ş" + file_name);
 
                     ui->file_list->removeRow(row);
                     file_list.removeAt(item_id);
@@ -471,23 +471,23 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
             }
         }
         else if (column == 4) {
-            // é‡å‘½å
+            // ÖØÃüÃû
             QString file_name = file_list.at(item_id);
-            // è¯¢é—®ä¿®æ”¹åçš„æ–‡ä»¶å
-            QString new_name = QInputDialog::getText(this, "é‡å‘½å", "è¯·è¾“å…¥æ–°çš„æ–‡ä»¶å");
+            // Ñ¯ÎÊĞŞ¸ÄºóµÄÎÄ¼şÃû
+            QString new_name = QInputDialog::getText(this, "ÖØÃüÃû", "ÇëÊäÈëĞÂµÄÎÄ¼şÃû");
             if (new_name.isEmpty()) {
-                showMsg("ä½ è‡ªå·±å…³äº†ï¼Œæ— äº‹å‘ç”Ÿ");
+                showMsg("Äã×Ô¼º¹ØÁË£¬ÎŞÊÂ·¢Éú");
                 return;
             }
             else {
                 if (is_dir) {
-                    showMsg("é‡å‘½åæ–‡ä»¶å¤¹" + file_name + "ä¸º" + new_name);
+                    showMsg("ÖØÃüÃûÎÄ¼ş¼Ğ" + file_name + "Îª" + new_name);
 
                     ui->file_list->item(row, 0)->setText(new_name);
                     dir_list.replace(item_id, new_name);
                 }
                 else {
-                    showMsg("é‡å‘½åæ–‡ä»¶" + file_name + "ä¸º" + new_name);
+                    showMsg("ÖØÃüÃûÎÄ¼ş" + file_name + "Îª" + new_name);
 
                     ui->file_list->item(row, 0)->setText(new_name);
                     file_list.replace(item_id, new_name);
@@ -499,15 +499,15 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
     }
 }
 
-// åŒå‡»è¿›å…¥æ–‡ä»¶å¤¹
+// Ë«»÷½øÈëÎÄ¼ş¼Ğ
 void NetDisk::on_file_list_cellDoubleClicked(int row, int column)
 {
     if (row >= file_list.length() && column < 2) {
-        // è¿›å…¥å…¶ä¸­
+        // ½øÈëÆäÖĞ
         QString dir_name = dir_list.at(row - file_list.length());
-        showMsg("è¿›å…¥æ–‡ä»¶å¤¹" + dir_name);
-
-        path += dir_name + "/";
+        this->sock->cd_dir(dir_name.toStdString());
+        reloadFile();
+        path = QString::fromStdString(g_msg.get_path());
         on_refresh_btn_clicked();
     }
 }

@@ -1,23 +1,39 @@
 #pragma once
 #include <cstring>
+#include <string>
+using namespace std;
 
 constexpr int BLOCK_SIZE = 5;
+constexpr int NAME_SIZE = 20;
+constexpr int FILE_NUM = 50; // ÎÄ¼ş¼ĞÏÂÎÄ¼ş×î´óÊıÁ¿
 
-// æ ¹æ®msg[0]åˆ¤æ–­æ¶ˆæ¯ç±»å‹ï¼Œç”¨Message(msg + 1)è¿›è¡Œè§£æ
+// ¸ù¾İmsg[0]ÅĞ¶ÏÏûÏ¢ÀàĞÍ£¬ÓÃMessage(msg + 1)½øĞĞ½âÎö
 constexpr int MSG_TYPE_LOGIN = 1;
 constexpr int MSG_TYPE_REGISTER = 2;
 constexpr int MSG_UPLOAD_FILE = 3;
 constexpr int MSG_UPLOAD_BLOCK = 4;
+constexpr int MSG_CREATE_DIR = 5;
+constexpr int MSG_CREATE_FILE_DIR = 6;
+constexpr int MSG_GET_DIR_ID = 7;
+constexpr int MSG_GET_FILE_ID = 8;
+constexpr int MSG_GET_DIRS = 9;
+constexpr int MSG_GET_FILES = 10;
+constexpr int MSG_MOVE_DIR = 11;
+constexpr int MSG_MOVE_FILE = 12;
+constexpr int MSG_DELETE_DIR = 13;
+constexpr int MSG_DELETE_FILE = 14;
+constexpr int MSG_GET_FILE_INFO = 15;
+constexpr int MSG_DOWNLOAD_BLOCK = 16;
 
-// æ³¨å†Œ ç™»å½•
+// ×¢²á µÇÂ¼
 struct LoginMessage
 {
   LoginMessage() {}
   LoginMessage(const char* msg) {
     memcpy(this, msg, sizeof(LoginMessage));
   }
-  char username[20];
-  char password[20];
+  char username[NAME_SIZE];
+  char password[NAME_SIZE];
 };
 
 struct LoginResponse
@@ -30,11 +46,13 @@ struct LoginResponse
     success = 0,
     failed = 1,
     user_exist = 2,
+    passwd_error = 3
   };
   int status;
+  int dir; // ¸ùÄ¿Â¼±àºÅ
 };
 
-// æ–‡ä»¶
+// ÎÄ¼ş
 struct UploadFileMessage
 {
   UploadFileMessage() {}
@@ -42,23 +60,23 @@ struct UploadFileMessage
     memcpy(this, msg, sizeof(UploadFileMessage));
   }
   char md5[33];
-  int file_size; // å­—èŠ‚æ•°
-  int block_num; // å‰ç«¯è®¡ç®—æ€»å—æ•°
-  int block_id;  // ä»0å¼€å§‹ç¼–å·
+  int file_size; // ×Ö½ÚÊı
+  int block_num; // Ç°¶Ë¼ÆËã×Ü¿éÊı
+  int block_id;  // ´Ó0¿ªÊ¼±àºÅ
 };
 
-// åé¦ˆéœ€è¦çš„æ–‡ä»¶å—
+// ·´À¡ĞèÒªµÄÎÄ¼ş¿é
 struct UploadFileResponse
 {
   UploadFileResponse() {}
   UploadFileResponse(const char* msg) {
     memcpy(this, msg, sizeof(UploadFileResponse));
   }
-  bool checked; // æ˜¯å¦éªŒè¯é€šè¿‡ trueæ‰èƒ½ä¸‹ä¸€æ­¥ä¼ è¾“
+  bool checked; // ÊÇ·ñÑéÖ¤Í¨¹ı true²ÅÄÜÏÂÒ»²½´«Êä
   int block_id;
 };
 
-// ä¸Šä¼ æ–‡ä»¶å—
+// ÉÏ´«ÎÄ¼ş¿é
 struct UploadBlockMessage
 {
   UploadBlockMessage() {}
@@ -67,16 +85,172 @@ struct UploadBlockMessage
   }
   char md5[33];
   int block_id;
-  int size; // å­—èŠ‚æ•°
+  int size; // ×Ö½ÚÊı
   char block_data[BLOCK_SIZE];
 };
 
-// åé¦ˆä¸Šä¼ æƒ…å†µ
+// ·´À¡ÉÏ´«Çé¿ö
 struct UploadBlockResponse
 {
   UploadBlockResponse() {}
   UploadBlockResponse(const char* msg) {
     memcpy(this, msg, sizeof(UploadBlockResponse));
   }
-  int next_block_id; // ä¸‹ä¸€ä¸ªå—çš„id -1è¡¨ç¤ºä¸Šä¼ å®Œæˆ
+  int next_block_id; // ÏÂÒ»¸ö¿éµÄid -1±íÊ¾ÉÏ´«Íê³É
+};
+
+// ´´½¨Ä¿Â¼
+struct CreateDirMessage
+{
+  CreateDirMessage() {}
+  CreateDirMessage(const char* msg) {
+    memcpy(this, msg, sizeof(CreateDirMessage));
+  }
+  char username[NAME_SIZE];
+  char dirname[NAME_SIZE];
+  int pid; // ¸¸Ä¿Â¼±àºÅ
+};
+
+typedef LoginResponse CreateDirResponse;
+
+// »ñÈ¡Ä¿Â¼id
+struct GetDirIDMessage
+{
+  GetDirIDMessage() {}
+  GetDirIDMessage(const char* msg) {
+    memcpy(this, msg, sizeof(GetDirIDMessage));
+  }
+  char username[NAME_SIZE];
+  char dirname[NAME_SIZE];
+  int pid; // ¸¸Ä¿Â¼±àºÅ
+};
+
+typedef LoginResponse GetDirIDResponse;
+
+// »ñÈ¡ÎÄ¼şid
+struct GetFileIDMessage
+{
+  GetFileIDMessage() {}
+  GetFileIDMessage(const char* msg) {
+    memcpy(this, msg, sizeof(GetFileIDMessage));
+  }
+  char username[NAME_SIZE];
+  char filename[NAME_SIZE];
+  int pid; // ¸¸Ä¿Â¼±àºÅ
+};
+
+typedef LoginResponse GetFileIDResponse;
+
+// ´´½¨ÎÄ¼şÄ¿Â¼
+struct CreateFileDirMessage
+{
+  CreateFileDirMessage() {}
+  CreateFileDirMessage(const char* msg) {
+    memcpy(this, msg, sizeof(CreateFileDirMessage));
+  }
+  char username[NAME_SIZE];
+  int pid; // ¸¸Ä¿Â¼±àºÅ
+  char md5[33]; // ÎÄ¼şµÄmd5
+  char filename[NAME_SIZE];
+};
+
+typedef LoginResponse CreateFileDirResponse;
+
+// »ñÈ¡ÎÄ¼ş¼ĞÏÂÄ¿Â¼
+struct GetDirsMessage
+{
+  GetDirsMessage() {}
+  GetDirsMessage(const char* msg) {
+    memcpy(this, msg, sizeof(GetDirsMessage));
+  }
+  char username[NAME_SIZE];
+  int pid; // ¸¸Ä¿Â¼±àºÅ
+};
+
+struct GetDirsResponse
+{
+  GetDirsResponse() {}
+  GetDirsResponse(const char* msg) {
+    memcpy(this, msg, sizeof(GetDirsResponse));
+  }
+  int num; // Ä¿Â¼ÊıÁ¿
+  char dirname[FILE_NUM][NAME_SIZE]; // Ä¿Â¼Ãû
+};
+
+// »ñÈ¡ÎÄ¼ş¼ĞÏÂÎÄ¼ş
+typedef GetDirsMessage GetFilesMessage;
+typedef GetDirsResponse GetFilesResponse;
+
+// ¸ü¸ÄÎÄ¼ş¼ĞÎ»ÖÃ
+struct MoveDirMessage
+{
+  MoveDirMessage() {}
+  MoveDirMessage(const char* msg) {
+    memcpy(this, msg, sizeof(MoveDirMessage));
+  }
+  int id; // Ä¿Â¼±àºÅ
+  int src; // Ô´¸¸Ä¿Â¼±àºÅ
+  int dst; // Ä¿±ê¸¸Ä¿Â¼±àºÅ
+};
+
+typedef LoginResponse MoveDirResponse;
+
+typedef MoveDirMessage MoveFileMessage;
+typedef MoveDirResponse MoveFileResponse;
+
+// É¾³ıÄ¿Â¼
+struct DeleteDirMessage
+{
+  DeleteDirMessage() {}
+  DeleteDirMessage(const char* msg) {
+    memcpy(this, msg, sizeof(DeleteDirMessage));
+  }
+  int id; // Ä¿Â¼±àºÅ
+};
+
+typedef LoginResponse DeleteDirResponse;
+
+typedef DeleteDirMessage DeleteFileMessage;
+typedef DeleteDirResponse DeleteFileResponse;
+
+
+// »ñÈ¡ÎÄ¼şĞÅÏ¢
+struct GetFileInfoMessage
+{
+  GetFileInfoMessage() {}
+  GetFileInfoMessage(const char* msg) {
+    memcpy(this, msg, sizeof(GetFileInfoMessage));
+  }
+  int id; // ÎÄ¼ş±àºÅ
+};
+
+struct GetFileInfoResponse
+{
+  GetFileInfoResponse() {}
+  GetFileInfoResponse(const char* msg) {
+    memcpy(this, msg, sizeof(GetFileInfoResponse));
+  }
+  int file_size; // ×Ö½ÚÊı
+};
+
+
+// ÏÂÔØÎÄ¼ş¿é
+struct DownloadBlockMessage
+{
+  DownloadBlockMessage() {}
+  DownloadBlockMessage(const char* msg) {
+    memcpy(this, msg, sizeof(DownloadBlockMessage));
+  }
+  int id;
+  int block_id; // ¿éË÷Òı ´Ó1¿ªÊ¼±àºÅ
+  int size; // ×Ö½ÚÊı
+};
+
+struct DownloadBlockResponse
+{
+  DownloadBlockResponse() {}
+  DownloadBlockResponse(const char* msg) {
+    memcpy(this, msg, sizeof(DownloadBlockResponse));
+  }
+  char block_data[BLOCK_SIZE];
 };
