@@ -24,6 +24,8 @@ constexpr int MSG_DELETE_DIR = 13;
 constexpr int MSG_DELETE_FILE = 14;
 constexpr int MSG_GET_FILE_INFO = 15;
 constexpr int MSG_DOWNLOAD_BLOCK = 16;
+constexpr int MSG_COPY_FILE = 17;
+constexpr int MSG_COPY_DIR = 18;
 
 // 注册 登录
 struct LoginMessage
@@ -46,7 +48,9 @@ struct LoginResponse
     success = 0,
     failed = 1,
     user_exist = 2,
-    passwd_error = 3
+    passwd_error = 3,
+    dir_exist = 4,
+    file_exist = 5,
   };
   int status;
   int dir; // 根目录编号
@@ -156,6 +160,22 @@ struct CreateFileDirMessage
 
 typedef LoginResponse CreateFileDirResponse;
 
+// 文件复制
+struct CopyFileMessage
+{
+  CopyFileMessage() {}
+  CopyFileMessage(const char* msg) {
+    memcpy(this, msg, sizeof(CopyFileMessage));
+  }
+  char username[NAME_SIZE];
+  int pid; // 父目录编号
+  int fid; // 源文件编号
+  char filename[NAME_SIZE];
+};
+
+typedef LoginResponse CopyFileResponse;
+
+
 // 获取文件夹下目录
 struct GetDirsMessage
 {
@@ -254,3 +274,16 @@ struct DownloadBlockResponse
   }
   char block_data[BLOCK_SIZE];
 };
+
+struct CopyDirMessage
+{
+  CopyDirMessage() {}
+  CopyDirMessage(const char* msg) {
+    memcpy(this, msg, sizeof(CopyDirMessage));
+  }
+  char username[NAME_SIZE];
+  int src; // 源目录编号
+  int dst; // 目标父目录编号
+};
+
+typedef LoginResponse CopyDirResponse;

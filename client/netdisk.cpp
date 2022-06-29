@@ -101,7 +101,6 @@ void NetDisk::on_upload_dir_clicked() {
 
 void NetDisk::on_new_dir_clicked()
 {
-    cout << "???" << endl;
     // 弹框询问文件夹名称
     bool ok;
     QString dir_name = QInputDialog::getText(this, QStringLiteral("新建文件夹"), QStringLiteral("请输入文件夹名称"), QLineEdit::Normal, QString(""), &ok);
