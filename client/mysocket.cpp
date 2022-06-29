@@ -18,7 +18,7 @@ SJ::MySocket::MySocket()
     ip = "1.15.144.212";
     port = 8000;
 
-    // è¿æ¥åˆ°æœåŠ¡ç«¯
+    // Á¬½Óµ½·şÎñ¶Ë
     //    if (getConnect() == -1) {
     //        has_error = true;
     //    }
@@ -35,7 +35,7 @@ SJ::MySocket::MySocket(std::string ip, int port)
     this->ip = ip;
     this->port = port;
 
-    // è¿æ¥åˆ°æœåŠ¡ç«¯
+    // Á¬½Óµ½·şÎñ¶Ë
     if (getConnect() == -1) {
         has_error = true;
     }
@@ -53,7 +53,7 @@ SJ::MySocket::~MySocket()
 
 int SJ::MySocket::getConnect()
 {
-    // æŒ‡å®šWindows Socketsç‰ˆæœ¬
+    // Ö¸¶¨Windows Sockets°æ±¾
     int version = MAKEWORD(2, 2);
     WSADATA wsaData;
     if (WSAStartup(version, &wsaData) != 0) {
@@ -61,14 +61,14 @@ int SJ::MySocket::getConnect()
         has_error = true;
         return -1;
     }
-    // åˆ›å»ºå¥—æ¥å­—
+    // ´´½¨Ì×½Ó×Ö
     client = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (client == INVALID_SOCKET) {
         std::cout << "socket error" << std::endl;
         has_error = true;
         return -1;
     }
-    // è¿æ¥æœåŠ¡ç«¯
+    // Á¬½Ó·şÎñ¶Ë
     sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
@@ -126,19 +126,19 @@ void SJ::MySocket::printError()
     }
 }
 
-// æ¥æ”¶æ¶ˆæ¯
+// ½ÓÊÕÏûÏ¢
 int SJ::MySocket::recvMsg()
 {
     return recv(client, recv_buf, sizeof(recv_buf), 0);
 }
 
-// å‘é€ç”¨æˆ·ä¿¡æ¯
+// ·¢ËÍÓÃ»§ĞÅÏ¢
 int SJ::MySocket::sendUserInfo(int type, const std::string &user_name, const std::string &user_password)
 {
     if (!is_connected) {
         return -1;
     }
-    // å‘é€æ¶ˆæ¯
+    // ·¢ËÍÏûÏ¢
     char buf[MAX_BUF_SIZE] = { 0 };
     LoginMessage msg;
     buf[0] = type;
@@ -155,13 +155,13 @@ int SJ::MySocket::sendUserInfo(int type, const std::string &user_name, const std
     return 0;
 }
 
-// å‘é€æ–‡ä»¶
+// ·¢ËÍÎÄ¼ş
 void SJ::MySocket::sendFile(const std::string &file_name)
 {
-    // è¯»æ–‡ä»¶
+    // ¶ÁÎÄ¼ş
     FILE *fp = fopen(file_name.c_str(), "r");
     int size = 0;
-    // è·å–æ–‡ä»¶å¤§å°
+    // »ñÈ¡ÎÄ¼ş´óĞ¡
     fseek(fp, 0, SEEK_END);
     size = ftell(fp);
 
@@ -184,7 +184,7 @@ void SJ::MySocket::sendFile(const std::string &file_name)
         msg.block_num = block_num;
         msg.block_id = cur_idx;
 
-        // å‘é€æ–‡ä»¶ä¿¡æ¯
+        // ·¢ËÍÎÄ¼şĞÅÏ¢
         buf_send[0] = MSG_UPLOAD_FILE;
         memcpy(buf_send + 1, &msg, sizeof(msg));
         send(client, buf_send, sizeof(msg) + 1, 0);
@@ -197,13 +197,13 @@ void SJ::MySocket::sendFile(const std::string &file_name)
         cout << "res.checked " << res.checked << endl;
         cout << "res.block_id " << res.block_id << endl << endl;
 
-        // ä¸æˆåŠŸå°±å†æ¬¡å‘é€
+        // ²»³É¹¦¾ÍÔÙ´Î·¢ËÍ
         if (!res.checked) {
           cur_idx = res.block_id;
           continue;
         }
 
-        // è¯»å–æ–‡ä»¶å†…å®¹
+        // ¶ÁÈ¡ÎÄ¼şÄÚÈİ
         UploadBlockMessage block_msg;
         memset(block_msg.block_data, 0, BLOCK_SIZE);
         fseek(fp, (cur_idx - 1) * BLOCK_SIZE, SEEK_SET);
@@ -212,7 +212,7 @@ void SJ::MySocket::sendFile(const std::string &file_name)
         block_msg.block_id = cur_idx;
         block_msg.size = min(BLOCK_SIZE, size - (cur_idx - 1) * BLOCK_SIZE);
 
-        // å‘é€æ–‡ä»¶å†…å®¹
+        // ·¢ËÍÎÄ¼şÄÚÈİ
         memset(buf_send, 0, sizeof(buf_send));
         buf_send[0] = MSG_UPLOAD_BLOCK;
         memcpy(buf_send + 1, &block_msg, sizeof(block_msg));
@@ -220,7 +220,7 @@ void SJ::MySocket::sendFile(const std::string &file_name)
 
         cout << "send2: " << min(BLOCK_SIZE, size - (cur_idx - 1) * BLOCK_SIZE) << endl;
 
-        // æ›´æ–°å½“å‰å—ç´¢å¼•
+        // ¸üĞÂµ±Ç°¿éË÷Òı
         recv(client, buf_send, sizeof(buf_send), 0);
         UploadBlockResponse block_res(buf_send);
         cout << "block_res.next_block_id " << block_res.next_block_id << endl << endl;

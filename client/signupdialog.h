@@ -19,7 +19,7 @@ public:
 public:
     explicit SignUpDialog(QWidget *parent = nullptr);
     ~SignUpDialog();
-    // æ³¨å†Œç”¨æˆ·åã€å¯†ç 
+    // ×¢²áÓÃ»§Ãû¡¢ÃÜÂë
     QString sign_up_account, sign_up_password1, sign_up_password2;
 
 private slots:

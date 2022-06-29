@@ -34,19 +34,19 @@ void SignInWidget::on_sign_in_password_textChanged(const QString &arg1)
 
 void SignInWidget::on_sign_in_btn_clicked()
 {
-    // å¦‚æœç”¨æˆ·åå’Œå¯†ç éƒ½ä¸ä¸ºç©ºï¼Œåˆ™å‘é€ç™»å½•è¯·æ±‚
+    // Èç¹ûÓÃ»§ÃûºÍÃÜÂë¶¼²»Îª¿Õ£¬Ôò·¢ËÍµÇÂ¼ÇëÇó
     if (sign_in_account.isEmpty() || sign_in_password.isEmpty()) {
-        showMsg("è¯·è¾“å…¥ç”¨æˆ·åå’Œå¯†ç ");
+        showMsg("ÇëÊäÈëÓÃ»§ÃûºÍÃÜÂë");
         return;
     }
-    // å‘é€ç™»å½•è¯·æ±‚ï¼Œè·å–ç™»å½•ç»“æœ
+    // ·¢ËÍµÇÂ¼ÇëÇó£¬»ñÈ¡µÇÂ¼½á¹û
     sock->sendUserInfo(MSG_TYPE_LOGIN, this->sign_in_account.toStdString(), this->sign_in_password.toStdString());
     sock->recvMsg();
     auto res = LoginResponse(sock->recv_buf);
     if (res.status == LoginResponse::success) {
-        // ç™»å½•æˆåŠŸï¼Œåˆ°ä¸»é¡µé¢
-        showMsg("ç™»é™†æˆåŠŸ!");
-        // è®°å½•å…¨å±€ä¿¡æ¯
+        // µÇÂ¼³É¹¦£¬µ½Ö÷Ò³Ãæ
+        showMsg("µÇÂ½³É¹¦!");
+        // ¼ÇÂ¼È«¾ÖĞÅÏ¢
         g_msg.username = this->sign_in_account.toStdString();
         g_msg.path.push_back("root");
         g_msg.cur_dir = res.dir;
@@ -56,31 +56,31 @@ void SignInWidget::on_sign_in_btn_clicked()
         client->show();
     }
     else if (res.status == LoginResponse::passwd_error) {
-        showMsg("å¯†ç é”™è¯¯!");
+        showMsg("ÃÜÂë´íÎó!");
     }
     else {
-        showMsg("ç”¨æˆ·ä¸å­˜åœ¨!");
+        showMsg("ÓÃ»§²»´æÔÚ!");
     }
 }
 
 void SignInWidget::on_go_to_sign_up_clicked()
 {
     /* 
-     * åˆ›å»ºä¸€ä¸ªæ–°çš„çª—å£ï¼Œæ˜¾ç¤ºæ³¨å†Œå¯¹è¯æ¡†
+     * ´´½¨Ò»¸öĞÂµÄ´°¿Ú£¬ÏÔÊ¾×¢²á¶Ô»°¿ò
      *
-     * å¯¹è¯æ¡†è¿”å›æœ‰ä¸¤ç§æƒ…å†µï¼šæ³¨å†ŒæˆåŠŸè¿”å›
-     *                     å…³é—­çª—å£è¿”å›
+     * ¶Ô»°¿ò·µ»ØÓĞÁ½ÖÖÇé¿ö£º×¢²á³É¹¦·µ»Ø
+     *                     ¹Ø±Õ´°¿Ú·µ»Ø
      */
     SignUpDialog sign_dlg;
     this->hide();
     if (sign_dlg.exec() == QDialog::Accepted) {
-        // æ³¨å†ŒæˆåŠŸè¿”å›ï¼Œè‡ªåŠ¨å¡«å†™ç”¨æˆ·åå’Œå¯†ç 
+        // ×¢²á³É¹¦·µ»Ø£¬×Ô¶¯ÌîĞ´ÓÃ»§ÃûºÍÃÜÂë
         ui->sign_in_account->setText(sign_dlg.sign_up_account);
         ui->sign_in_password->setText(sign_dlg.sign_up_password1);
         this->show();
     }
     else {
-        // å…³é—­çª—å£è¿”å›ï¼Œä¸åšä»»ä½•å¤„ç†
+        // ¹Ø±Õ´°¿Ú·µ»Ø£¬²»×öÈÎºÎ´¦Àí
         this->show();
     }
 }
@@ -94,6 +94,6 @@ void SignInWidget::showMsg(QString msg)
 
 void SignInWidget::reConnect()
 {
-    // å¦‚æœç™»å½•å¤±è´¥ï¼Œåˆ™é‡æ–°è¿æ¥
+    // Èç¹ûµÇÂ¼Ê§°Ü£¬ÔòÖØĞÂÁ¬½Ó
     // my_socket.reConnect();
 }

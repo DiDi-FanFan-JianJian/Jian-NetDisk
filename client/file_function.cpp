@@ -3,7 +3,7 @@
 #include <QFileInfo>
 #include <QDir>
 
-// åˆ¤æ–­æŸä¸ªè·¯å¾„æ˜¯æ–‡ä»¶è¿˜æ˜¯æ–‡ä»¶å¤¹
+// ÅĞ¶ÏÄ³¸öÂ·¾¶ÊÇÎÄ¼ş»¹ÊÇÎÄ¼ş¼Ğ
 bool isDir(const QString &path)
 {
     QFileInfo file_info(path);
@@ -15,63 +15,63 @@ bool isFile(const QString &path)
     return file_info.isFile();
 }
 
-// åˆ¤æ–­æŸæ–‡ä»¶å¤¹æ˜¯å¦å­˜åœ¨
+// ÅĞ¶ÏÄ³ÎÄ¼ş¼ĞÊÇ·ñ´æÔÚ
 bool isDirExist(const QString &dir_path)
 {
     QDir dir(dir_path);
     return dir.exists();
 }
 
-// åˆ¤æ–­æŸä¸ªæ–‡ä»¶æ˜¯å¦å­˜åœ¨
+// ÅĞ¶ÏÄ³¸öÎÄ¼şÊÇ·ñ´æÔÚ
 bool isFileExist(const QString &file_path)
 {
     QFile file(file_path);
     return file.exists();
 }
 
-// è·å–æŸä¸ªè·¯å¾„ä¸‹æ‰€æœ‰æ–‡ä»¶å¤¹ï¼ˆä¸åŒ…æ‹¬æ–‡ä»¶ï¼‰
+// »ñÈ¡Ä³¸öÂ·¾¶ÏÂËùÓĞÎÄ¼ş¼Ğ£¨²»°üÀ¨ÎÄ¼ş£©
 QStringList getDirList(const QString &dir_path)
 {
     QDir dir(dir_path);
-    // è·å–æ–‡ä»¶å¤¹åˆ—è¡¨ï¼Œä¸åŒ…æ‹¬æ–‡ä»¶
+    // »ñÈ¡ÎÄ¼ş¼ĞÁĞ±í£¬²»°üÀ¨ÎÄ¼ş
     QStringList dir_list = dir.entryList(QDir::Dirs);
     return dir_list;
 }
 
-// è·å–æŸä¸ªè·¯å¾„ä¸‹æ‰€æœ‰æ–‡ä»¶ï¼ˆä¸åŒ…æ‹¬æ–‡ä»¶å¤¹ï¼‰
+// »ñÈ¡Ä³¸öÂ·¾¶ÏÂËùÓĞÎÄ¼ş£¨²»°üÀ¨ÎÄ¼ş¼Ğ£©
 QStringList getFileList(const QString &dir_path)
 {
     QDir dir(dir_path);
-    // è·å–æ–‡ä»¶åˆ—è¡¨ï¼Œä¸åŒ…æ‹¬æ–‡ä»¶å¤¹
+    // »ñÈ¡ÎÄ¼şÁĞ±í£¬²»°üÀ¨ÎÄ¼ş¼Ğ
     QStringList file_list = dir.entryList(QDir::Files);
     return file_list;
 }
 
-// åœ¨æŸä¸ªè·¯å¾„ä¸‹åˆ›å»ºæ–‡ä»¶å¤¹
+// ÔÚÄ³¸öÂ·¾¶ÏÂ´´½¨ÎÄ¼ş¼Ğ
 bool createDir(const QString &dir_path, const QString &dir_name)
 {
     if (!isDirExist(dir_path))
     {
         QDir dir(dir_path);
-        // åˆ›å»ºæ–‡ä»¶å¤¹
+        // ´´½¨ÎÄ¼ş¼Ğ
         return dir.mkdir(dir_name);
     }
     return false;
 }
 
-// åœ¨æŸä¸ªè·¯å¾„ä¸‹åˆ›å»ºæ–‡ä»¶
+// ÔÚÄ³¸öÂ·¾¶ÏÂ´´½¨ÎÄ¼ş
 bool createFile(const QString &file_path)
 {
     if (!isFileExist(file_path))
     {
         QFile file(file_path);
-        // åˆ›å»ºæ–‡ä»¶å¹¶æŒ‡å®šè¯»å†™æƒé™
+        // ´´½¨ÎÄ¼ş²¢Ö¸¶¨¶ÁĞ´È¨ÏŞ
         return file.open(QIODevice::ReadWrite);
     }
     return false;
 }
 
-// è·å–æ–‡ä»¶MD5å€¼
+// »ñÈ¡ÎÄ¼şMD5Öµ
 QString getFileMD5(QString file_name)
 {
     std::string str_md5;
@@ -82,7 +82,7 @@ QString getFileMD5(QString file_name)
     return QString::fromStdString(str_md5);
 }
 
-// è·å–æ–‡ä»¶å¤§å°
+// »ñÈ¡ÎÄ¼ş´óĞ¡
 int getFileSize(QString file_name)
 {
     QFile file(file_name);
@@ -93,22 +93,22 @@ int getFileSize(QString file_name)
     return file.size();
 }
 
-// è·å–æ–‡ä»¶å
+// »ñÈ¡ÎÄ¼şÃû
 QString getFileName(QString file_name)
 {
     QFileInfo file_info(file_name);
     return file_info.fileName();
 }
 
-// å‘æŸä¸ªæ–‡ä»¶æŒ‡å®šä½ç½®å†™å…¥å†…å®¹ï¼ˆ-1ï¼šå°¾ï¼Œ0ï¼šå¤´ï¼Œå…¶ä»–ï¼šæŒ‡å®šä½ç½®ï¼‰
+// ÏòÄ³¸öÎÄ¼şÖ¸¶¨Î»ÖÃĞ´ÈëÄÚÈİ£¨-1£ºÎ²£¬0£ºÍ·£¬ÆäËû£ºÖ¸¶¨Î»ÖÃ£©
 bool writeFile(const QString &file_path, const QString &content, int pos)
 {
-    // åˆ¤æ–­æ–‡ä»¶æ˜¯å¦å­˜åœ¨
+    // ÅĞ¶ÏÎÄ¼şÊÇ·ñ´æÔÚ
     if (!isFileExist(file_path))
     {
         return false;
     }
-    // ä»¥äºŒè¿›åˆ¶æ–¹å¼æ‰“å¼€æ–‡ä»¶ï¼Œç§»åŠ¨æ–‡ä»¶æŒ‡é’ˆåˆ°æŒ‡å®šä½ç½®
+    // ÒÔ¶ş½øÖÆ·½Ê½´ò¿ªÎÄ¼ş£¬ÒÆ¶¯ÎÄ¼şÖ¸Õëµ½Ö¸¶¨Î»ÖÃ
     QFile file(file_path);
     if (!file.open(QIODevice::ReadWrite))
     {
@@ -126,7 +126,7 @@ bool writeFile(const QString &file_path, const QString &content, int pos)
     {
         file.seek(pos);
     }
-    // å‘æ–‡ä»¶å†™å…¥å†…å®¹ï¼Œåˆ¤æ–­æ˜¯å¦å†™å…¥æˆåŠŸ
+    // ÏòÎÄ¼şĞ´ÈëÄÚÈİ£¬ÅĞ¶ÏÊÇ·ñĞ´Èë³É¹¦
     QTextStream out(&file);
     out << content;
     if (file.error() != QFile::NoError)
@@ -137,22 +137,22 @@ bool writeFile(const QString &file_path, const QString &content, int pos)
     return true;
 }
 
-// ä»æŸä¸ªæ–‡ä»¶è¯»å–æŒ‡å®šä½ç½®çš„æŒ‡å®šæ•°é‡çš„å†…å®¹
+// ´ÓÄ³¸öÎÄ¼ş¶ÁÈ¡Ö¸¶¨Î»ÖÃµÄÖ¸¶¨ÊıÁ¿µÄÄÚÈİ
 QString readFile(const QString &file_path, int pos, int size, QString &content)
 {
-    // åˆ¤æ–­æ–‡ä»¶æ˜¯å¦å­˜åœ¨
+    // ÅĞ¶ÏÎÄ¼şÊÇ·ñ´æÔÚ
     if (!isFileExist(file_path))
     {
         return "";
     }
-    // ä»¥äºŒè¿›åˆ¶æ–¹å¼æ‰“å¼€æ–‡ä»¶ï¼Œç§»åŠ¨æ–‡ä»¶æŒ‡é’ˆåˆ°æŒ‡å®šä½ç½®
+    // ÒÔ¶ş½øÖÆ·½Ê½´ò¿ªÎÄ¼ş£¬ÒÆ¶¯ÎÄ¼şÖ¸Õëµ½Ö¸¶¨Î»ÖÃ
     QFile file(file_path);
     if (!file.open(QIODevice::ReadOnly))
     {
         return "";
     }
     file.seek(pos);
-    // è¯»å–æŒ‡å®šæ•°é‡çš„å†…å®¹ï¼Œåˆ¤æ–­æ˜¯å¦è¯»å–æˆåŠŸ
+    // ¶ÁÈ¡Ö¸¶¨ÊıÁ¿µÄÄÚÈİ£¬ÅĞ¶ÏÊÇ·ñ¶ÁÈ¡³É¹¦
     QTextStream in(&file);
     content = in.read(size);
     if (file.error() != QFile::NoError)
@@ -163,7 +163,7 @@ QString readFile(const QString &file_path, int pos, int size, QString &content)
     return content;
 }
 
-// å°†æ–‡ä»¶è·¯å¾„ä¸­çš„'/'æ›¿æ¢ä¸º'\'
+// ½«ÎÄ¼şÂ·¾¶ÖĞµÄ'/'Ìæ»»Îª'\'
 QString slash2backslash(QString file_path)
 {
     return file_path.replace('/', '\\');
