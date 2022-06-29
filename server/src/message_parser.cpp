@@ -50,6 +50,10 @@ string router::parse(const char* msg)
       return handle_get_file_info(msg + 1);
     case MSG_DOWNLOAD_BLOCK:
       return handle_download_block(msg + 1);
+    case MSG_COPY_FILE:
+      return handle_copy_file(msg + 1);
+    case MSG_COPY_DIR:
+      return handle_copy_dir(msg + 1);
     default:
       return "unknown type";
   }
@@ -183,7 +187,10 @@ string router::handle_create_dir(const char* m)
   CreateDirMessage msg(m);
   cout << "handle_create_dir" << endl;
   CreateDirResponse res;
-  if (this->db->create_dir(msg.username, to_string(msg.pid), msg.dirname)) {
+  if (this->db->is_dir_exist(to_string(msg.pid), msg.dirname)) {
+    res.status = CreateDirResponse::dir_exist;
+  }
+  else if (this->db->create_dir(msg.username, to_string(msg.pid), msg.dirname)) {
     res.status = CreateDirResponse::success;
   }
   else {
@@ -203,6 +210,21 @@ string router::handle_create_file_dir(const char* m)
   } 
   else {
     res.status = CreateFileDirResponse::failed;
+  }
+  return struct_to_string(res);
+}
+
+// 复制文件
+string router::handle_copy_file(const char* m)
+{
+  cout << "handle_copy_file" << endl;
+  CopyFileMessage msg(m);
+  CopyFileResponse res;
+  if (this->db->copy_file(msg.username, to_string(msg.fid), to_string(msg.pid), msg.filename)) {
+    res.status = CopyFileResponse::success;
+  }
+  else {
+    res.status = CopyFileResponse::failed;
   }
   return struct_to_string(res);
 }
@@ -348,5 +370,20 @@ string router::handle_download_block(const char* m)
   fseek(fp, idx * BLOCK_SIZE, SEEK_SET);
   fread(res.block_data, sizeof(char), size, fp);
   fclose(fp);
+  return struct_to_string(res);
+}
+
+// 复制目录
+string router::handle_copy_dir(const char* m)
+{
+  cout << "handle_copy_dir" << endl;
+  CopyDirMessage msg(m);
+  CopyDirResponse res;
+  if (this->db->copy_dir(msg.username, to_string(msg.src), to_string(msg.dst))) {
+    res.status = CopyDirResponse::success;
+  }
+  else {
+    res.status = CopyDirResponse::failed;
+  }
   return struct_to_string(res);
 }

@@ -123,5 +123,3 @@ string dbController::getNextId(string table)
   int id = atoi(result[0][0].c_str()) + 1;
   return to_string(id);
 }
-
- 

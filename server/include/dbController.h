@@ -50,6 +50,8 @@ public:
   vector<string> get_dirs(string username, string pid); // 获取目录下所有子目录
   bool delete_dir(string did); // 删除目录
   bool move_dir(string did, string dst); // 移动目录
+  bool is_dir_exist(string pid, string dirname); // 判断目录是否存在
+  bool copy_dir(string username, string did, string dst); // 复制目录
 
   // file
   string get_file_id(string md5);       // 获取文件id
@@ -65,4 +67,6 @@ public:
   bool move_file(string fid, string src, string dst); // 移动文件
   int get_file_size(string fid); // 获取文件大小
   string get_file_path(string fid); // 获取文件路径
+  bool is_file_dir_exist(string pid, string filename); // 判断文件目录是否存在
+  bool copy_file(string username, string fid, string pid, string filename); // 文件复制
 };

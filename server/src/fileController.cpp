@@ -105,6 +105,19 @@ bool dbController::create_file_dir(string username, string md5, string pid, stri
   return true;
 }
 
+bool dbController::copy_file(string username, string fid, string pid, string filename)
+{
+  string uid = get_user_id(username);
+  string did = pid;
+  string time = getMysqlTime();
+  // fid uid did filename create_time update_time
+  string sql = "insert into file_dir (fid, uid, did, filename, create_time, update_time) values ('" + fid + "', '" + uid + "', '" + did + "', '" + filename + "', '" + time + "', '" + time + "')";
+  if (!insert(sql))
+    return false;
+  add_file_link_count(fid);
+  return true;
+}
+
 vector<string> dbController::get_dirs(string username, string pid)
 {
   vector<string> dirs;
@@ -118,6 +131,8 @@ vector<string> dbController::get_dirs(string username, string pid)
   {
     dirs.push_back(result[i][0]);
   }
+  // cout << sql << endl;
+  // cout << "get_dirs: " << dirs.size() << endl;
   return dirs;
 }
 
@@ -255,4 +270,80 @@ string dbController::get_file_path(string fid)
     return "";
   }
   return result[0][0];
+}
+
+// 目录是否存在
+bool dbController::is_dir_exist(string pid, string dirname)
+{
+  string sql = "select id from dirs where pid = '" + pid + "' and name = '" + dirname + "'";
+  if (!query(sql))
+  {
+    return false;
+  }
+  if ((int)result.size() == 0)
+  {
+    return false;
+  }
+  return true;
+}
+
+bool dbController::is_file_dir_exist(string pid, string filename)
+{
+  string sql = "select id from file_dir where did = '" + pid + "' and filename = '" + filename + "'";
+  if (!query(sql))
+  {
+    return false;
+  }
+  if ((int)result.size() == 0)
+  {
+    return false;
+  }
+  return true;
+}
+
+// src 起始父目录id dst 目标父目录id
+bool dbController::copy_dir(string username, string did, string dst) 
+{
+  // 获取原目录文件名
+  string sql = "select name from dirs where id = '" + did + "'";
+  if (!query(sql))
+  {
+    return false;
+  }
+
+  // 创建新目录
+  create_dir(username, dst, result[0][0]);
+  string new_did = get_dir_id(username, dst, result[0][0]);
+  
+  // 递归复制
+  sql = "select id from dirs where pid = '" + did + "'";
+  if (!query(sql))
+  {
+    return false;
+  }
+  for (auto i = 0; i < result.size(); i++)
+  {
+    string id = result[i][0];
+    copy_dir(username, id, new_did);
+  }
+
+  // 复制文件
+  sql = "select fid from file_dir where did = '" + did + "'";
+  if (!query(sql))
+  {
+    return false;
+  }
+  for (auto i = 0; i < result.size(); i++)
+  {
+    string fid = result[i][0];
+    // 获取文件名 fid did
+    sql = "select filename from file_dir where fid = '" + fid + "' and did = '" + did + "'";
+    if (!query(sql))
+    {
+      return false;
+    }
+    string filename = result[0][0];
+    copy_file(username, fid, new_did, filename);
+  }
+  return true;
 }
