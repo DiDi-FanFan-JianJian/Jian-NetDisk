@@ -1,36 +1,49 @@
 #include "md5.h"
 
-int get_file_md5(const std::string &file_name, std::string &md5_value)
+string getFileMd5(string path)
 {
-  md5_value.clear();
+    QString filePath = QString::fromStdString(path);
+    QFile localFile(filePath);
 
-  std::ifstream file(file_name.c_str(), std::ifstream::binary);
-  if (!file)
-  {
-    return -1;
-  }
+    if (!localFile.open(QFile::ReadOnly))
+    {
+        qDebug() << "file open error.";
+        return 0;
+    }
 
-  MD5_CTX md5Context;
-  MD5_Init(&md5Context);
+    QCryptographicHash ch(QCryptographicHash::Md5);
 
-  char buf[1024 * 16];
-  while (file.good())
-  {
-    file.read(buf, sizeof(buf));
-    MD5_Update(&md5Context, buf, file.gcount());
-  }
+    quint64 totalBytes = 0;
+    quint64 bytesWritten = 0;
+    quint64 bytesToWrite = 0;
+    quint64 loadSize = 1024 * 4;
+    QByteArray buf;
 
-  unsigned char result[MD5_DIGEST_LENGTH];
-  MD5_Final(result, &md5Context);
+    totalBytes = localFile.size();
+    bytesToWrite = totalBytes;
 
-  char hex[35];
-  memset(hex, 0, sizeof(hex));
-  for (int i = 0; i < MD5_DIGEST_LENGTH; ++i)
-  {
-    sprintf(hex + i * 2, "%02x", result[i]);
-  }
-  hex[32] = '\0';
-  md5_value = string(hex);
+    while (1)
+    {
+        if(bytesToWrite > 0)
+        {
+            buf = localFile.read(qMin(bytesToWrite, loadSize));
+            ch.addData(buf);
+            bytesWritten += buf.length();
+            bytesToWrite -= buf.length();
+            buf.resize(0);
+        }
+        else
+        {
+            break;
+        }
 
-  return 0;
+        if(bytesWritten == totalBytes)
+        {
+            break;
+        }
+    }
+
+    localFile.close();
+    QByteArray md5 = ch.result();
+    return md5.toHex().toStdString();
 }

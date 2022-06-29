@@ -1,7 +1,7 @@
 #include "mysocket.h"
 #include "message.h"
-#include "md5.h"
 #include "global_msg.h"
+#include "md5.h"
 
 #include <QDebug>
 #include <iostream>
@@ -21,14 +21,6 @@ SJ::MySocket::MySocket()
     has_error = false;
     ip = "1.15.144.212";
     port = 8000;
-
-    // 连接到服务端
-    //    if (getConnect() == -1) {
-    //        has_error = true;
-    //    }
-    //    else {
-    //        is_connected = true;
-    //    }
 }
 
 SJ::MySocket::MySocket(std::string ip, int port)
@@ -171,8 +163,7 @@ void SJ::MySocket::sendFile(const std::string &file_name)
 
     int block_num = size / BLOCK_SIZE + (size % BLOCK_SIZE ? 1 : 0);
     int cur_idx = 1;
-    string md5;
-    get_file_md5("./test_file/test.txt", md5);
+    string md5 = getFileMd5(file_name.c_str());
     char buf_send[this->MAX_BUF_SIZE];
     while (true) {
         getchar();
