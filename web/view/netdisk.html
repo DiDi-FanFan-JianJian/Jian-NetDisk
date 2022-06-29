@@ -6,9 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="../static/js/jquery.js"></script>
     <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
     <title>网盘</title>
 </head>
 
@@ -93,7 +92,8 @@
                     <input type=text name="fname" id="addfile_fname" class="form-control">
                     <span class="btn btn-info fileinput-button" style="margin-left:10px;">
                         <span id="file_name">选&nbsp;择&nbsp;文&nbsp;件</span>
-                        <input type="file" name="file" id="loadfile" accept=".rar"">
+                        <input type="file" name="file" id="loadfile">
+                        <!-- accept=".rar" -->
                     </span>
 
                     <input type="submit" id="addfile" value="上&nbsp;传&nbsp;文&nbsp;件" class="btn btn-info" style="margin-left:10px;">
@@ -273,7 +273,8 @@
             e.preventDefault();
             var form = this;
             var md5_post = document.getElementById("md5");
-            if (!md5_post) {
+            console.log(md5_post.value);
+            if (!md5_post.value) {
                 alert("请先选择您要上传的文件");
                 return;
             }
@@ -282,12 +283,15 @@
             },
                 function (data, status) {
                     if (data == 1) {
-                        // alert("您上传的文件支持秒传");
+                        alert("您上传的文件支持秒传");
                         document.getElementById("loadfile").value = "";
                         document.getElementById("addfile_token").value = "miao";
                     }
+                    else {
+                        let need_time = document.getElementById("loadfile").files[0].size / 8000 / 1024;
+                        alert("您上传的文件不支持秒传，预计时间：" + need_time.toPrecision(2) + "秒");
+                    }
                     console.log(data);
-                    // var status = confirm("Click OK to continue?");
                     form.submit();
                 });
         });
@@ -333,10 +337,6 @@
         });
     </script>
 
-    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js"></script>
-    <!-- <script src="https://unpkg.com/vue@3"></script> -->
-    <!-- <script src="../static/js/vue.global.js"></script> -->
     <style>
         .margin-tb {
             display: inline-block;
