@@ -172,9 +172,9 @@ bool dbController::del_file_link_count(string fid)
   return true;
 }
 
-bool dbController::delete_file(string fid)
+bool dbController::delete_file(string fid, string did)
 {
-  string sql = "delete from file_dir where fid = '" + fid + "'";
+  string sql = "delete from file_dir where fid = '" + fid + "' and did = '" + did + "'";
   if (!_delete(sql))
   {
     return false;
@@ -194,23 +194,26 @@ bool dbController::delete_dir(string did)
   {
     return false;
   }
-  // 子目录
-  for (auto i = 0; i < result.size(); i++)
+  auto tmp = result;
+  for (auto i = 0; i < tmp.size(); i++)
   {
-    string id = result[i][0];
+    string id = tmp[i][0];
     delete_dir(id);
   }
+
   // 子文件
   sql = "select fid from file_dir where did = '" + did + "'";
   if (!query(sql))
   {
     return false;
   }
-  for (auto i = 0; i < result.size(); i++)
+  tmp = result;
+  for (auto i = 0; i < tmp.size(); i++)
   {
-    string fid = result[i][0];
-    delete_file(fid);
+    string fid = tmp[i][0];
+    delete_file(fid, did);
   }
+
   // 删除目录
   sql = "delete from dirs where id = '" + did + "'";
   if (!_delete(sql))
@@ -310,10 +313,10 @@ bool dbController::copy_dir(string username, string did, string dst)
   {
     return false;
   }
-
+  string dname = result[0][0];
   // 创建新目录
-  create_dir(username, dst, result[0][0]);
-  string new_did = get_dir_id(username, dst, result[0][0]);
+  create_dir(username, dst, dname);
+  string new_did = get_dir_id(username, dst, dname);
   
   // 递归复制
   sql = "select id from dirs where pid = '" + did + "'";
@@ -321,9 +324,10 @@ bool dbController::copy_dir(string username, string did, string dst)
   {
     return false;
   }
-  for (auto i = 0; i < result.size(); i++)
+  auto tmp = result;
+  for (auto i = 0; i < tmp.size(); i++)
   {
-    string id = result[i][0];
+    string id = tmp[i][0];
     copy_dir(username, id, new_did);
   }
 
@@ -333,9 +337,10 @@ bool dbController::copy_dir(string username, string did, string dst)
   {
     return false;
   }
-  for (auto i = 0; i < result.size(); i++)
+  tmp = result;
+  for (auto i = 0; i < tmp.size(); i++)
   {
-    string fid = result[i][0];
+    string fid = tmp[i][0];
     // 获取文件名 fid did
     sql = "select filename from file_dir where fid = '" + fid + "' and did = '" + did + "'";
     if (!query(sql))
@@ -344,6 +349,27 @@ bool dbController::copy_dir(string username, string did, string dst)
     }
     string filename = result[0][0];
     copy_file(username, fid, new_did, filename);
+  }
+  return true;
+}
+
+// 重命名
+bool dbController::rename_dir(string did, string newname)
+{
+  string sql = "update dirs set name = '" + newname + "' where id = '" + did + "'";
+  if (!update(sql))
+  {
+    return false;
+  }
+  return true;
+}
+
+bool dbController::rename_file(string fid, string did, string newname)
+{
+  string sql = "update file_dir set filename = '" + newname + "' where fid = '" + fid + "' and did = '" + did + "'";
+  if (!update(sql))
+  {
+    return false;
   }
   return true;
 }

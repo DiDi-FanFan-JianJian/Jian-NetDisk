@@ -37,6 +37,7 @@ public:
   string handle_get_file_info(const char* msg);
   string handle_download_block(const char* msg);
   string handle_copy_file(const char* msg);
+  string handle_rename_file(const char* msg);
 
   // dir
   string handle_create_dir(const char* msg);
@@ -45,4 +46,5 @@ public:
   string handle_move_dir(const char* msg);
   string handle_delete_dir(const char* msg);
   string handle_copy_dir(const char* msg);
+  string handle_rename_dir(const char* msg);
 };

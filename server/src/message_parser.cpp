@@ -15,6 +15,7 @@ router::router(string user, string passwd, string dbname)
 
 string router::parse(const char* msg)
 {
+  // cout << "parse msg: " << (int)msg[0] << endl;
   int type = msg[0];
   switch (type)
   {
@@ -54,6 +55,10 @@ string router::parse(const char* msg)
       return handle_copy_file(msg + 1);
     case MSG_COPY_DIR:
       return handle_copy_dir(msg + 1);
+    case MSG_RENAME_FILE:
+      return handle_rename_file(msg + 1);
+    case MSG_RENAME_DIR:
+      return handle_rename_dir(msg + 1);
     default:
       return "unknown type";
   }
@@ -73,7 +78,10 @@ string router::handle_login(const char* m)
   {
     res.status = LoginResponse::success;
     auto dir = this->db->get_dir_id(msg.username, "0", "root");
-    res.dir = stoi(dir);
+    if (dir == "") 
+      res.status = LoginResponse::failed;
+    else 
+      res.dir = stoi(dir);
   }
   else if (this->db->is_user_exist(msg.username))
   {
@@ -288,6 +296,7 @@ string router::handle_move_dir(const char* m)
   cout << "handle_move_dir" << endl;
   MoveDirMessage msg(m);
   MoveDirResponse res;
+  // 获取msg.id对应的目录名
   if (this->db->move_dir(to_string(msg.id), to_string(msg.dst))) {
     res.status = MoveDirResponse::success;
   }
@@ -333,7 +342,7 @@ string router::handle_delete_file(const char* m)
   cout << "handle_delete_file" << endl;
   DeleteFileMessage msg(m);
   DeleteFileResponse res;
-  if (this->db->delete_file(to_string(msg.id))) {
+  if (this->db->delete_file(to_string(msg.id), to_string(msg.did))) {
     res.status = DeleteFileResponse::success;
   }
   else {
@@ -379,11 +388,41 @@ string router::handle_copy_dir(const char* m)
   cout << "handle_copy_dir" << endl;
   CopyDirMessage msg(m);
   CopyDirResponse res;
+
   if (this->db->copy_dir(msg.username, to_string(msg.src), to_string(msg.dst))) {
     res.status = CopyDirResponse::success;
   }
   else {
     res.status = CopyDirResponse::failed;
+  }
+  return struct_to_string(res);
+}
+
+// 重命名文件
+string router::handle_rename_dir(const char* m)
+{
+  cout << "handle_rename_dir" << endl;
+  RenameDirMessage msg(m);
+  RenameDirResponse res;
+  if (this->db->rename_dir(to_string(msg.id), msg.newname)) {
+    res.status = RenameDirResponse::success;
+  }
+  else {
+    res.status = RenameDirResponse::failed;
+  }
+  return struct_to_string(res);
+}
+
+string router::handle_rename_file(const char* m)
+{
+  cout << "handle_rename_file" << endl;
+  RenameFileMessage msg(m);
+  RenameFileResponse res;
+  if (this->db->rename_file(to_string(msg.id), to_string(msg.did), msg.newname)) {
+    res.status = RenameFileResponse::success;
+  }
+  else {
+    res.status = RenameFileResponse::failed;
   }
   return struct_to_string(res);
 }
