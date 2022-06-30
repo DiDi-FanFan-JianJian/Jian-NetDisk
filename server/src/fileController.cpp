@@ -373,3 +373,31 @@ bool dbController::rename_file(string fid, string did, string newname)
   }
   return true;
 }
+
+string dbController::get_file_name(string fid, string did)
+{
+  string sql = "select filename from file_dir where fid = '" + fid + "' and did = '" + did + "'";
+  if (!query(sql))
+  {
+    return "";
+  }
+  if ((int)result.size() == 0)
+  {
+    return "";
+  }
+  return result[0][0];
+}
+
+string dbController::get_file_md5(string fid)
+{
+  string sql = "select md5 from files where id = '" + fid + "'";
+  if (!query(sql))
+  {
+    return "";
+  }
+  if ((int)result.size() == 0)
+  {
+    return "";
+  }
+  return result[0][0];
+}

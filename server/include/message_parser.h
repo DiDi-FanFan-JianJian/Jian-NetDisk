@@ -47,4 +47,7 @@ public:
   string handle_delete_dir(const char* msg);
   string handle_copy_dir(const char* msg);
   string handle_rename_dir(const char* msg);
+
+
+  string handel_get_file_all_info(const char* msg);
 };

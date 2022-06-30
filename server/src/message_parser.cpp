@@ -59,6 +59,8 @@ string router::parse(const char* msg)
       return handle_rename_file(msg + 1);
     case MSG_RENAME_DIR:
       return handle_rename_dir(msg + 1);
+    case MSG_GET_FILE_ALL_INFO:
+      return handel_get_file_all_info(msg + 1);
     default:
       return "unknown type";
   }
@@ -425,5 +427,23 @@ string router::handle_rename_file(const char* m)
   else {
     res.status = RenameFileResponse::failed;
   }
+  return struct_to_string(res);
+}
+
+string router::handel_get_file_all_info(const char* m)
+{
+  cout << "handel_get_file_all_info" << endl;
+  GetFileAllInfoMessage msg(m);
+  GetFileAllInfoResponse res;
+  // 获取msg.id和msg.pid获取文件信息
+  string id = to_string(msg.id);
+  string pid = to_string(msg.pid);
+  // 文件名
+  string filename = this->db->get_file_name(id, pid);
+  string md5 = this->db->get_file_md5(id);
+  string size = to_string(this->db->get_file_size(id));
+  strcpy(res.filename, filename.c_str());
+  strcpy(res.md5, md5.c_str());
+  res.size = stoi(size);
   return struct_to_string(res);
 }
