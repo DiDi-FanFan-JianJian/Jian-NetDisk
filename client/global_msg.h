@@ -26,6 +26,7 @@ struct LoadFileInfo {
     int finished_size;
     int file_size;
     string file_path;
+    char md5[33] = "00000000000000000000000000000000";
     bool working;
 };
 
