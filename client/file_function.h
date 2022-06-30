@@ -25,6 +25,7 @@ QStringList getFileList(const QString &dir_path);
 
 // 在某个路径下创建文件夹
 bool createDir(const QString &dir_path, const QString &dir_name);
+bool createDir(const QString &dir_name_path);
 
 // 在某个路径下创建文件
 bool createFile(const QString &file_path);

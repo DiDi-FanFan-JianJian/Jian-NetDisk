@@ -54,6 +54,9 @@ namespace SJ
         void init_file_task(const string path);
         void init_dir_task(const string path, int did);
 
+        void add_download_file(const string& filename, const string& file_path);
+        void add_download_dir(const string &dirname, const string &dir_path);
+
         // 其他（移动、复制、重命名、删除）
         bool copy_file(int pid, int fid, string filename);
         bool copy_dir(int src);

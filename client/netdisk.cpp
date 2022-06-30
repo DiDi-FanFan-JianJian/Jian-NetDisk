@@ -227,7 +227,7 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
         file_name->setFlags(Qt::ItemIsEnabled);
         ui->file_list->setItem(i, 0, file_name);
         // 文件大小
-        QTableWidgetItem *file_size = new QTableWidgetItem("1.0KB");
+        QTableWidgetItem *file_size = new QTableWidgetItem(QStringLiteral("文件"));
         file_size->setFlags(Qt::ItemIsEnabled);
         ui->file_list->setItem(i, 1, file_size);
     }
@@ -332,10 +332,18 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
 
         if (is_dir) {
             QString dir_name = dir_list.at(item_id);
+            QString dir_path = download_path + "/" + dir_name;
+            int dir_id = g_msg.get_cur_id();
+            int did = this->sock->get_dir_id(dir_name.toStdString());
+            // this->sock->add_download_file(dir_name, dir_path);
             showMsg("下载文件夹" + dir_name + "到指定位置" + download_path);
         }
         else {
             QString file_name = file_list.at(item_id);
+            QString file_path = download_path + "/" + file_name;
+            int did = g_msg.get_cur_id();
+            int fid = this->sock->get_file_id(file_name.toStdString());
+            this->sock->add_download_file(file_name.toStdString(), file_path.toStdString());
             showMsg("下载文件" + file_name + "到指定位置" + download_path);
         }
     }

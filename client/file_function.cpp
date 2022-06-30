@@ -61,6 +61,17 @@ bool createDir(const QString &dir_path, const QString &dir_name)
     }
     return false;
 }
+bool createDir(const QString &dir_name_path)
+{
+    QFileInfo file_info(dir_name_path);
+    if (!file_info.isDir())
+    {
+        QDir dir(file_info.path());
+        // 创建文件夹
+        return dir.mkdir(file_info.fileName());
+    }
+    return false;
+}
 
 // 在某个路径下创建文件
 bool createFile(const QString &file_path)
