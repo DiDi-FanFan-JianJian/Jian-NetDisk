@@ -202,53 +202,54 @@ vector<string> SJ::MySocket::get_cur_files()
     return ans;
 }
 
-// 获取指定目录下信息
-vector<string> SJ::MySocket::get_cur_dirs(int dir_id)
-{
-    vector<string> ans;
-    char buf[MAX_BUF_SIZE] = {0};
+//// 获取指定目录下信息
+//vector<string> SJ::MySocket::get_cur_dirs(int dir_id)
+//{
+//    vector<string> ans;
+//    char buf[MAX_BUF_SIZE] = {0};
 
-    // 获取所有目录
-    buf[0] = MSG_GET_DIRS;
-    GetDirsMessage msg1;
-    strcpy(msg1.username, g_msg.username.c_str());
-    msg1.pid = dir_id;
-    memcpy(buf + 1, &msg1, sizeof(msg1));
-    send(client, buf, sizeof(msg1) + 1, 0);
-    this->recvMsg();
-    GetDirsResponse res1(this->recv_buf);
-    for (int i = 0; i < res1.num; ++i) {
-        // ans.push_back(res1.dirname[i]);
-        // 转utf-8
-        string utf = g_msg.GbkToUtf8(res1.dirname[i]);
-        ans.push_back(utf);
-    }
+//    // 获取所有目录
+//    buf[0] = MSG_GET_DIRS;
+//    GetDirsMessage msg1;
+//    strcpy(msg1.username, g_msg.username.c_str());
+//    msg1.pid = dir_id;
+//    memcpy(buf + 1, &msg1, sizeof(msg1));
+//    send(client, buf, sizeof(msg1) + 1, 0);
+//    this->recvMsg();
+//    GetDirsResponse res1(this->recv_buf);
+//    for (int i = 0; i < res1.num; ++i) {
+//        // ans.push_back(res1.dirname[i]);
+//        // 转utf-8
+//        string utf = g_msg.GbkToUtf8(res1.dirname[i]);
+//        ans.push_back(utf);
+//    }
 
-    return ans;
-}
-vector<string> SJ::MySocket::get_cur_files(int dir_id)
-{
-    vector<string> ans;
-    char buf[MAX_BUF_SIZE] = {0};
+//    return ans;
+//}
 
-    // 获取所有文件
-    buf[0] = MSG_GET_FILES;
-    GetFilesMessage msg2;
-    strcpy(msg2.username, g_msg.username.c_str());
-    msg2.pid = dir_id;
-    memcpy(buf + 1, &msg2, sizeof(msg2));
-    send(client, buf, sizeof(msg2) + 1, 0);
-    this->recvMsg();
-    GetFilesResponse res2(this->recv_buf);
-    for (int i = 0; i < res2.num; ++i) {
-        // ans.push_back(res2.dirname[i]);
-        // 转utf-8
-        string utf = g_msg.GbkToUtf8(res2.dirname[i]);
-        ans.push_back(utf);
-    }
+//vector<string> SJ::MySocket::get_cur_files(int dir_id)
+//{
+//    vector<string> ans;
+//    char buf[MAX_BUF_SIZE] = {0};
 
-    return ans;
-}
+//    // 获取所有文件
+//    buf[0] = MSG_GET_FILES;
+//    GetFilesMessage msg2;
+//    strcpy(msg2.username, g_msg.username.c_str());
+//    msg2.pid = dir_id;
+//    memcpy(buf + 1, &msg2, sizeof(msg2));
+//    send(client, buf, sizeof(msg2) + 1, 0);
+//    this->recvMsg();
+//    GetFilesResponse res2(this->recv_buf);
+//    for (int i = 0; i < res2.num; ++i) {
+//        // ans.push_back(res2.dirname[i]);
+//        // 转utf-8
+//        string utf = g_msg.GbkToUtf8(res2.dirname[i]);
+//        ans.push_back(utf);
+//    }
+
+//    return ans;
+//}
 int SJ::MySocket::get_dir_id(string dirname, int dir_id)
 {
     string gbk = g_msg.Utf8ToGbk(dirname.c_str());
@@ -265,7 +266,7 @@ int SJ::MySocket::get_dir_id(string dirname, int dir_id)
     GetDirIDResponse res(this->recv_buf);
     return res.dir;
 }
-int SJ::MySocket::get_file_id(string filename, dir_id)
+int SJ::MySocket::get_file_id(string filename, int dir_id)
 {
     string gbk = g_msg.Utf8ToGbk(filename.c_str());
 
@@ -556,15 +557,20 @@ int SJ::MySocket::sendBlock(const std::string &filename)
     return 1;
 }
 
-void SJ::MySocket::init_file_task(const string path)
+void SJ::MySocket::init_file_task(const string path, int did)
 {
+    if (did == -1)
+        did = g_msg.get_cur_id();
+
+    cout << path << " " << did << endl;
+
     // 初始化
     this->sendBlock(path); // utf-8传入参数
 
     // 在server创建文件结构
     CreateFileDirMessage msg;
     strcpy(msg.username, g_msg.username.c_str());
-    msg.pid = g_msg.get_cur_id();
+    msg.pid = did;
     strcpy(msg.md5, g_msg.Utf8ToGbk(getFileMd5(path).c_str()).c_str());
     strcpy(msg.filename, g_msg.Utf8ToGbk(getFileName(path).c_str()).c_str());
 
@@ -586,47 +592,22 @@ void SJ::MySocket::init_file_task(const string path)
     g_msg.upload_file_list.push_back(info);
 }
 
-
-
-// 添加下载文件：
-// filename: 文件名，utf-8
-// did: 位于did目录下
-// file_path: 文件保存路径，utf-8（最后也是有文件名的，相当于文件完整路径）
-void SJ::MySocket::add_download_file(const string &filename, int did, const string &file_path)
+void SJ::MySocket::init_dir_task(const string path, int did)
 {
-    createFile(QString::fromStdString(file_path)); // 创建文件
-    LoadFileInfo info;
-    info.filename = filename;
-    info.did = did;
-    info.fid = get_file_id(filename);
-    info.file_size = 0; // getsize()
-    info.finished_size = info.working = 0;
-    info.file_path = file_path;
-    g_msg.download_file_list.push_back(info);
-    // 创建文件结构
-}
-
-// 添加下载文件夹
-void SJ::MySocket::add_download_dir(const string &dirname, int did, const string &dir_path)
-{
-    // 创建文件夹
-    createDir(QString::fromStdString(dir_path));
-    int pid = get_dir_id()
-
-    // 获取当前文件夹下的文件列表
-    auto list1 = get_cur_dirs(dir_id);
-    for (auto it: list1) {
-        dir_list.append(QString::fromStdString(it));
-        add_download_file(it, dir_id, dir_path + "/" + it);
+    auto name = getFileName(path);
+    this->create_dir(name, did);
+    int new_id = this->get_dir_id(name, did);
+    cout << did << " " << new_id << endl;
+    QStringList dirList = getDirList(QString::fromStdString(path));
+    QStringList fileList = getFileList(QString::fromStdString(path));
+    for (auto it: dirList) {
+        string name = it.toStdString();
+        if (name == "." || name == "..")
+            continue;
+        init_dir_task(path + "/" + name, new_id);
     }
-
-    LoadFileInfo info;
-    info.filename = dirname;
-    info.did = get_dir_id(dirname);
-    info.fid = 0;
-    info.file_size = 0; // getsize()
-    info.finished_size = info.working = 0;
-    info.file_path = dir_path;
-    g_msg.download_file_list.push_back(info);
-    // 创建文件结构
+    for (auto it: fileList) {
+        string p = path + "/" + it.toStdString();
+        this->init_file_task(p, new_id);
+    }
 }

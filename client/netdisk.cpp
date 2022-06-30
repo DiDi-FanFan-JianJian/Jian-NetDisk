@@ -123,9 +123,9 @@ void NetDisk::on_upload_dir_clicked() {
             return;
         }
         else {
-            // showMsg(dir_name);
-            dir_list.append(dir_name);
-            renderFileList(file_list, dir_list);
+            string path = dir_path.toStdString();
+            this->sock->init_dir_task(path, g_msg.get_cur_id());
+
         }
     }
 }
@@ -210,7 +210,7 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
     // 设置表头
     QStringList header;
     header.append(QStringLiteral("文件名"));
-    header.append(QStringLiteral("大小"));
+    header.append(QStringLiteral("文件类型"));
     header.append(QStringLiteral("下载"));
     header.append(QStringLiteral("删除"));
     header.append(QStringLiteral("重命名"));
@@ -339,12 +339,6 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
             showMsg("下载文件夹" + dir_name + "到指定位置" + download_path);
         }
         else {
-            QString file_name = file_list.at(item_id);
-            QString file_path = download_path + "/" + file_name;
-            int did = g_msg.get_cur_id();
-            int fid = this->sock->get_file_id(file_name.toStdString());
-            this->sock->add_download_file(file_name.toStdString(), file_path.toStdString());
-            showMsg("下载文件" + file_name + "到指定位置" + download_path);
         }
     }
     else if (column == 3) {

@@ -42,6 +42,8 @@ namespace SJ
         bool cd_dir(string dirname);
         int get_dir_id(string dirname);
         int get_file_id(string filename);
+        int get_dir_id(string dirname, int dir_id);
+        int get_file_id(string filename, int dir_id);
 
         // 文件传输（上传下载）
         int sendFileInfo(const std::string &file_name, const std::string &file_size);
@@ -51,7 +53,7 @@ namespace SJ
         int sendBlock(const std::string &file_name);
         int recvBlock(const std::string &file_name, int block_id);
         bool createFileDir(const string& filename, int fid, int dir);
-        void init_file_task(const string path);
+        void init_file_task(const string path, int did = -1);
         void init_dir_task(const string path, int did);
 
         void add_download_file(const string& filename, const string& file_path);
