@@ -8,7 +8,7 @@ make.exe all --print-data-base --no-builtin-variables --no-builtin-rules --quest
 # This program built for i686-pc-mingw32
  
 
-# Make data base, printed on Wed Jun 29 08:58:51 2022
+# Make data base, printed on Thu Jun 30 10:10:15 2022
 
 # Variables
 
@@ -67,10 +67,9 @@ NVM_SYMLINK = D:\mynvm
 # environment
 PROGRAMDATA = C:\ProgramData
 # environment
-VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-793b9006-771c-4244-a2d7-74cbef028561-sock
+VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-47be2f04-f844-4ffc-a993-b582d692c0a0-sock
 # environment
-VS 
-CODE_CWD = D:\Microsoft VS Code
+VSCODE_CWD = D:\
 # environment
 PATH = C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\libnvvp;D:\VMware\bin\;C:\ProgramData\Oracle\Java\javapath;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files\Python38\Scripts\;C:\Program Files\Python38\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NGX;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\dotnet\;C:\Program Files\Java\jdk1.8.0_05\jre\bin;C:\Program Files\Java\jdk1.8.0_05\bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Mozilla Firefox;D:\ssh;D:\Git\cmd;D:\CMake\bin;D:\node_js\;D:\vivado\Vivado\2016.2\bin;E:\codeforces\;E:\yarn\bin\;E:\vcpkg;D:\xshell\;D:\xftp\;C:\Program Files\NVIDIA Corporation\Nsight Compute 2019.5.0\;D:\MongoDB\bin\;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\ProgramData\chocolatey\bin;D:\nvm;D:\mynvm;D:\nvm\v16.13.0\;D:\Dev-Cpp\MinGW64\bin;D:\anaconda;D:\anaconda\Library\mingw-w64\bin;D:\anaconda\Library\usr\bin;D:\anaconda\Library\bin;D:\anaconda\Scripts;E:\Ruby\Ruby30-x64\bin;D:\Scripts\;D:\;C:\Users\86131\AppData\Local\Programs\AdoptOpenJDK\bin;C:\Users\86131\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Bandizip\;D:\Microsoft VS Code\bin;D:\PyCharm Community Edition 2019.3.1\bin;;D:\PyCharm 2020.1\bin;;D:\IntelliJ IDEA Educational Edition 2020.1\bin;;D:\CLion 2020.1\bin;;D:\digitLogic\win32pe;C:\Users\86131\AppData\Local\GitHubDesktop\bin;D:\texlive\2020\bin\win32;E:\WebStorm\WebStorm 2020.3.1\bin;;E:\IntelliJ\IntelliJ IDEA 2020.3.2\bin;;C:\Users\86131\AppData\Roaming\npm;C:\Users\86131\AppData\Local\Yarn\bin;E:\os-64\NASM;E:\os-64\MinGW\bin;E:\vcpkg;D:\nvm;D:\mynvm
 # environment
@@ -102,7 +101,7 @@ INTELLIJ IDEA = E:\IntelliJ\IntelliJ IDEA 2020.3.2\bin;
 # automatic
 %F = $(notdir $%)
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_42612_MNEFHGZSELLMRQZS
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_48332_BKYSVSWQGFEKZOKA
 # environment
 CUDA_PATH_V10_2 = C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2
 # environment
@@ -208,7 +207,10 @@ LC_ALL = C
 # environment
 PYCHARM = D:\PyCharm 2020.1\bin;
 # environment
-CONFIGSETROOT = C:\WINDOWS\ConfigSetRoot
+CONFIGSETROOT = C 
+make.exe: *** No rule to make target `all'.  Stop.
+
+:\WINDOWS\ConfigSetRoot
 # automatic
 ^F = $(notdir $^)
 # environment
@@ -234,7 +236,7 @@ PROCESSOR_LEVEL = 6
 # environment
 FPS_BROWSER_APP_PROFILE_STRING = Internet Explorer
 # environment
-VSCODE_PID = 42612
+VSCODE_PID = 48332
 # environment
 USERDOMAIN_ROAMINGPROFILE = MAGIC-PC
 # variable set hash-table stats:
@@ -248,7 +250,7 @@ USERDOMAIN_ROAMINGPROFILE = MAGIC-PC
 
 # : could not be stat'd.
 # D:\PyCharm Community Edition 2019.3.1\bin: could not be stat'd.
-# C:\Program Files\Mozilla Firefox (key C:/Program Files/Mozilla Firefox, mtime 1656084891): 79 files, no impossibilities.
+# C:\Program Files\Mozilla Firefox (key C:/Program Files/Mozilla Firefox, mtime 1656516270): 80 files, no impossibilities.
 # D:\xshell\ (key D:/xshell/, mtime 1646117162): 39 files, no impossibilities.
 # C:\Program Files\Common Files\Oracle\Java\javapath (key C:/Program Files/Common Files/Oracle/Java/javapath, mtime 1614318167): 6 files, no impossibilities.
 # C:\Program Files\Bandizip\ (key C:/Program Files/Bandizip/, mtime 1640760692): 25 files, no impossibilities.
@@ -313,7 +315,7 @@ USERDOMAIN_ROAMINGPROFILE = MAGIC-PC
 # C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR (key C:/Program Files/NVIDIA Corporation/NVIDIA NvDLISR, mtime 1562007710): 5 files, no impossibilities.
 # D:\VMware\bin\ (key D:/VMware/bin/, mtime 1643533563): 4 files, no impossibilities.
 
-# 6164 files, no impossibilities in 66 directories.
+# 6165 files, no impossibilities in 66 directories.
 
 # Implicit Rules
 
@@ -375,8 +377,6 @@ GNUmakefile:
 # strcache size: total = 0 / max = 0 / min = 4096 / avg = 0
 # strcache free: total = 0 / max = 0 / min = 4096 / avg = 0
 
-# Finished Make data base on Wed Jun 29 08:58:51 2022
+# Finished Make data base on Thu Jun 30 10:10:15 2022
 
  
-make.exe: *** No rule to make target `all'.  Stop.
-

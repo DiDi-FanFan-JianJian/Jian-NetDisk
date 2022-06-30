@@ -123,9 +123,9 @@ void NetDisk::on_upload_dir_clicked() {
             return;
         }
         else {
-            // showMsg(dir_name);
-            dir_list.append(dir_name);
-            renderFileList(file_list, dir_list);
+            string path = dir_path.toStdString();
+            this->sock->init_dir_task(path, g_msg.get_cur_id());
+
         }
     }
 }
@@ -210,7 +210,7 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
     // 设置表头
     QStringList header;
     header.append(QStringLiteral("文件名"));
-    header.append(QStringLiteral("大小"));
+    header.append(QStringLiteral("文件类型"));
     header.append(QStringLiteral("下载"));
     header.append(QStringLiteral("删除"));
     header.append(QStringLiteral("重命名"));
@@ -358,7 +358,6 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
             int ret = msgbox.exec();
             if (ret == QMessageBox::Yes) {
                 // 删除文件夹
-                showMsg(QStringLiteral("删除成功"));
                 int id = this->sock->get_dir_id(dir_name.toStdString());
                 this->sock->delete_dir(id);
             }
@@ -373,10 +372,8 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
             int ret = msgbox.exec();
             if (ret == QMessageBox::Yes) {
                 // 删除文件
-                showMsg("删除文件" + file_name);
-
-                ui->file_list->removeRow(row);
-                file_list.removeAt(item_id);
+                int id = this->sock->get_file_id(file_name.toStdString());
+                this->sock->delete_file(id, g_msg.get_cur_id());
             }
         }
     }

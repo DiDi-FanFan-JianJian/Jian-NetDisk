@@ -38,6 +38,7 @@ namespace SJ
         vector<string> get_cur_dirs();
         vector<string> get_cur_files();
         bool create_dir(string dirname);
+        bool create_dir(string dirname, int did);
         bool cd_dir(string dirname);
         int get_dir_id(string dirname);
         int get_file_id(string filename);
@@ -54,7 +55,8 @@ namespace SJ
         int sendBlock(const std::string &file_name);
         int recvBlock(const std::string &file_name, int block_id);
         bool createFileDir(const string& filename, int fid, int dir);
-        void init_file_task(const string path);
+        void init_file_task(const string path, int did = -1);
+        void init_dir_task(const string path, int did);
 
         int get_file_size (int fid, int pid);
         void add_download_file(const string &filename, int did, const string &file_path);
