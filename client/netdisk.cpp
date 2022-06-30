@@ -351,7 +351,6 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
             int ret = msgbox.exec();
             if (ret == QMessageBox::Yes) {
                 // 删除文件夹
-                showMsg("删除文件夹" + dir_name);
                 int id = this->sock->get_dir_id(dir_name.toStdString());
                 this->sock->delete_dir(id);
             }
@@ -366,10 +365,8 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
             int ret = msgbox.exec();
             if (ret == QMessageBox::Yes) {
                 // 删除文件
-                showMsg("删除文件" + file_name);
-
-                ui->file_list->removeRow(row);
-                file_list.removeAt(item_id);
+                int id = this->sock->get_file_id(file_name.toStdString());
+                this->sock->delete_file(id, g_msg.get_cur_id());
             }
         }
     }

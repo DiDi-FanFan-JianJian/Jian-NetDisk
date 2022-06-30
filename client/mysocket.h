@@ -38,6 +38,7 @@ namespace SJ
         vector<string> get_cur_dirs();
         vector<string> get_cur_files();
         bool create_dir(string dirname);
+        bool create_dir(string dirname, int did);
         bool cd_dir(string dirname);
         int get_dir_id(string dirname);
         int get_file_id(string filename);
@@ -51,6 +52,7 @@ namespace SJ
         int recvBlock(const std::string &file_name, int block_id);
         bool createFileDir(const string& filename, int fid, int dir);
         void init_file_task(const string path);
+        void init_dir_task(const string path, int did);
 
         // 其他（移动、复制、重命名、删除）
         bool copy_file(int pid, int fid, string filename);

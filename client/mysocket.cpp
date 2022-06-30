@@ -219,6 +219,23 @@ bool SJ::MySocket::create_dir(string dirname)
     return res.status == CreateDirResponse::success;
 }
 
+bool SJ::MySocket::create_dir(string dirname, int did)
+{
+    string gbk = g_msg.Utf8ToGbk(dirname.c_str());
+
+    char buf[MAX_BUF_SIZE] = {0};
+    buf[0] = MSG_CREATE_DIR;
+    CreateDirMessage msg;
+    strcpy(msg.username, g_msg.username.c_str());
+    strcpy(msg.dirname, gbk.c_str());
+    msg.pid = did;
+    memcpy(buf + 1, &msg, sizeof(msg));
+    send(client, buf, sizeof(msg) + 1, 0);
+    this->recvMsg();
+    CreateDirResponse res(this->recv_buf);
+    return res.status == CreateDirResponse::success;
+}
+
 bool SJ::MySocket::cd_dir(string dirname)
 {
     string gbk = g_msg.Utf8ToGbk(dirname.c_str());
