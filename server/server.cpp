@@ -20,6 +20,8 @@ using namespace std;
 #define SERV_PORT 8000
 #define OPEN_MAX 1024
 
+const char* log_file = "/home/netdisk/db.log";
+
 int main()
 {
   string md5;
@@ -93,6 +95,14 @@ int main()
         /*接受请求，分配新文件描述符connfd进行通信*/
         connfd = accept(listenfd, (struct sockaddr *)&cliaddr, &clilen);
         printf("received from %s at PORT %d\n", (char *)inet_ntop(AF_INET, &cliaddr.sin_addr, str, sizeof(str)), ntohs(cliaddr.sin_port));
+        
+        // 日志追加写
+        FILE *fp = fopen(log_file, "a");
+        // 时间 ip 端口
+        time_t t = time(NULL);
+        struct tm *tm = localtime(&t);
+        fprintf(fp, "%d-%d-%d %d:%d:%d %s %d\n", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, (char *)inet_ntop(AF_INET, &cliaddr.sin_addr, str, sizeof(str)), ntohs(cliaddr.sin_port));
+        fclose(fp);
 
         /*若将此新客户端添加至客户端集中*/
         for (j = 0; j < OPEN_MAX; j++)
