@@ -71,4 +71,6 @@ public:
   bool is_file_dir_exist(string pid, string filename); // 判断文件目录是否存在
   bool copy_file(string username, string fid, string pid, string filename); // 文件复制
   bool rename_file(string fid, string did, string newname); // 重命名文件
+  string get_file_name(string fid, string did); // 获取文件名
+  string get_file_md5(string fid); // 获取文件md5
 };

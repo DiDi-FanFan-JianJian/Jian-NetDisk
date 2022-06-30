@@ -29,6 +29,9 @@ constexpr int MSG_COPY_DIR = 18;
 constexpr int MSG_RENAME_FILE = 19;
 constexpr int MSG_RENAME_DIR = 20;
 
+constexpr int MSG_GET_FILE_ALL_INFO = 21;
+constexpr int MSG_GET_FILE_MD5 = 22;
+
 // 注册 登录
 struct LoginMessage
 {
@@ -307,3 +310,25 @@ typedef LoginResponse RenameDirResponse;
 
 typedef RenameDirMessage RenameFileMessage;
 typedef RenameDirResponse RenameFileResponse;
+
+
+struct GetFileAllInfoMessage
+{
+  GetFileAllInfoMessage() {}
+  GetFileAllInfoMessage(const char* msg) {
+    memcpy(this, msg, sizeof(GetFileAllInfoMessage));
+  }
+  int id; // 文件编号
+  int pid; // 父目录编号
+};
+
+struct GetFileAllInfoResponse
+{
+  GetFileAllInfoResponse() {}
+  GetFileAllInfoResponse(const char* msg) {
+    memcpy(this, msg, sizeof(GetFileAllInfoResponse));
+  }
+  char filename[40]; // 文件名
+  char md5[33]; // 文件的md5
+  int size; // 字节数
+};
