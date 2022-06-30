@@ -123,9 +123,9 @@ void NetDisk::on_upload_dir_clicked() {
             return;
         }
         else {
-            // showMsg(dir_name);
-            dir_list.append(dir_name);
-            renderFileList(file_list, dir_list);
+            string path = dir_path.toStdString();
+            this->sock->init_dir_task(path, g_msg.get_cur_id());
+
         }
     }
 }
@@ -210,7 +210,7 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
     // 设置表头
     QStringList header;
     header.append(QStringLiteral("文件名"));
-    header.append(QStringLiteral("大小"));
+    header.append(QStringLiteral("文件类型"));
     header.append(QStringLiteral("下载"));
     header.append(QStringLiteral("删除"));
     header.append(QStringLiteral("重命名"));
@@ -227,7 +227,7 @@ void NetDisk::renderFileList(QStringList file_list, QStringList dir_list) {
         file_name->setFlags(Qt::ItemIsEnabled);
         ui->file_list->setItem(i, 0, file_name);
         // 文件大小
-        QTableWidgetItem *file_size = new QTableWidgetItem("1.0KB");
+        QTableWidgetItem *file_size = new QTableWidgetItem(QStringLiteral("文件"));
         file_size->setFlags(Qt::ItemIsEnabled);
         ui->file_list->setItem(i, 1, file_size);
     }
@@ -332,11 +332,13 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
 
         if (is_dir) {
             QString dir_name = dir_list.at(item_id);
+            QString dir_path = download_path + "/" + dir_name;
+            int dir_id = g_msg.get_cur_id();
+            int did = this->sock->get_dir_id(dir_name.toStdString());
+            // this->sock->add_download_file(dir_name, dir_path);
             showMsg("下载文件夹" + dir_name + "到指定位置" + download_path);
         }
         else {
-            QString file_name = file_list.at(item_id);
-            showMsg("下载文件" + file_name + "到指定位置" + download_path);
         }
     }
     else if (column == 3) {
@@ -351,7 +353,6 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
             int ret = msgbox.exec();
             if (ret == QMessageBox::Yes) {
                 // 删除文件夹
-                showMsg("删除文件夹" + dir_name);
                 int id = this->sock->get_dir_id(dir_name.toStdString());
                 this->sock->delete_dir(id);
             }
@@ -366,10 +367,8 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
             int ret = msgbox.exec();
             if (ret == QMessageBox::Yes) {
                 // 删除文件
-                showMsg("删除文件" + file_name);
-
-                ui->file_list->removeRow(row);
-                file_list.removeAt(item_id);
+                int id = this->sock->get_file_id(file_name.toStdString());
+                this->sock->delete_file(id, g_msg.get_cur_id());
             }
         }
     }
