@@ -3,6 +3,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <iostream>
+#include <QTextStream>
 
 using namespace std;
 
@@ -133,6 +134,45 @@ bool writeFile(const QString &file_path, const QString &content, int pos)
     // 向文件写入内容，判断是否写入成功
     QTextStream out(&file);
     out << content;
+    if (file.error() != QFile::NoError)
+    {
+        return false;
+    }
+    file.close();
+    return true;
+}
+// 向某个文件指定位置写入指定数量的内容（-1：尾，0：头，其他：指定位置）
+bool writeFile(const QString &file_path, char data[], int size, int pos)
+{
+    // 判断文件是否存在
+    if (!isFileExist(file_path))
+    {
+        return false;
+    }
+    // 以二进制方式打开文件，移动文件指针到指定位置
+    QFile file(file_path);
+    if (!file.open(QIODevice::ReadWrite))
+    {
+        return false;
+    }
+    if (pos == -1)
+    {
+        file.seek(file.size());
+    }
+    else if (pos == 0)
+    {
+        file.seek(0);
+    }
+    else
+    {
+        file.seek(pos);
+    }
+    // 向文件写入内容，判断是否写入成功
+    QTextStream out(&file);
+    for (int i = 0; i < size; i++)
+    {
+        out << data[i];
+    }
     if (file.error() != QFile::NoError)
     {
         return false;

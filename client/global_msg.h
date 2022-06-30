@@ -11,6 +11,10 @@
 #include <queue>
 #include <windows.h>
 
+#define STOP 0
+#define RUNNING 1
+#define WAITING 2
+
 #define PASTE_NOFILE 0
 #define PASTE_COPYFILE 1
 #define PASTE_CUTFILE 2
@@ -27,7 +31,7 @@ struct LoadFileInfo {
     int file_size;
     string file_path;
     char md5[33] = "00000000000000000000000000000000";
-    bool working;
+    int working;
 };
 
 struct Global_Msg {

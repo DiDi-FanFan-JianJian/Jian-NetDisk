@@ -41,6 +41,10 @@ namespace SJ
         bool cd_dir(string dirname);
         int get_dir_id(string dirname);
         int get_file_id(string filename);
+        vector<string> get_cur_dirs(int dir_id);
+        vector<string> get_cur_files(int dir_id);
+        int get_dir_id(string dirname, int dir_id);
+        int get_file_id(string filename, int dir_id);
 
         // 文件传输（上传下载）
         int sendFileInfo(const std::string &file_name, const std::string &file_size);
@@ -52,8 +56,10 @@ namespace SJ
         bool createFileDir(const string& filename, int fid, int dir);
         void init_file_task(const string path);
 
-        void add_download_file(const string& filename, const string& file_path);
-        void add_download_dir(const string &dirname, const string &dir_path);
+        int get_file_size (int fid, int pid);
+        void add_download_file(const string &filename, int did, const string &file_path);
+        void add_download_dir(const string &dirname, int did, const string &dir_path);
+        int recvBlock();
 
         // 其他（移动、复制、重命名、删除）
         bool copy_file(int pid, int fid, string filename);

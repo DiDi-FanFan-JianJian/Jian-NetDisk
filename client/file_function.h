@@ -38,6 +38,7 @@ string getFileName(string path);
 
 // 向某个文件指定位置写入内容（-1：尾，0：头，其他：指定位置）
 bool writeFile(const QString &file_path, const QString &content, int pos = -1);
+bool writeFile(const QString &file_path, char data[], int size, int pos = -1);
 
 // 从某个文件读取指定位置的指定数量的内容
 QString readFile(const QString &file_path, int pos, int size, QString &content);

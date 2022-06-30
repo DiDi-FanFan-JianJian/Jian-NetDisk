@@ -49,6 +49,7 @@ void TransferListDialog::my_timer_timeout()
             fir.finished_size = min(g_msg.cur_idx[g_msg.file_md5[fir.file_path]], g_msg.block_num[md5]);
         }
     }
+    this->sock->recvBlock();
     // 渲染文件列表
     renderFileList();
 }
@@ -67,15 +68,29 @@ void TransferListDialog::renderFileList()
         // 进度，使用QProgressBar控件显示进度
         QProgressBar *bar = new QProgressBar();
         bar->setRange(0, 100);
-        bar->setValue(g_msg.upload_file_list[i].finished_size * 100 / g_msg.upload_file_list[i].file_size);
+        if (g_msg.upload_file_list[i].file_size) {
+            bar->setValue(g_msg.upload_file_list[i].finished_size * 100 / g_msg.upload_file_list[i].file_size);
+        }
+        else {
+            bar->setValue(100);
+        }
         ui->upload_file_list->setCellWidget(i, 1, bar);
         // 状态
-        item = new QTableWidgetItem(QString::fromStdString(g_msg.upload_file_list[i].working ? "uploading" : "waiting"));
-        ui->upload_file_list->setItem(i, 2, item);
+        if (g_msg.upload_file_list[i].working == 0) {
+            item = new QTableWidgetItem(QString::fromStdString("stop"));
+            ui->upload_file_list->setItem(i, 2, item);
+        }
+        else if (g_msg.upload_file_list[i].working == 1) {
+            item = new QTableWidgetItem(QString::fromStdString("uploading"));
+            ui->upload_file_list->setItem(i, 2, item);
+        }
+        else {
+            item = new QTableWidgetItem(QString::fromStdString("waiting"));
+            ui->upload_file_list->setItem(i, 2, item);
+        }
         // 控制暂停、继续按钮
-        QPushButton *btn = new QPushButton();
-        btn->setText(g_msg.upload_file_list[i].working ? "pause" : "continue");
-        ui->upload_file_list->setCellWidget(i, 3, btn);
+        item = new QTableWidgetItem(QString::fromStdString((g_msg.upload_file_list[i].working == 0) ? "start" : "stop"));
+        ui->upload_file_list->setItem(i, 3, item);
     }
 
     // 使用QTableWidget控件显示文件下载列表
@@ -90,15 +105,29 @@ void TransferListDialog::renderFileList()
         // 进度，使用QProgressBar控件显示进度
         QProgressBar *bar = new QProgressBar();
         bar->setRange(0, 100);
-        bar->setValue(g_msg.download_file_list[i].finished_size * 100 / g_msg.download_file_list[i].file_size);
+        if (g_msg.download_file_list[i].file_size) {
+            bar->setValue(g_msg.download_file_list[i].finished_size * 100 / g_msg.download_file_list[i].file_size);
+        }
+        else {
+            bar->setValue(100);
+        }
         ui->download_file_list->setCellWidget(i, 1, bar);
         // 状态
-        item = new QTableWidgetItem(QString::fromStdString(g_msg.download_file_list[i].working ? "downloading" : "waiting"));
-        ui->download_file_list->setItem(i, 2, item);
+        if (g_msg.download_file_list[i].working == 0) {
+            item = new QTableWidgetItem(QString::fromStdString("stop"));
+            ui->download_file_list->setItem(i, 2, item);
+        }
+        else if (g_msg.download_file_list[i].working == 1) {
+            item = new QTableWidgetItem(QString::fromStdString("downloading"));
+            ui->download_file_list->setItem(i, 2, item);
+        }
+        else {
+            item = new QTableWidgetItem(QString::fromStdString("waiting"));
+            ui->download_file_list->setItem(i, 2, item);
+        }
         // 控制暂停、继续文字（如果正在传输，则显示暂停，否则显示继续）
-        QPushButton *btn = new QPushButton();
-        btn->setText(g_msg.download_file_list[i].working ? "pause" : "continue");
-        ui->download_file_list->setCellWidget(i, 3, btn);
+        item = new QTableWidgetItem(QString::fromStdString((g_msg.download_file_list[i].working == 0) ? "start" : "stop"));
+        ui->download_file_list->setItem(i, 3, item);
     }
 }
 
@@ -109,10 +138,10 @@ void TransferListDialog::on_upload_file_list_cellClicked(int row, int column)
     g_msg.upload_file_list[file_index];
     // 点击暂停、继续按钮
     if (column == 3) {
-        if (g_msg.upload_file_list[row].working) {
-            g_msg.upload_file_list[row].working = false;
+        if (g_msg.upload_file_list[row].working == 0) {
+            g_msg.upload_file_list[row].working = 1;
         } else {
-            g_msg.upload_file_list[row].working = true;
+            g_msg.upload_file_list[row].working = 0;
         }
     }
 }
@@ -124,10 +153,10 @@ void TransferListDialog::on_download_file_list_cellClicked(int row, int column)
     g_msg.download_file_list[file_index];
     // 点击暂停、继续按钮
     if (column == 3) {
-        if (g_msg.download_file_list[row].working) {
-            g_msg.download_file_list[row].working = false;
+        if (g_msg.download_file_list[row].working == 0) {
+            g_msg.download_file_list[row].working = 2;
         } else {
-            g_msg.download_file_list[row].working = true;
+            g_msg.download_file_list[row].working = 0;
         }
     }
 }

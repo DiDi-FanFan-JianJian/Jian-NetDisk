@@ -265,7 +265,7 @@ int SJ::MySocket::get_dir_id(string dirname, int dir_id)
     GetDirIDResponse res(this->recv_buf);
     return res.dir;
 }
-int SJ::MySocket::get_file_id(string filename, dir_id)
+int SJ::MySocket::get_file_id(string filename, int dir_id)
 {
     string gbk = g_msg.Utf8ToGbk(filename.c_str());
 
@@ -570,7 +570,18 @@ void SJ::MySocket::init_file_task(const string path)
 }
 
 
-
+int SJ::MySocket::get_file_size (int fid, int pid){
+    char buf[MAX_BUF_SIZE] = {0};
+    buf[0] = MSG_GET_FILE_ALL_INFO;
+    GetFileAllInfoMessage msg;
+    msg.id = fid;
+    msg.pid = pid;
+    memcpy(buf + 1, &msg, sizeof(msg));
+    send(client, buf, sizeof(msg) + 1, 0);
+    this->recvMsg();
+    GetFileAllInfoResponse res(this->recv_buf);
+    return res.size;
+}
 // 添加下载文件：
 // filename: 文件名，utf-8
 // did: 位于did目录下
@@ -581,12 +592,12 @@ void SJ::MySocket::add_download_file(const string &filename, int did, const stri
     LoadFileInfo info;
     info.filename = filename;
     info.did = did;
-    info.fid = get_file_id(filename);
-    info.file_size = 0; // getsize()
-    info.finished_size = info.working = 0;
+    info.fid = get_file_id(filename, did);
+    info.file_size = get_file_size(info.fid, did);
+    info.finished_size = 0;
+    info.working = WAITING;
     info.file_path = file_path;
     g_msg.download_file_list.push_back(info);
-    // 创建文件结构
 }
 
 // 添加下载文件夹
@@ -594,22 +605,68 @@ void SJ::MySocket::add_download_dir(const string &dirname, int did, const string
 {
     // 创建文件夹
     createDir(QString::fromStdString(dir_path));
-    int pid = get_dir_id()
+    // 获取选择的文件夹的id
+    int pid = get_dir_id(dirname, did);
 
-    // 获取当前文件夹下的文件列表
-    auto list1 = get_cur_dirs(dir_id);
+    // 获取选择的文件夹下的文件列表
+    auto list1 = get_cur_files(pid);
     for (auto it: list1) {
-        dir_list.append(QString::fromStdString(it));
-        add_download_file(it, dir_id, dir_path + "/" + it);
+        // 合并文件路径
+        string path = dir_path + "/" + it;
+        // 添加下载文件
+        add_download_file(it, pid, path);
     }
 
-    LoadFileInfo info;
-    info.filename = dirname;
-    info.did = get_dir_id(dirname);
-    info.fid = 0;
-    info.file_size = 0; // getsize()
-    info.finished_size = info.working = 0;
-    info.file_path = dir_path;
-    g_msg.download_file_list.push_back(info);
-    // 创建文件结构
+    // 获取选择的文件夹下的文件夹列表
+    auto list2 = get_cur_dirs(pid);
+    for (auto it: list2) {
+        // 合并文件路径
+        string path = dir_path + "/" + it;
+        // 添加下载文件夹
+        add_download_dir(it, pid, path);
+    }
+}
+
+int SJ::MySocket::recvBlock()
+{
+    // 先找到正在下载的文件
+    int working_id = -1;
+    int waiting_id = -1;
+    for (unsigned i = 0; i < g_msg.download_file_list.size(); i++) {
+        if (g_msg.download_file_list[i].working == RUNNING) {
+            working_id = i;
+            break;
+        }
+        if (waiting_id < 0 && g_msg.download_file_list[i].working == WAITING) {
+            waiting_id = i;
+        }
+    }
+    if (working_id == -1 && waiting_id == -1) {
+        return 0;
+    }
+    if (working_id == -1) {
+        working_id = waiting_id;
+        g_msg.download_file_list[working_id].working = RUNNING;
+    }
+    // 下载一个block
+    char buf[MAX_BUF_SIZE] = {0};
+    DownloadBlockMessage msg;
+    msg.id = g_msg.download_file_list[working_id].fid;
+    msg.block_id = g_msg.download_file_list[working_id].finished_size / BLOCK_SIZE + 1;
+    msg.size = (g_msg.download_file_list[working_id].finished_size + BLOCK_SIZE) > g_msg.download_file_list[working_id].file_size ? g_msg.download_file_list[working_id].file_size - g_msg.download_file_list[working_id].finished_size : BLOCK_SIZE;
+    memset(buf, 0, sizeof(buf));
+    buf[0] = MSG_DOWNLOAD_BLOCK;
+    memcpy(buf + 1, &msg, sizeof(msg));
+    send(client, buf, sizeof(msg) + 1, 0);
+    this->recvMsg();
+    DownloadBlockResponse res(this->recv_buf);
+    // 写入文件msg.size个字节
+    writeFile(QString::fromStdString(g_msg.download_file_list[working_id].file_path), res.block_data, msg.size, -1);
+    // 更新已下载大小
+    g_msg.download_file_list[working_id].finished_size += msg.size;
+    // 如果下载完成，移除
+    if (g_msg.download_file_list[working_id].finished_size == g_msg.download_file_list[working_id].file_size) {
+        g_msg.download_file_list.erase(g_msg.download_file_list.begin() + working_id);
+    }
+    return 1;
 }
