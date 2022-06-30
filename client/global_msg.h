@@ -116,10 +116,10 @@ struct Global_Msg {
     // 将所有的LoadFileInfo的工作状态设置为false
     void set_all_file_working_false() {
         for (auto &&it: upload_file_list) {
-            it.working = false;
+            it.working = 0;
         }
         for (auto &&it: download_file_list) {
-            it.working = false;
+            it.working = 0;
         }
     }
     // 将upload_file_list、download_file_list写入文件，下次再次登录时使用

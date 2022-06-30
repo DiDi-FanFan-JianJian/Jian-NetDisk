@@ -101,6 +101,7 @@ void TransferListDialog::renderFileList()
     for (unsigned i = 0; i < g_msg.download_file_list.size(); i++) {
         // 文件名
         QTableWidgetItem *item = new QTableWidgetItem(QString::fromStdString(g_msg.download_file_list[i].filename));
+        item->setFlags(Qt::ItemIsEnabled);
         ui->download_file_list->setItem(i, 0, item);
         // 进度，使用QProgressBar控件显示进度
         QProgressBar *bar = new QProgressBar();
@@ -115,18 +116,22 @@ void TransferListDialog::renderFileList()
         // 状态
         if (g_msg.download_file_list[i].working == 0) {
             item = new QTableWidgetItem(QString::fromStdString("stop"));
+            item->setFlags(Qt::ItemIsEnabled);
             ui->download_file_list->setItem(i, 2, item);
         }
         else if (g_msg.download_file_list[i].working == 1) {
             item = new QTableWidgetItem(QString::fromStdString("downloading"));
+            item->setFlags(Qt::ItemIsEnabled);
             ui->download_file_list->setItem(i, 2, item);
         }
         else {
             item = new QTableWidgetItem(QString::fromStdString("waiting"));
+            item->setFlags(Qt::ItemIsEnabled);
             ui->download_file_list->setItem(i, 2, item);
         }
         // 控制暂停、继续文字（如果正在传输，则显示暂停，否则显示继续）
         item = new QTableWidgetItem(QString::fromStdString((g_msg.download_file_list[i].working == 0) ? "start" : "stop"));
+        item->setFlags(Qt::ItemIsEnabled);
         ui->download_file_list->setItem(i, 3, item);
     }
 }
@@ -159,4 +164,5 @@ void TransferListDialog::on_download_file_list_cellClicked(int row, int column)
             g_msg.download_file_list[row].working = 0;
         }
     }
+    std::cout << 1 << std::endl;
 }

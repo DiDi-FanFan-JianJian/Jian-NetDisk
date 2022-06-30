@@ -202,54 +202,51 @@ vector<string> SJ::MySocket::get_cur_files()
     return ans;
 }
 
-//// 获取指定目录下信息
-//vector<string> SJ::MySocket::get_cur_dirs(int dir_id)
-//{
-//    vector<string> ans;
-//    char buf[MAX_BUF_SIZE] = {0};
+// 获取指定目录下信息
+vector<string> SJ::MySocket::get_cur_dirs(int dir_id)
+{
+   vector<string> ans;
+   char buf[MAX_BUF_SIZE] = {0};
+   // 获取所有目录
+   buf[0] = MSG_GET_DIRS;
+   GetDirsMessage msg1;
+   strcpy(msg1.username, g_msg.username.c_str());
+   msg1.pid = dir_id;
+   memcpy(buf + 1, &msg1, sizeof(msg1));
+   send(client, buf, sizeof(msg1) + 1, 0);
+   this->recvMsg();
+   GetDirsResponse res1(this->recv_buf);
+   for (int i = 0; i < res1.num; ++i) {
+       // ans.push_back(res1.dirname[i]);
+       // 转utf-8
+       string utf = g_msg.GbkToUtf8(res1.dirname[i]);
+       ans.push_back(utf);
+   }
+   return ans;
+}
+vector<string> SJ::MySocket::get_cur_files(int dir_id)
+{
+   vector<string> ans;
+   char buf[MAX_BUF_SIZE] = {0};
 
-//    // 获取所有目录
-//    buf[0] = MSG_GET_DIRS;
-//    GetDirsMessage msg1;
-//    strcpy(msg1.username, g_msg.username.c_str());
-//    msg1.pid = dir_id;
-//    memcpy(buf + 1, &msg1, sizeof(msg1));
-//    send(client, buf, sizeof(msg1) + 1, 0);
-//    this->recvMsg();
-//    GetDirsResponse res1(this->recv_buf);
-//    for (int i = 0; i < res1.num; ++i) {
-//        // ans.push_back(res1.dirname[i]);
-//        // 转utf-8
-//        string utf = g_msg.GbkToUtf8(res1.dirname[i]);
-//        ans.push_back(utf);
-//    }
+   // 获取所有文件
+   buf[0] = MSG_GET_FILES;
+   GetFilesMessage msg2;
+   strcpy(msg2.username, g_msg.username.c_str());
+   msg2.pid = dir_id;
+   memcpy(buf + 1, &msg2, sizeof(msg2));
+   send(client, buf, sizeof(msg2) + 1, 0);
+   this->recvMsg();
+   GetFilesResponse res2(this->recv_buf);
+   for (int i = 0; i < res2.num; ++i) {
+       // ans.push_back(res2.dirname[i]);
+       // 转utf-8
+       string utf = g_msg.GbkToUtf8(res2.dirname[i]);
+       ans.push_back(utf);
+   }
 
-//    return ans;
-//}
-
-//vector<string> SJ::MySocket::get_cur_files(int dir_id)
-//{
-//    vector<string> ans;
-//    char buf[MAX_BUF_SIZE] = {0};
-
-//    // 获取所有文件
-//    buf[0] = MSG_GET_FILES;
-//    GetFilesMessage msg2;
-//    strcpy(msg2.username, g_msg.username.c_str());
-//    msg2.pid = dir_id;
-//    memcpy(buf + 1, &msg2, sizeof(msg2));
-//    send(client, buf, sizeof(msg2) + 1, 0);
-//    this->recvMsg();
-//    GetFilesResponse res2(this->recv_buf);
-//    for (int i = 0; i < res2.num; ++i) {
-//        // ans.push_back(res2.dirname[i]);
-//        // 转utf-8
-//        string utf = g_msg.GbkToUtf8(res2.dirname[i]);
-//        ans.push_back(utf);
-//    }
-
-//    return ans;
-//}
+   return ans;
+}
 int SJ::MySocket::get_dir_id(string dirname, int dir_id)
 {
     string gbk = g_msg.Utf8ToGbk(dirname.c_str());

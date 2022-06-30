@@ -334,7 +334,6 @@ void NetDisk::on_file_list_cellClicked(int row, int column)
             QString dir_name = dir_list.at(item_id);
             QString dir_path = download_path + "/" + dir_name;
             int dir_id = g_msg.get_cur_id();
-            int did = this->sock->get_dir_id(dir_name.toStdString());
             this->sock->add_download_dir(dir_name.toStdString(), dir_id, dir_path.toStdString());
             showMsg(QStringLiteral("©╙й╪обть"));
         }
